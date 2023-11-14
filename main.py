@@ -1,16 +1,8 @@
-# This is a sample Python script.
+from simulation_run import simulation_run
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+# Create a simulation instance
+sim_run = simulation_run(2, "./saveFiles/test.csv", 100)
 
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+# Run the simulation
+sim_run.setup_run()
+sim_run.run_calculation()
