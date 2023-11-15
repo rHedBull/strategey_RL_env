@@ -1,5 +1,6 @@
 import json
 
+import pickle
 import pygame
 from nation import Nation
 import pandas as pd
@@ -7,8 +8,8 @@ import pandas as pd
 
 class simulation_run:
 
-    def __init__(self,  numb_nations, path_to_saveFile, max_steps):
-        self.save_file = path_to_saveFile
+    def __init__(self,  numb_nations, save_file_name, max_steps):
+        self.save_file = save_file_name
         #self.world_map = map # TODO create map class
         self.nations = []
         self.numb_nations = numb_nations
@@ -36,8 +37,20 @@ class simulation_run:
         self.save_df = pd.concat([self.save_df, df], ignore_index=True)
 
     def save_to_file(self):
-        # TODO save to other file types
-        self.save_df.to_csv(self.save_file, index=False)
+
+        # save to pickle file
+        save_directory = "./saveFiles/"
+        with open(save_directory + self.save_file + ".pkl", 'wb') as file:
+            pickle.dump(self.save_df, file)
+
+        # save to csv file
+        self.save_df.to_csv(save_directory + self.save_file + ".csv", index=False)
+
+    def load_from_file(self, save_file_name):
+        # load from pickle file
+        pickle_file = "./saveFiles/" + save_file_name + ".pkl"
+        with open(pickle_file, 'rb') as file:
+            self.save_df = pickle.load(file)
 
     def visualize_on_map(self):
         pygame.init()
@@ -53,18 +66,5 @@ class simulation_run:
         # Quit pygame
         pygame.quit()
 
-        raise NotImplementedError
-
     def visualize_on_graph(self):
         raise NotImplementedError
-
-    def load_from_file(self, path_to_file):
-        raise NotImplementedError
-
-    def save_all_nations_state(self):
-        current_total_state = []
-        for nation in self.nations:
-            current_nation_state = nation.get_nation_state_as_dic()
-            current_total_state.append(current_nation_state)
-
-        return current_total_state
