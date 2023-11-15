@@ -14,6 +14,7 @@ class simulation_run:
         self.numb_nations = numb_nations
         self.max_steps = max_steps
         self.all_states = []
+        self.save_df = pd.DataFrame()
 
     def setup_run(self):
         for i in range(self.numb_nations):
@@ -21,22 +22,22 @@ class simulation_run:
 
     def run_calculation(self):
 
-        for i in range(self.max_steps):
+        for step in range(self.max_steps):
             for nation in self.nations: # TODO make random order
                 nation.update()
+            self.save_step(step)
+        self.save_to_file()
 
-            self.save_step()
-
-    def save_step(self):
-        # TODO save to other file types
-        self.get_simulation_data_as_dataframe().to_csv(self.save_file, index=False)
-
-    def get_simulation_data_as_dataframe(self):
+    def save_step(self, step):
         data = []
-        for step in range(self.max_steps):
-            for nation in self.nations:
-                data.append(nation.get_nation_data_as_dict(step))
-        return pd.DataFrame(data)
+        for nation in self.nations:
+            data.append(nation.get_nation_data_as_dict(step))
+        df = pd.DataFrame(data)
+        self.save_df = pd.concat([self.save_df, df], ignore_index=True)
+
+    def save_to_file(self):
+        # TODO save to other file types
+        self.save_df.to_csv(self.save_file, index=False)
 
     def visualize_on_map(self):
         pygame.init()
