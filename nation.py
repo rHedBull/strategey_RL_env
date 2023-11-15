@@ -3,6 +3,7 @@ class Nation:
         self.name = name
         self.color = color
         self.money = initial_money
+        self.territory = []
 
     # return nation state as a dictionary
     def get_nation_data_as_dict(self,   step):
@@ -11,3 +12,5 @@ class Nation:
     def update(self):
         self.money += 1
 
+    def add_territory(self, territory):
+        self.territory.append(territory)
