@@ -2,12 +2,13 @@ import json
 
 import pygame
 from nation import Nation
+import pandas as pd
 
 
 class simulation_run:
 
     def __init__(self,  numb_nations, path_to_saveFile, max_steps):
-        self.saved_file = path_to_saveFile
+        self.save_file = path_to_saveFile
         #self.world_map = map # TODO create map class
         self.nations = []
         self.numb_nations = numb_nations
@@ -22,21 +23,20 @@ class simulation_run:
 
         for i in range(self.max_steps):
             for nation in self.nations: # TODO make random order
-                nation.update_nation_state()
+                nation.update()
 
-            self.all_states.append({ "step": i, "nation_states": self.save_all_nations_state()})
+            self.save_step()
 
-        with open("test.json", "w") as file:
-            json.dump(self.all_states, file, indent=4)
+    def save_step(self):
+        # TODO save to other file types
+        self.get_simulation_data_as_dataframe().to_csv(self.save_file, index=False)
 
-    # save nations state of the current step
-    def save_all_nations_state(self):
-        current_total_state = []
-        for nation in self.nations:
-            current_nation_state = nation.get_nation_state_as_dic()
-            current_total_state.append(current_nation_state)
-
-        return current_total_state
+    def get_simulation_data_as_dataframe(self):
+        data = []
+        for step in range(self.max_steps):
+            for nation in self.nations:
+                data.append(nation.get_nation_data_as_dict(step))
+        return pd.DataFrame(data)
 
     def visualize_on_map(self):
         pygame.init()
@@ -57,8 +57,13 @@ class simulation_run:
     def visualize_on_graph(self):
         raise NotImplementedError
 
-    def save_to_file(self):
-        raise NotImplementedError
-
     def load_from_file(self, path_to_file):
         raise NotImplementedError
+
+    def save_all_nations_state(self):
+        current_total_state = []
+        for nation in self.nations:
+            current_nation_state = nation.get_nation_state_as_dic()
+            current_total_state.append(current_nation_state)
+
+        return current_total_state
