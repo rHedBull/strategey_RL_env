@@ -2,8 +2,8 @@ import pygame
 import random
 
 default_land_color = (34, 139, 34)
-default_water_color = (70, 130, 180)
-default_border_color = (0, 0, 0)
+default_water_color = (0, 255, 255)
+default_border_color = (255, 255, 255)
 
 default_land_value = 0
 default_water_value = 1
@@ -16,6 +16,7 @@ class MapSquare:
         self.x = x
         self.y = y
         self.square_size = 10
+
         self.default_border_color = default_border_color
         self.default_color = default_land_color
         self.fill_color = default_land_color
@@ -59,10 +60,9 @@ class Map:
         self.width = width
         self.height = height
         self.squares = []
-        self.screen = None
         self.square_size = 10
 
-        self.water_budget_per_agent = 3  # Adjust the total amount of land per agent
+        self.water_budget_per_agent = 50  # Adjust the total amount of land per agent
         self.numb_agents = 10
 
     def create_map(self, width, height):
@@ -70,7 +70,7 @@ class Map:
         self.height = height
 
         # create map squares
-        self.squares = [[MapSquare(x * self.square_size, y * self.square_size) for x in range(self.width)] for y in
+        self.squares = [[MapSquare(x , y ) for x in range(self.width)] for y in
                         range(self.height)]
 
         agents = [
@@ -78,48 +78,50 @@ class Map:
                       self.water_budget_per_agent) for i in range(self.numb_agents)]
 
         # Initialize Pygame
-        pygame.init()
-        clock = pygame.time.Clock()
-        fps = 30  # Set desired FPS
-        self.screen = pygame.display.set_mode((self.width, self.height))
-        pygame.display.set_caption('Agent-based Landmass Generation')
 
-        self.draw(self.screen)
+
+
         # Main loop
         running = True
         while running:
-            clock.tick(fps)
 
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
+            #for event in pygame.event.get():
+             #   if event.type == pygame.QUIT:
+              #      running = False
 
             # Move each agent and draw the world
             for agent in agents:
                 agent.walk(self)
-            #self.draw(self.screen)
-            # Update the display
+                if agent.water_budget == 0:
+                    agents.remove(agent)
+                if len(agents) == 0:
+                    running = False
+            #self.draw(screen)
+            #pygame.display.update()
 
-            pygame.display.update()
+        pygame.init()
+        screen = pygame.display.set_mode((self.width, self.height))
+        pygame.display.set_caption('Agent-based Landmass Generation')
+
+        self.draw(screen)
+
+        pygame.display.update()
+
+        # Secondary loop to keep the window open
+        waiting_for_close = True
+        while waiting_for_close:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    waiting_for_close = False
 
     def get_map_as_matrix(self):
         # Returns the map as a matrix of land values
         return [[square.get_land_value() for square in row] for row in self.squares]
 
     def draw(self, screen):
-
         for row in self.squares:
             for square in row:
                 square.draw(screen)
-
-    def get_neighbors(self, x, y):
-        # Returns the coordinates of the square's neighbors
-        neighbors = []
-        for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-            nx, ny = x + dx, y + dy
-            if 0 <= nx < self.width and 0 <= ny < self.height:
-                neighbors.append((nx, ny))
-        return neighbors
 
 
 # Agent class
@@ -146,5 +148,5 @@ class Map_Agent:
             current_square = world_map.squares[self.y][self.x]
             if current_square.get_land_value() == default_land_value:
                 current_square.set_land_value(default_water_value)
-                current_square.draw(world_map.screen)
+                #current_square.draw(world_map.screen)
                 self.water_budget -= 1
