@@ -1,26 +1,20 @@
 import pygame
-default_land_color = (34, 139, 34)
-default_water_color = (0, 255, 255)
-default_border_color = (255, 255, 255)
 
-default_land_value = 0
-default_water_value = 1
-
-default_tile_owner = 0
+from MapSettings import *
 
 class MapSquare:
-    def __init__(self, x, y, land_value=default_land_value):
+    def __init__(self, x, y, square_size = 1, land_value=VALUE_DEFAULT_LAND):
         self.x = x
         self.y = y
-        self.square_size = 10
+        self.square_size = square_size
 
-        self.default_border_color = default_border_color
-        self.default_color = default_land_color
-        self.fill_color = default_land_color
-        self.border_color = default_border_color
+        self.default_border_color = COLOR_DEFAULT_BORDER
+        self.default_color = COLOR_DEFAULT_LAND
+        self.fill_color = COLOR_DEFAULT_LAND
+        self.border_color = COLOR_DEFAULT_BORDER
 
         self.land_value = land_value
-        self.owner_value = default_tile_owner
+        self.owner_value = OWNER_DEFAULT_TILE
 
     def set_owner(self, owner_value):
         self.owner_value = owner_value
@@ -30,10 +24,10 @@ class MapSquare:
 
     def set_land_value(self, land_value):
         self.land_value = land_value
-        if self.land_value == default_land_value:
-            self.fill_color = default_land_color
+        if self.land_value == VALUE_DEFAULT_LAND:
+            self.fill_color = COLOR_DEFAULT_LAND
         else:
-            self.fill_color = default_water_color
+            self.fill_color = COLOR_DEFAULT_WATER
 
 
     def get_land_value(self):
@@ -45,8 +39,8 @@ class MapSquare:
     def draw_border(self, screen):
         # draw square border
         color = self.default_border_color
-        if self.get_owner() == default_tile_owner:
-            color = default_border_color
+        if self.get_owner() == OWNER_DEFAULT_TILE:
+            color = COLOR_DEFAULT_BORDER
         else:
-            color = default_water_color
+            color = COLOR_DEFAULT_WATER
         pygame.draw.rect(screen, color, (self.x, self.y, self.square_size, self.square_size), 1)

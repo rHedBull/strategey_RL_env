@@ -1,17 +1,9 @@
 import pygame
 import random
 
+
 from MapSquare import MapSquare
 from MapAgent import Map_Agent
-
-default_land_color = (34, 139, 34)
-default_water_color = (0, 255, 255)
-default_border_color = (255, 255, 255)
-
-default_land_value = 0
-default_water_value = 1
-
-default_tile_owner = 0
 
 class Map:
     def __init__(self, width=100, height=100):
@@ -28,7 +20,7 @@ class Map:
         self.height = height
 
         # create map squares
-        self.squares = [[MapSquare(x , y ) for x in range(self.width)] for y in
+        self.squares = [[MapSquare(x, y) for x in range(self.width)] for y in
                         range(self.height)]
 
         agents = [

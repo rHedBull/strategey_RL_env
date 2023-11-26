@@ -1,13 +1,7 @@
 import random
 
-default_land_color = (34, 139, 34)
-default_water_color = (0, 255, 255)
-default_border_color = (255, 255, 255)
+from MapSettings import VALUE_DEFAULT_LAND, VALUE_DEFAULT_WATER
 
-default_land_value = 0
-default_water_value = 1
-
-default_tile_owner = 0
 
 class Map_Agent:
     def __init__(self, x, y, water_budget):
@@ -30,7 +24,7 @@ class Map_Agent:
 
         if self.water_budget > 0:
             current_square = world_map.squares[self.y][self.x]
-            if current_square.get_land_value() == default_land_value:
-                current_square.set_land_value(default_water_value)
-                #current_square.draw(world_map.screen)
+            if current_square.get_land_value() == VALUE_DEFAULT_LAND:
+                current_square.set_land_value(VALUE_DEFAULT_WATER)
+                # current_square.draw(world_map.screen)
                 self.water_budget -= 1
