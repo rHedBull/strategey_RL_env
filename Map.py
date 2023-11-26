@@ -12,10 +12,10 @@ class Map:
         self.squares = []
         self.square_size = 10
 
-        self.water_budget_per_agent = 50  # Adjust the total amount of land per agent
-        self.numb_agents = 10
+        self.water_budget_per_agent = 100  # Adjust the total amount of land per agent
+        self.numb_agents = 15
 
-    def create_map(self, width, height):
+    def create_map(self, width, height, show = False):
         self.width = width
         self.height = height
 
@@ -27,14 +27,17 @@ class Map:
             Map_Agent(random.randint(0, self.width - 1), random.randint(0, self.height - 1),
                       self.water_budget_per_agent) for i in range(self.numb_agents)]
 
+        pygame.init()
+        screen = pygame.display.set_mode((self.width, self.height))
+        pygame.display.set_caption('Agent-based Landmass Generation')
 
         # Main loop
         running = True
         while running:
 
-            #for event in pygame.event.get():
-             #   if event.type == pygame.QUIT:
-              #      running = False
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
 
             # Move each agent and draw the world
             for agent in agents:
@@ -43,15 +46,12 @@ class Map:
                     agents.remove(agent)
                 if len(agents) == 0:
                     running = False
-            #self.draw(screen)
-            #pygame.display.update()
+            if show:
+                self.draw(screen)
+                pygame.display.update()
 
-        pygame.init()
-        screen = pygame.display.set_mode((self.width, self.height))
-        pygame.display.set_caption('Agent-based Landmass Generation')
 
         self.draw(screen)
-
         pygame.display.update()
 
         # Secondary loop to keep the window open
