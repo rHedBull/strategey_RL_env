@@ -1,9 +1,9 @@
 import pygame
 import random
 
-
 from MapSquare import MapSquare
 from MapAgent import Map_Agent
+
 
 class Map:
     def __init__(self, width=100, height=100):
@@ -15,7 +15,7 @@ class Map:
         self.water_budget_per_agent = 100  # Adjust the total amount of land per agent
         self.numb_agents = 15
 
-    def create_map(self, width, height, show = False):
+    def create_map(self, width, height, show=False):
         self.width = width
         self.height = height
 
@@ -31,13 +31,12 @@ class Map:
         screen = pygame.display.set_mode((self.width, self.height))
         pygame.display.set_caption('Agent-based Landmass Generation')
 
+        zoom_level = 1.0  # initial zoom level
+        pan_x, pan_y = 0, 0  # initial pan position
+
         # Main loop
         running = True
         while running:
-
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
 
             # Move each agent and draw the world
             for agent in agents:
@@ -47,11 +46,31 @@ class Map:
                 if len(agents) == 0:
                     running = False
             if show:
-                self.draw(screen)
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        running = False
+                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                        if event.button == 4:  # Mouse wheel up
+                            zoom_level *= 1.1  # Zoom in
+                        elif event.button == 5:  # Mouse wheel down
+                            zoom_level /= 1.1  # Zoom out
+
+                keys = pygame.key.get_pressed()
+                if keys[pygame.K_w] or keys[pygame.K_UP]:
+                    pan_y += 10  # Move view up
+                if keys[pygame.K_s] or keys[pygame.K_DOWN]:
+                    pan_y -= 10  # Move view down
+                if keys[pygame.K_a] or keys[pygame.K_LEFT]:
+                    pan_x += 10  # Move view left
+                if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
+                    pan_x -= 10  # Move view right
+
+                screen.fill((0, 0, 0))
+
+                self.draw(screen, zoom_level, pan_x, pan_y)
                 pygame.display.update()
 
-
-        self.draw(screen)
+        self.draw(screen, zoom_level, pan_x, pan_y)
         pygame.display.update()
 
         # Secondary loop to keep the window open
@@ -65,7 +84,10 @@ class Map:
         # Returns the map as a matrix of land values
         return [[square.get_land_value() for square in row] for row in self.squares]
 
-    def draw(self, screen):
+    def draw(self, screen, zoom_level, pan_x, pan_y):
         for row in self.squares:
             for square in row:
-                square.draw(screen)
+                new_x = (square.x * zoom_level) + pan_x
+                new_y = (square.y * zoom_level) + pan_y
+                new_size = square.square_size * zoom_level
+                square.draw(screen, new_x, new_y, new_size)

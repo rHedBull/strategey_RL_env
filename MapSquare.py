@@ -33,8 +33,8 @@ class MapSquare:
     def get_land_value(self):
         return self.land_value
 
-    def draw(self, screen):
-        pygame.draw.rect(screen, self.fill_color, (self.x, self.y, self.square_size, self.square_size))
+    def draw(self, screen, new_x, new_y, new_square_size):
+        pygame.draw.rect(screen, self.fill_color, (new_x, new_y, new_square_size, new_square_size))
 
     def draw_border(self, screen):
         # draw square border
