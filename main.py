@@ -1,11 +1,46 @@
-from simulation_run import simulation_run
+from simulation_run import Simulation_run
+import pygame
+from Map import Map
 
-# Create a simulation instance
-sim_run = simulation_run(2, "pick-test", 100)
 
-# Run the simulation
-sim_run.setup_run()
-sim_run.run_calculation()
-sim_run.load_from_file("pick-test")
-sim_run.run_calculation()
+def main():
+
+    visualization = True
+
+    run_name = "map-test"
+    max_steps = 100
+    numb_nations = 4
+
+    #simulation_run = Simulation_run(numb_nations, run_name, max_steps)
+
+    # screen = pygame.display.set_mode((800, 600))
+
+    #screen = pygame.display.set_mode((1000, 1000))
+    #pygame.display.set_caption('Agent-based Landmass Generation')
+
+    sim_map = Map()
+    sim_map.create_map(500, 500, show= True)
+
+    """
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            # Handle other events, like user interactions
+
+        # Update the state of the simulation
+        #simulation_run.update()
+
+
+
+
+        # Update the display
+        #pygame.display.flip()
+    
+    # Clean up
+    pygame.quit()
+    """
+if __name__ == "__main__":
+    main()
 
