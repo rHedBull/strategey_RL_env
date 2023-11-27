@@ -1,31 +1,35 @@
 import pygame
 import random
+import math
 
 from MapSquare import MapSquare
 from MapAgent import Map_Agent
 
 
 class Map:
-    def __init__(self, width=100, height=100):
+    def __init__(self, width=1000, height=1000):
         self.width = width
         self.height = height
+
         self.squares = []
-        self.square_size = 10
+        self.tiles = 100
+        self.tile_size = self.height / self.tiles
 
-        self.water_budget_per_agent = 100  # Adjust the total amount of land per agent
-        self.numb_agents = 15
+        self.water_budget_per_agent = 10  # Adjust the total amount of land per agent
+        self.numb_agents = 10
 
-    def create_map(self, width, height, show=False):
+    def create_map(self, width, height, show = False, dynamic_view = False):
         self.width = width
         self.height = height
 
         # create map squares
-        self.squares = [[MapSquare(x, y) for x in range(self.width)] for y in
+        self.squares = [[MapSquare(x_index, y_index, self.tile_size) for x_index in range(self.height)] for y_index in
                         range(self.height)]
 
         agents = [
-            Map_Agent(random.randint(0, self.width - 1), random.randint(0, self.height - 1),
+            Map_Agent(random.randint(0, int(math.sqrt(self.tiles) - 1)), random.randint(0, int(math.sqrt(self.tiles) - 1)),
                       self.water_budget_per_agent) for i in range(self.numb_agents)]
+        # TODO correct indexing of agents, now they are not in the right place
 
         pygame.init()
         screen = pygame.display.set_mode((self.width, self.height))
@@ -40,7 +44,7 @@ class Map:
 
             # Move each agent and draw the world
             for agent in agents:
-                agent.walk(self)
+                agent.walk(self, self.tiles)
                 if agent.water_budget == 0:
                     agents.remove(agent)
                 if len(agents) == 0:
@@ -49,21 +53,22 @@ class Map:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         running = False
-                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                    elif event.type == pygame.MOUSEBUTTONDOWN and dynamic_view:
                         if event.button == 4:  # Mouse wheel up
                             zoom_level *= 1.1  # Zoom in
                         elif event.button == 5:  # Mouse wheel down
                             zoom_level /= 1.1  # Zoom out
 
-                keys = pygame.key.get_pressed()
-                if keys[pygame.K_w] or keys[pygame.K_UP]:
-                    pan_y += 10  # Move view up
-                if keys[pygame.K_s] or keys[pygame.K_DOWN]:
-                    pan_y -= 10  # Move view down
-                if keys[pygame.K_a] or keys[pygame.K_LEFT]:
-                    pan_x += 10  # Move view left
-                if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
-                    pan_x -= 10  # Move view right
+                if dynamic_view:
+                    keys = pygame.key.get_pressed()
+                    if keys[pygame.K_w] or keys[pygame.K_UP]:
+                        pan_y += 10  # Move view up
+                    if keys[pygame.K_s] or keys[pygame.K_DOWN]:
+                        pan_y -= 10  # Move view down
+                    if keys[pygame.K_a] or keys[pygame.K_LEFT]:
+                        pan_x += 10  # Move view left
+                    if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
+                        pan_x -= 10  # Move view right
 
                 screen.fill((0, 0, 0))
 
