@@ -20,19 +20,24 @@ def zoom_handler(pan_x, pan_y):
 
 class Map:
     def __init__(self, width=500, height=500):
+        self.numb_agents = None
+        self.water_budget_per_agent = None
+        self.tile_size = None
+        self.tiles = None
         self.width = width
         self.height = height
 
         self.squares = []
-        self.tiles = 100
-        self.tile_size = int(self.height / math.sqrt(self.tiles))
-
-        self.water_budget_per_agent = 1  # Adjust the total amount of land per agent
-        self.numb_agents = 10
 
     def create_map(self, width, height, show=False, dynamic_view=False):
         self.width = width
         self.height = height
+
+        self.tiles = 1000000
+        self.tile_size = int(self.height / math.sqrt(self.tiles))
+
+        self.water_budget_per_agent = 5000  # Adjust the total amount of land per agent
+        self.numb_agents = 20
 
         # create map squares
         self.squares = [[MapSquare(x_index, y_index, self.tile_size) for x_index in range(int(math.sqrt(self.tiles)))]
