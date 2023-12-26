@@ -5,6 +5,7 @@ import math
 from MapSquare import MapSquare
 from MapAgent import Map_Agent
 
+from MapSettings import VALUE_DEFAULT_LAND, VALUE_DEFAULT_WATER
 
 def zoom_handler(pan_x, pan_y):
     keys = pygame.key.get_pressed()
@@ -33,11 +34,12 @@ class Map:
         self.width = width
         self.height = height
 
-        self.tiles = 1000000
+        self.tiles = 100000
         self.tile_size = int(self.height / math.sqrt(self.tiles))
-
-        self.water_budget_per_agent = 5000  # Adjust the total amount of land per agent
-        self.numb_agents = 20
+        self.max_x_index = int(self.width / self.tile_size)
+        self.max_y_index = int(self.height / self.tile_size)
+        self.water_budget_per_agent = 1000  # Adjust the total amount of land per agent
+        self.numb_agents = 7
 
         # create map squares
         self.squares = [[MapSquare(x_index, y_index, self.tile_size) for x_index in range(int(math.sqrt(self.tiles)))]
@@ -84,6 +86,7 @@ class Map:
 
                 self.draw(screen, zoom_level, pan_x, pan_y)
                 pygame.display.update()
+
 
         self.draw(screen, zoom_level, pan_x, pan_y)
         pygame.display.update()

@@ -1,16 +1,15 @@
-import json
-
 import pickle
-import pygame
-from nation import Nation
+import random
+
+from simulation.nation import Nation
 import pandas as pd
 
 
-class simulation_run:
+class Simulation_run:
 
-    def __init__(self,  numb_nations, save_file_name, max_steps):
+    def __init__(self, numb_nations, save_file_name, max_steps):
         self.save_file = save_file_name
-        #self.world_map = map # TODO create map class
+
         self.nations = []
         self.numb_nations = numb_nations
         self.max_steps = max_steps
@@ -21,10 +20,22 @@ class simulation_run:
         for i in range(self.numb_nations):
             self.nations.append(Nation("Nation " + str(i), "red", 100))
 
+    def update(self):
+
+        #random update
+
+        update_nations_list = self.nations.copy()
+        random.shuffle(update_nations_list)
+
+        for nation in update_nations_list:
+            nation.update()
+        self.save_step()
+
+
     def run_calculation(self):
 
         for step in range(self.max_steps):
-            for nation in self.nations: # TODO make random order
+            for nation in self.nations:
                 nation.update()
             self.save_step(step)
         self.save_to_file()
@@ -48,23 +59,9 @@ class simulation_run:
 
     def load_from_file(self, save_file_name):
         # load from pickle file
-        pickle_file = "./saveFiles/" + save_file_name + ".pkl"
+        pickle_file = "./saveFiles/" + save_file_name + "_nations.pkl"
         with open(pickle_file, 'rb') as file:
             self.save_df = pickle.load(file)
 
-    def visualize_on_map(self):
-        pygame.init()
-        running = True
-        while running:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-
-            # Update and display the world map
-            self.world_map.display()
-
-        # Quit pygame
-        pygame.quit()
-
     def visualize_on_graph(self):
-        raise NotImplementedError
+        print(self.df.head())

@@ -1,6 +1,4 @@
-from simulation_run import Simulation_run
-import pygame
-from Map import Map
+from Map.Map import Map
 
 
 def main():
@@ -19,7 +17,7 @@ def main():
     #pygame.display.set_caption('Agent-based Landmass Generation')
 
     sim_map = Map()
-    sim_map.create_map(500, 500, show= True)
+    sim_map.create_map(1000, 1000, show= False)
 
     """
     running = True

@@ -1,5 +1,5 @@
 import pygame
-from MapSettings import *
+from Map.MapSettings import *
 
 
 class MapSquare:
@@ -35,8 +35,8 @@ class MapSquare:
     def draw(self, screen, new_x, new_y, new_square_size):
         pygame.draw.rect(screen, self.fill_color,
                          (self.x * self.square_size, self.y * self.square_size, self.square_size, self.square_size))
-        pygame.draw.rect(screen, self.border_color,
-                         (self.x * self.square_size, self.y * self.square_size, self.square_size, self.square_size), 1)
+        #pygame.draw.rect(screen, self.border_color,
+         #                (self.x * self.square_size, self.y * self.square_size, self.square_size, self.square_size), 1)
 
         # self.draw_border(screen)
         # TODO test drawing borders
