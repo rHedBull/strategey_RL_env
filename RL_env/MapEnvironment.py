@@ -1,25 +1,28 @@
 import pygame
 
-from Map.Map import Map
-from agent.agent import Agent
-import Settings
+from Map.Sim_Map import Map
+from agents.Sim_Agent import Agent
+from RL_env.Settings import Settings
 
 
 class MapEnvironment:
     def __init__(self, settings_file, num_agents):
 
-        self.map = Map()
         self.settings = Settings(settings_file)
         self.agents = [Agent(i) for i in range(num_agents)]
 
-        # assuming render is true
-        pygame.init()
-        self.screen = pygame.display.set_mode((self.map.width, self.map.height))
-        pygame.display.set_caption('Agent-based Landmass Generation')
+        self.map = Map()
+        self.reset()
+
+        if self.settings.get_setting('render_game'):
+            pygame.init()
+            self.screen = pygame.display.set_mode((self.map.width, self.map.height))
+            pygame.display.set_caption('Agent-based Landmass Generation')
+            self.screen.fill((0, 0, 0))
 
     def reset(self):
 
-        self.map.create_map(self.settings.get_setting('map_width'), self.settings.get_setting('map_height'), show=False)
+        self.map.create_map(self.settings)
         for agent in self.agents:
             agent.reset()
         return self.get_state()

@@ -1,7 +1,7 @@
 import random
 import math
 
-from MapSettings import VALUE_DEFAULT_LAND, VALUE_DEFAULT_WATER
+from Map.MapSettings import *
 
 
 class Map_Agent:

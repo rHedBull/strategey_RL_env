@@ -2,7 +2,7 @@ import pygame
 from Map.MapSettings import *
 
 
-class MapSquare:
+class Map_Square:
     def __init__(self, x, y, square_size, land_value=VALUE_DEFAULT_LAND):
         self.x = x
         self.y = y
