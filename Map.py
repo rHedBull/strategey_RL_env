@@ -6,28 +6,42 @@ from MapSquare import MapSquare
 from MapAgent import Map_Agent
 
 
+def zoom_handler(pan_x, pan_y):
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_w] or keys[pygame.K_UP]:
+        pan_y += 10  # Move view up
+    if keys[pygame.K_s] or keys[pygame.K_DOWN]:
+        pan_y -= 10  # Move view down
+    if keys[pygame.K_a] or keys[pygame.K_LEFT]:
+        pan_x += 10  # Move view left
+    if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
+        pan_x -= 10  # Move view right
+
+
 class Map:
-    def __init__(self, width=1000, height=1000):
+    def __init__(self, width=500, height=500):
         self.width = width
         self.height = height
 
         self.squares = []
         self.tiles = 100
-        self.tile_size = self.height / self.tiles
+        self.tile_size = int(self.height / math.sqrt(self.tiles))
 
-        self.water_budget_per_agent = 10  # Adjust the total amount of land per agent
+        self.water_budget_per_agent = 1  # Adjust the total amount of land per agent
         self.numb_agents = 10
 
-    def create_map(self, width, height, show = False, dynamic_view = False):
+    def create_map(self, width, height, show=False, dynamic_view=False):
         self.width = width
         self.height = height
 
         # create map squares
-        self.squares = [[MapSquare(x_index, y_index, self.tile_size) for x_index in range(self.height)] for y_index in
-                        range(self.height)]
+        self.squares = [[MapSquare(x_index, y_index, self.tile_size) for x_index in range(int(math.sqrt(self.tiles)))]
+                        for y_index in
+                        range(int(math.sqrt(self.tiles)))]
 
         agents = [
-            Map_Agent(random.randint(0, int(math.sqrt(self.tiles) - 1)), random.randint(0, int(math.sqrt(self.tiles) - 1)),
+            Map_Agent(random.randint(0, int(math.sqrt(self.tiles) - 1)),
+                      random.randint(0, int(math.sqrt(self.tiles) - 1)),
                       self.water_budget_per_agent) for i in range(self.numb_agents)]
         # TODO correct indexing of agents, now they are not in the right place
 
@@ -60,16 +74,7 @@ class Map:
                             zoom_level /= 1.1  # Zoom out
 
                 if dynamic_view:
-                    keys = pygame.key.get_pressed()
-                    if keys[pygame.K_w] or keys[pygame.K_UP]:
-                        pan_y += 10  # Move view up
-                    if keys[pygame.K_s] or keys[pygame.K_DOWN]:
-                        pan_y -= 10  # Move view down
-                    if keys[pygame.K_a] or keys[pygame.K_LEFT]:
-                        pan_x += 10  # Move view left
-                    if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
-                        pan_x -= 10  # Move view right
-
+                    zoom_handler(pan_x, pan_y)
                 screen.fill((0, 0, 0))
 
                 self.draw(screen, zoom_level, pan_x, pan_y)

@@ -1,6 +1,6 @@
 import pygame
-
 from MapSettings import *
+
 
 class MapSquare:
     def __init__(self, x, y, square_size, land_value=VALUE_DEFAULT_LAND):
@@ -33,16 +33,13 @@ class MapSquare:
         return self.land_value
 
     def draw(self, screen, new_x, new_y, new_square_size):
-        # draw square
-        pygame.draw.rect(screen, self.fill_color, (self.x* self.square_size, self.y*self.square_size, self.square_size, self.square_size))
-        #self.draw_border(screen)
+        pygame.draw.rect(screen, self.fill_color,
+                         (self.x * self.square_size, self.y * self.square_size, self.square_size, self.square_size))
+        pygame.draw.rect(screen, self.border_color,
+                         (self.x * self.square_size, self.y * self.square_size, self.square_size, self.square_size), 1)
+
+        # self.draw_border(screen)
         # TODO test drawing borders
 
-    def draw_border(self, screen):
-        # draw square border
-        color = None
-        if self.get_owner() == OWNER_DEFAULT_TILE:
-            color = COLOR_DEFAULT_BORDER
-        else:
-            color = COLOR_DEFAULT_WATER
-        pygame.draw.rect(screen, color, (self.x, self.y, self.square_size, self.square_size), 1)
+    #def draw_border(self, screen):
+
