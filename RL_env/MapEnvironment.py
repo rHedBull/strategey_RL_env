@@ -70,7 +70,8 @@ class MapEnvironment:
         agent.x = max(0, min(agent.x, self.map.max_x_index - 1))
         agent.y = max(0, min(agent.y, self.map.max_y_index - 1))
 
-        # agent.budget = agent.budget - 1
+        agent.budget = agent.budget - 1
+        agent.update()
 
     def calculate_reward(self, agent):
         # Calculate the reward for the agent

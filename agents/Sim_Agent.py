@@ -17,7 +17,11 @@ class Agent:
         self.id = id
 
     def create_agent(self, settings, max_x, max_y):
-        self.initial_budget = settings.get_setting('water_budget')
+        self.initial_budget = settings.get_setting('agent_budget')
+
+        if self.initial_budget is None:
+            raise Exception('Agent budget not set in settings file')
+
         self.max_x = max_x
         self.max_y = max_y
         self.reset()
@@ -31,7 +35,7 @@ class Agent:
 
     def update(self):
         # Update the agent's state
-        self.budget -= 1
+
         if self.budget <= 0:
             self.state = 'Done'
 
