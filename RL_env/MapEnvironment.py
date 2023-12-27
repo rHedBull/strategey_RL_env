@@ -55,7 +55,7 @@ class MapEnvironment:
 
         # this should be moved to the agent class if more complex
         if action == 'Claim':
-            self.map.claim_tile(agent.x, agent.y, agent.id)
+            self.map.claim_tile(agent)
             return
 
         if action == 'Move Left':

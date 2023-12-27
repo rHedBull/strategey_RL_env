@@ -38,9 +38,9 @@ class Map_Square:
     def get_land_value(self):
         return self.land_value
 
-    def claim(self, agent_id):
-        self.owner_value = agent_id
-        self.border_color = AGENT_COLORS[agent_id]
+    def claim(self, agent):
+        self.owner_value = agent.id
+        self.border_color = agent.color
 
     def draw(self, screen, new_x, new_y, new_square_size):
         pygame.draw.rect(screen, self.fill_color,

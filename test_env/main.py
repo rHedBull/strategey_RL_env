@@ -1,12 +1,13 @@
 from RL_env.MapEnvironment import MapEnvironment
 from test_env.Player import Player
+from test_env.Agent import Agent
 
 import pygame
 
 Rendering = True
 screen_size = 1000
-
-max_steps = 5
+num_agents = 100
+max_steps = 21
 
 def main():
     screen = None
@@ -19,7 +20,7 @@ def main():
         pygame.display.set_caption('Agent-based Landmass Generation')
         screen.fill((0, 0, 0))
 
-    env = MapEnvironment("./test_env/env_settings.json", 1, Rendering, screen)
+    env = MapEnvironment("./test_env/env_settings.json", num_agents, Rendering, screen)
 
     if Rendering:
         env.render()
@@ -27,6 +28,9 @@ def main():
 
     # setup my agents
     agents = [Player()]
+    for i in range(num_agents - 1):
+        agent = Agent(i)
+        agents.append(agent)
 
     # run the game loop
     done = False
@@ -36,9 +40,16 @@ def main():
         # get actions from agents
         agent_actions = []
         for agent in agents:
-            action = agent.get_action(pygame)
+            # if agent is a player, get action from keyboard
+            if isinstance(agent, Player):
+                action = agent.get_action(pygame)
+                print("Player chose action {}".format(action))
+            else:
+                possible_actions = ['Move Up', 'Move Down', 'Move Left', 'Move Right', 'Claim']
+                action = agent.get_action(possible_actions)
+                print("Agent {} chose action {}".format(agent.id, action))
             agent_actions.append(action)
-            print(action)
+
 
         state, reward, dones, info = env.step(agent_actions)
 
@@ -71,4 +82,4 @@ def main():
 if __name__ == "__main__":
     main()
 
-# TODO write random stepping agent(s) to test environment
+# TODO resolve issue around terminating agents poping out of agents list

@@ -60,8 +60,8 @@ class Map:
         # Returns the map as a matrix of land values
         return [[square.get_land_value() for square in row] for row in self.squares]
 
-    def claim_tile(self, x, y, agent_id):
-        self.squares[y][x].claim(agent_id)
+    def claim_tile(self, agent):
+        self.squares[agent.y][agent.x].claim(agent)
 
     def draw(self, screen, zoom_level, pan_x, pan_y):
         for row in self.squares:

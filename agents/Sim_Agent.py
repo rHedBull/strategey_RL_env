@@ -15,6 +15,7 @@ class Agent:
         self.x = None
         self.state = None
         self.id = id
+        self.color = AGENT_COLORS[id % len(AGENT_COLORS)]
 
     def create_agent(self, settings, max_x, max_y):
         self.initial_budget = settings.get_setting('agent_budget')
@@ -44,7 +45,9 @@ class Agent:
 
     def draw(self, screen, square_size, zoom_level, pan_x, pan_y):
         radius = square_size / 2
-        pygame.draw.circle(screen, AGENT_COLORS[self.id],
+        # get a color modulo the number of colors
+
+        pygame.draw.circle(screen, self.color,
                            ((self.x * square_size) + radius, (self.y * square_size) + radius),
                            radius)
 
