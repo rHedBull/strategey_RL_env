@@ -1,4 +1,3 @@
-import pygame
 
 from Map.Sim_Map import Map
 from agents.Sim_Agent import Agent
@@ -6,23 +5,22 @@ from RL_env.Settings import Settings
 
 
 class MapEnvironment:
-    def __init__(self, settings_file, num_agents):
+    def __init__(self, settings_file, num_agents, render_game=False, screen=None):
 
         self.settings = Settings(settings_file)
-        self.agents = [Agent(i) for i in range(num_agents)]
-
+        self.screen = screen
+        self.render_mode = render_game
         self.map = Map()
-        self.reset()
+        self.map.create_map(self.settings)
+        self.agents = [Agent(i) for i in range(num_agents)]
+        for agent in self.agents:
+            agent.create_agent(self.settings, self.map.max_x_index, self.map.max_y_index)
 
-        if self.settings.get_setting('render_game'):
-            pygame.init()
-            self.screen = pygame.display.set_mode((self.map.width, self.map.height))
-            pygame.display.set_caption('Agent-based Landmass Generation')
-            self.screen.fill((0, 0, 0))
+        self.reset()
 
     def reset(self):
 
-        self.map.create_map(self.settings)
+        self.map.reset()
         for agent in self.agents:
             agent.reset()
         return self.get_state()
@@ -44,25 +42,49 @@ class MapEnvironment:
         return self.get_state(), rewards, dones, {}
 
     def render(self):
-        # Render the environment
-        # You'll need to define this
+
+        if not self.render_mode:
+            return
+
         self.map.draw(self.screen, 0, 0, 0)
-        pygame.display.flip()
+        for agent in self.agents:
+            agent.draw(self.screen, self.map.tile_size
+                       , 0, 0, 0)
 
     def apply_action(self, action, agent):
-        # Apply the given action to the environment
-        # You'll need to define how actions affect the environment and the agent
-        pass
+
+        # this should be moved to the agent class if more complex
+        if action == 'Claim':
+            self.map.claim_tile(agent.x, agent.y, agent.id)
+            return
+
+        if action == 'Move Left':
+            agent.x -= 1
+        elif action == 'Move Right':
+            agent.x += 1
+        elif action == 'Move Up':
+            agent.y -= 1
+        elif action == 'Move Down':
+            agent.y += 1
+
+        agent.x = max(0, min(agent.x, self.map.max_x_index - 1))
+        agent.y = max(0, min(agent.y, self.map.max_y_index - 1))
+
+        # agent.budget = agent.budget - 1
 
     def calculate_reward(self, agent):
-        # Calculate the reward for the current state and action
-        # You'll need to define what constitutes a reward in your environment
+        # Calculate the reward for the agent
         return 0
 
     def check_done(self, agent):
-        # Check if the episode has ended
-        # You'll need to define what constitutes the end of an episode in your environment
-        return False
+        if agent.state == 'Done':
+            return True
+        else:
+            return False
 
     def get_state(self):
-        pass
+        states = []
+        for agent in self.agents:
+            state = agent.get_state()
+            states.append(state)
+        return states
