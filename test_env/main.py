@@ -6,6 +6,7 @@ import pygame
 Rendering = True
 screen_size = 1000
 
+max_steps = 5
 
 def main():
     screen = None
@@ -30,7 +31,7 @@ def main():
     # run the game loop
     done = False
     step = 0
-    while not done:
+    while not done and step < max_steps:
 
         # get actions from agents
         agent_actions = []
@@ -57,6 +58,7 @@ def main():
             print("All agents are done")
         step += 1
 
+    print("Game Terminated")
     if Rendering:
         # keep the window open until the user closes it manually
         running = True
