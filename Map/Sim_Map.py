@@ -33,6 +33,13 @@ class Map:
                         for y_index in
                         range(self.max_y_index)]
 
+        self.reset()
+
+    def reset(self):
+        for row in self.squares:
+            for square in row:
+                square.reset()
+
         if (self.numb_agents * self.water_budget_per_agent) > 0:
             agents = [
                 Map_Agent(random.randint(0, int(math.sqrt(self.tiles) - 1)),

@@ -16,6 +16,12 @@ class Map_Square:
         self.land_value = land_value
         self.owner_value = OWNER_DEFAULT_TILE
 
+    def reset(self):
+        self.owner_value = OWNER_DEFAULT_TILE
+        self.land_value = VALUE_DEFAULT_LAND
+        self.fill_color = COLOR_DEFAULT_LAND
+        self.border_color = COLOR_DEFAULT_BORDER
+
     def set_owner(self, owner_value):
         self.owner_value = owner_value
 

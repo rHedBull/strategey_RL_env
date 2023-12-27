@@ -1,6 +1,4 @@
-import math
 import random
-
 import pygame
 
 from Map.MapSettings import AGENT_COLORS
@@ -8,19 +6,27 @@ from RL_env.Settings import Settings
 
 
 class Agent:
-    def __init__(self, id, settings):
+    def __init__(self, id):
+        self.initial_budget = None
         self.budget = None
+        self.max_x = None
+        self.max_y = None
         self.y = None
         self.x = None
         self.state = None
         self.id = id
-        self.reset(settings)
 
-    def reset(self, settings):
+    def create_agent(self, settings, max_x, max_y):
+        self.initial_budget = settings.get_setting('water_budget')
+        self.max_x = max_x
+        self.max_y = max_y
+        self.reset()
 
-        self.x = random.randint(0, settings.get_setting('map_width') - 1)
-        self.y = random.randint(0, settings.get_setting('map_height') - 1)
-        self.budget = settings.get_setting('water_budget')
+    def reset(self):
+
+        self.x = random.randint(0, self.max_x - 1)
+        self.y = random.randint(0, self.max_y - 1)
+        self.budget = self.initial_budget
         self.state = 'Running'
 
     def update(self):
