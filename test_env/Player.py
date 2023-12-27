@@ -6,6 +6,7 @@ class Player:
     def __init__(self, ):
         self.env = None
         self.action = None
+        self.state = 'Running'
 
     def get_action(self, game):
 

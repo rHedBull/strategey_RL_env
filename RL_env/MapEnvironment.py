@@ -53,6 +53,9 @@ class MapEnvironment:
 
     def apply_action(self, action, agent):
 
+        if action == 'None' or agent.state == 'Done':
+            return
+
         # this should be moved to the agent class if more complex
         if action == 'Claim':
             self.map.claim_tile(agent)
@@ -74,8 +77,11 @@ class MapEnvironment:
         agent.update()
 
     def calculate_reward(self, agent):
-        # Calculate the reward for the agent
-        return 0
+
+        if agent.state == 'Done':
+            return 1000
+        else:
+            return 0
 
     def check_done(self, agent):
         if agent.state == 'Done':
