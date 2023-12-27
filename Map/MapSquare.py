@@ -32,14 +32,15 @@ class Map_Square:
     def get_land_value(self):
         return self.land_value
 
+    def claim(self, agent_id):
+        self.owner_value = agent_id
+        self.border_color = AGENT_COLORS[agent_id]
+
     def draw(self, screen, new_x, new_y, new_square_size):
         pygame.draw.rect(screen, self.fill_color,
                          (self.x * self.square_size, self.y * self.square_size, self.square_size, self.square_size))
-        #pygame.draw.rect(screen, self.border_color,
-         #                (self.x * self.square_size, self.y * self.square_size, self.square_size, self.square_size), 1)
 
-        # self.draw_border(screen)
-        # TODO test drawing borders
-
-    #def draw_border(self, screen):
-
+        if self.border_color != COLOR_DEFAULT_BORDER:
+            pygame.draw.rect(screen, self.border_color,
+                             (self.x * self.square_size, self.y * self.square_size, self.square_size, self.square_size),
+                             1)

@@ -29,29 +29,32 @@ class Map:
         self.numb_agents = settings.get_setting('map_agents')
 
         # create map squares
-        self.squares = [[Map_Square(x_index, y_index, self.tile_size) for x_index in range(int(math.sqrt(self.tiles)))]
+        self.squares = [[Map_Square(x_index, y_index, self.tile_size) for x_index in range(self.max_x_index)]
                         for y_index in
-                        range(int(math.sqrt(self.tiles)))]
+                        range(self.max_y_index)]
 
-        agents = [
-            Map_Agent(random.randint(0, int(math.sqrt(self.tiles) - 1)),
-                      random.randint(0, int(math.sqrt(self.tiles) - 1)),
-                      self.water_budget_per_agent) for i in range(self.numb_agents)]
-        # TODO correct indexing of agents, now they are not in the right place
+        if (self.numb_agents * self.water_budget_per_agent) > 0:
+            agents = [
+                Map_Agent(random.randint(0, int(math.sqrt(self.tiles) - 1)),
+                          random.randint(0, int(math.sqrt(self.tiles) - 1)),
+                          self.water_budget_per_agent) for i in range(self.numb_agents)]
 
-        running = True
-        while running:
+            running = True
+            while running:
 
-            for agent in agents:
-                agent.walk(self, self.tiles)
-                if agent.water_budget == 0:
-                    agents.remove(agent)
-                if len(agents) == 0:
-                    running = False
+                for agent in agents:
+                    agent.walk(self, self.tiles)
+                    if agent.water_budget == 0:
+                        agents.remove(agent)
+                    if len(agents) == 0:
+                        running = False
 
     def get_map_as_matrix(self):
         # Returns the map as a matrix of land values
         return [[square.get_land_value() for square in row] for row in self.squares]
+
+    def claim_tile(self, x, y, agent_id):
+        self.squares[y][x].claim(agent_id)
 
     def draw(self, screen, zoom_level, pan_x, pan_y):
         for row in self.squares:
