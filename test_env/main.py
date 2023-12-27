@@ -7,12 +7,13 @@ import pygame
 Rendering = True
 screen_size = 1000
 num_agents = 100
-max_steps = 21
+max_steps = 300
+
 
 def main():
     screen = None
 
-    game = pygame.init()
+    pygame.init()
 
     if Rendering:
         # init pygame
@@ -50,14 +51,13 @@ def main():
                 print("Agent {} chose action {}".format(agent.id, action))
             agent_actions.append(action)
 
-
         state, reward, dones, info = env.step(agent_actions)
 
         for i in range(len(dones)):
             if dones[i]:
                 print("Agent {} is done".format(i))
                 # remove agent from list
-                agents.pop(i)
+        agents = [agent for agent, done in zip(agents, dones) if not done]
 
         env.render()
         # flip the display
@@ -79,7 +79,7 @@ def main():
                     running = False
         pygame.quit()
 
+
 if __name__ == "__main__":
     main()
 
-# TODO resolve issue around terminating agents poping out of agents list
