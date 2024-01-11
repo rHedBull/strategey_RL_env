@@ -1,0 +1,10 @@
+{
+    "storing_game": true,
+    "storing_round_interval": 1,
+    "path_to_store": "saveFiles/",
+    "rendering_game": true,
+    "rendering_round_interval": 1,
+    "screen_size": 1000,
+    "num_agents": 10,
+    "max_steps": 100
+}

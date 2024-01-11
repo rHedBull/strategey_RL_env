@@ -1,0 +1,10 @@
+{
+    "map_width": 1000,
+    "map_height": 1000,
+    "tiles" : 10000,
+    "map_agents": 20,
+    "map_agents_water": 100,
+    "num_agents": 2,
+    "agent_initial_budget": 3,
+    "render_game": true
+}
