@@ -1,24 +1,36 @@
 import random
 import pygame
 
-from Map.MapSettings import AGENT_COLORS
+from Map.MapSettings import AGENT_COLORS, PLAYER_COLOR
 from RL_env.Settings import Settings
 
 
 class Agent:
-    def __init__(self, id):
-        self.initial_budget = None
-        self.budget = None
+    def __init__(self, id, game_mode):
+        self.id = id
         self.max_x = None
         self.max_y = None
         self.y = None
         self.x = None
+
+        self.initial_budget = None
+        self.budget = None
+
         self.state = None
-        self.id = id
-        self.color = AGENT_COLORS[id % len(AGENT_COLORS)]
+
+        if game_mode == 'player' and id == 0:
+            self.color = PLAYER_COLOR
+        elif game_mode == 'player':
+            # exclude player color id 0
+            c = self.id
+            if self.id % len(AGENT_COLORS) == 0:
+                c = 1
+            self.color = AGENT_COLORS[c % len(AGENT_COLORS)]
+        else:
+            self.color = AGENT_COLORS[id % len(AGENT_COLORS)]
 
     def create_agent(self, settings, max_x, max_y):
-        self.initial_budget = settings.get_setting('agent_budget')
+        self.initial_budget = settings.get_setting('agent_initial_budget')
 
         if self.initial_budget is None:
             raise Exception('Agent budget not set in settings file')

@@ -2,7 +2,6 @@ import pygame
 
 from Map.Sim_Map import Map
 from agents.Sim_Agent import Agent
-from RL_env.Settings import Settings
 
 
 def check_done(agent):
@@ -20,14 +19,15 @@ def calculate_reward(agent):
 
 
 class MapEnvironment:
-    def __init__(self, settings_file, num_agents, render_mode=False, screen=None):
+    def __init__(self, settings_file, num_agents, render_mode=False, screen=None, game_mode='automated'):
 
+        self.game_mode = game_mode
         self.settings = settings_file
         self.render_mode = render_mode
         self.screen = screen
         self.map = Map()
         self.map.create_map(self.settings)
-        self.agents = [Agent(i) for i in range(num_agents)]
+        self.agents = [Agent(i, self.game_mode) for i in range(num_agents)]
         for agent in self.agents:
             agent.create_agent(self.settings, self.map.max_x_index, self.map.max_y_index)
 
@@ -61,7 +61,6 @@ class MapEnvironment:
 
         for i in dones:
             if not i:
-
                 return False
 
         self.finish_env()
@@ -91,8 +90,7 @@ class MapEnvironment:
 
         self.map.draw(self.screen, 0, 0, 0)
         for agent in self.agents:
-            agent.draw(self.screen, self.map.tile_size
-                       , 0, 0, 0)
+            agent.draw(self.screen, self.map.tile_size, 0, 0, 0)
         pygame.display.flip()
 
     def apply_action(self, action, agent):

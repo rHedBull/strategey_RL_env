@@ -20,6 +20,7 @@ def check_settings(hyperparameters, env_settings, run_settings):
     if env_settings.get_setting('tiles') < env_settings.get_setting('map_agents') * \
             env_settings.get_setting('map_agents_water'):
         raise ValueError('Map size is too small for number of agents')
+    # TODO check if hyperparameters are valid
 
 
 def main():
@@ -32,7 +33,7 @@ def main():
 
     check_settings(hyperparameters, env_settings, run_settings)
     screen = setup_screen(True, 1000)
-    env = MapEnvironment(env_settings, 4, True, screen)
+    env = MapEnvironment(env_settings, env_settings.get_setting('num_agents'), True, screen, 'player')
     run = Run(run_settings, hyperparameters, env)
     run.run()
 
@@ -40,7 +41,6 @@ def main():
 if __name__ == "__main__":
     main()
 
-# TODO make player always same color if rendering with player
 # TODO proper rewared storing
 # TODO proper stats tracking
 # TODO stats visualization after one game
@@ -50,7 +50,3 @@ if __name__ == "__main__":
 # TODO Q table for agents
 # TODO more complex map
 # TODO add get actions for agents funciton to env
-
-# Todo simplify code
-# TODO clearly define hyperparameters and agents, map settings
-# TODO uuid based on agent and map settings, for storing

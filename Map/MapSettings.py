@@ -7,5 +7,7 @@ VALUE_DEFAULT_WATER = 1
 
 OWNER_DEFAULT_TILE = 0
 
+PLAYER_COLOR = (0, 0, 255)
 # agent color red, blue, orange, yellow, purple,
-AGENT_COLORS = [(255, 0, 0), (0, 0, 255), (255, 165, 0), (255, 255, 0), (128, 0, 128), (0, 255, 0)]
+
+AGENT_COLORS = [(0, 0, 255), (255, 0, 0), (255, 165, 0), (255, 255, 0), (128, 0, 128), (0, 255, 0)]
