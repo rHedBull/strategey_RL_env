@@ -1,8 +1,9 @@
 import uuid
+from datetime import datetime
 
+import tensorflow as tf
 import pygame
 
-from RL_env.Settings import Settings
 from test_env.Agent import Agent
 from test_env.Player import Player
 
@@ -11,20 +12,16 @@ class Run:
     def __init__(self, settings_file, hyperparameters, env):
         self.id = uuid.uuid4()
         self.settings = settings_file
+
         self.hyper_settings = hyperparameters
         self.max_steps = self.settings.get_setting('max_steps')
         self.num_agents = self.settings.get_setting('num_agents')
         self.agents = []
         self.env = env
 
-
-
-
-
-
-    # TODO check if hyperparameters are valid
-    # TODO check if map creation parameters fit
-    # TODO check if number agents is correct as env agents
+        current_time = datetime.now().strftime("%Y%m%d-%H%M%S")
+        log_dir = 'test_env/logs/agent_performance/' + current_time
+        self.summary_writer = tf.summary.create_file_writer(log_dir)
 
     def run(self):
         pygame.init()
@@ -36,11 +33,14 @@ class Run:
         # list of agents that are still running, by index in agents list
         running_agents = [i for i in range(self.num_agents)]
         all_done = False
+
         while not all_done and step < self.max_steps:
             self.env.render()  # checks already if rendering is on
 
             # get actions from agents
             agent_actions = []
+            agent_rewards = []
+
             for agent in self.agents:
                 if agent.state == 'Done':
                     agent_actions.append('None')
@@ -54,9 +54,18 @@ class Run:
                     action = agent.get_action(possible_actions)
                 agent_actions.append(action)
 
-            state, reward, dones, all_done = self.env.step(agent_actions)
+            state, agent_rewards, dones, all_done = self.env.step(agent_actions)
 
             self.update_agents(all_done, running_agents, dones)
+            self.log_stats(agent_rewards, step)
+            step += 1
+
+    def log_stats(self, reward, step):
+        with self.summary_writer.as_default():
+            for i, agent in enumerate(self.agents):
+                tf.summary.scalar('reward_agent_{}'.format(i), reward[i], step=step)
+                # If you want to log actions, convert them to a numerical format
+                # tf.summary.scalar('action_agent_{}'.format(i), numeric_action, step=step)
 
     def update_agents(self, all_done, running_agents, dones):
         for i, done in zip(running_agents, dones):
