@@ -53,7 +53,7 @@ class Run:
                     action = agent.get_action(pygame)
                     print("Player chose action {}".format(action))
                 else:
-                    possible_actions = ['Move Up', 'Move Down', 'Move Left', 'Move Right', 'Claim']
+                    possible_actions = ['Move Up', 'Move Down', 'Move Left', 'Move Right']
                     action = agent.get_action(possible_actions)
                 agent_actions.append(action)
 
@@ -69,3 +69,4 @@ class Run:
             # check if the game is over
             if all_done:
                 print("game done")
+
