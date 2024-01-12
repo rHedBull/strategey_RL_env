@@ -22,7 +22,7 @@ def calculate_reward(agent):
 class MapEnvironment:
     def __init__(self, settings_file, num_agents, render_mode=False, screen=None):
 
-        self.settings = Settings(settings_file)
+        self.settings = settings_file
         self.render_mode = render_mode
         self.screen = screen
         self.map = Map()
