@@ -39,7 +39,8 @@ class Run:
         step = 0
         # list of agents that are still running, by index in agents list
         running_agents = [i for i in range(self.num_agents)]
-        while not done and step < self.max_steps:
+        all_done = False
+        while not all_done and step < self.max_steps:
             self.env.render()  # checks already if rendering is on
 
             # get actions from agents
@@ -53,7 +54,7 @@ class Run:
                     action = agent.get_action(pygame)
                     print("Player chose action {}".format(action))
                 else:
-                    possible_actions = ['Move Up', 'Move Down', 'Move Left', 'Move Right']
+                    possible_actions = ['Move Up', 'Move Down', 'Move Left', 'Move Right', 'Claim']
                     action = agent.get_action(possible_actions)
                 agent_actions.append(action)
 
@@ -61,7 +62,10 @@ class Run:
 
             for i, done in zip(running_agents, dones):
                 if done:
-                    print("Agent {} is done".format(i))
+                    if isinstance(self.agents[i], Player):
+                        print("Player {} is done".format(i))
+                    else:
+                        print("Agent {} is done".format(i))
                     self.agents[i].state = 'Done'
 
             running_agents = [agent for agent, done in zip(running_agents, dones) if not done]
