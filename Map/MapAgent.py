@@ -27,6 +27,6 @@ class Map_Agent:
         if self.water_budget > 0:
             current_square = world_map.squares[self.y][self.x]
             if current_square.get_land_value() == VALUE_DEFAULT_LAND:
-                current_square.set_land_value(VALUE_DEFAULT_WATER)
+                current_square.set_land_type(VALUE_DEFAULT_WATER)
                 # current_square.draw(world_map.screen)
                 self.water_budget -= 1
