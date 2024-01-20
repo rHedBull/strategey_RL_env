@@ -24,15 +24,15 @@ class Player:
 
         action = None
         if keys[pygame.K_w] or keys[pygame.K_UP]:
-            action = 'Move Up'
+            action = 0 #'Move Up'
         elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
-            action = 'Move Down'
+            action = 1#'Move Down'
         elif keys[pygame.K_a] or keys[pygame.K_LEFT]:
-            action = 'Move Left'
+            action = 2#'Move Left'
         elif keys[pygame.K_d] or keys[pygame.K_RIGHT]:
-            action = 'Move Right'
+            action = 3 #'Move Right'
         elif keys[pygame.K_c]:
-            action = 'Claim'
+            action = 4 #'Claim'
 
         self.action = action
         return self.action

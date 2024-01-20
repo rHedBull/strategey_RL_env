@@ -70,3 +70,6 @@ class Map:
                 new_y = (square.y * zoom_level) + pan_y
                 new_size = square.square_size * zoom_level
                 square.draw(screen, new_x, new_y, new_size)
+
+    def get_tile(self, x, y):
+        return self.squares[y][x]

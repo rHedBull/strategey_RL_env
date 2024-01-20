@@ -13,10 +13,11 @@ class Agent:
         self.y = None
         self.x = None
 
-        self.initial_budget = None
-        self.budget = None
-
         self.state = None
+
+        # resources
+        self.money = None
+        self.claimed_tiles = [] # TODO see if claimed tiles show up
 
         if game_mode == 'player' and id == 0:
             self.color = PLAYER_COLOR
@@ -43,14 +44,21 @@ class Agent:
 
         self.x = random.randint(0, self.max_x - 1)
         self.y = random.randint(0, self.max_y - 1)
-        self.budget = self.initial_budget
+
         self.state = 'Running'
+        # TODO maybe set intial possition as claimed tile
+
+        self.money = 100 # TODO normal distributed money, different scenarios
 
     def update(self):
         # Update the agent's state
 
-        if self.budget <= 0:
+        for tile, i in enumerate(self.claimed_tiles):
+            self.money += 10 # TODO differnet money for different tiles
+
+        if self.money <= 0: # TODO adapt different state transitions
             self.state = 'Done'
+
 
     def get_state(self):
         return self.state

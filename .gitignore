@@ -1,1 +1,4 @@
 .idea
+
+**/test_env/logs/**
+**/test_env/save_files/**

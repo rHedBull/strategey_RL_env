@@ -51,24 +51,23 @@ class Run:
                     action = agent.get_action(pygame)
                     print("Player chose action {}".format(action))
                 else:
-                    possible_actions = ['Move Up', 'Move Down', 'Move Left', 'Move Right', 'Claim']
+                    possible_actions = self.env.get_possible_actions()
                     action = agent.get_action(possible_actions)
                 agent_actions.append(action)
 
             state, agent_rewards, dones, all_done = self.env.step(agent_actions)
 
             self.update_agents(all_done, running_agents, dones)
-            self.log_stats(agent_rewards, step)
+            self.log_stats(agent_rewards, step, agent_actions)
             step += 1
 
-    def log_stats(self, reward, step):
+    def log_stats(self, reward, step, actions):
         if step % self.settings.get_setting('storing_round_interval') == 0:
 
             with self.summary_writer.as_default():
                 for i, agent in enumerate(self.agents):
                     tf.summary.scalar('reward_agent_{}'.format(i), reward[i], step)
-                    # If you want to log actions, convert them to a numerical format
-                    # tf.summary.scalar('action_agent_{}'.format(i), numeric_action, step=step)
+                    tf.summary.scalar('action_agent_{}'.format(i), actions[i], step)
 
         if step % self.settings.get_setting('image_logging_round_interval') == 0:
             game_state_image = capture_game_state_as_image()

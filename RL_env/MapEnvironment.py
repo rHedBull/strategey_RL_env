@@ -14,14 +14,15 @@ def check_done(agent):
 
 def calculate_reward(agent):
     if check_done(agent):
-        return agent.budget + 1000
+        return agent.money + 1000
     else:
-        return agent.budget
+        return agent.money
 
 
 def capture_game_state_as_image():
     screen_capture = pygame.display.get_surface()
     return np.transpose(pygame.surfarray.array3d(screen_capture), axes=[1, 0, 2])
+
 
 class MapEnvironment:
     def __init__(self, settings_file, num_agents, render_mode=False, screen=None, game_mode='automated'):
@@ -57,6 +58,9 @@ class MapEnvironment:
             dones.append(done)
 
         # TODO update environment state
+        # TODO update agent state
+        for agent in self.agents:
+            agent.update()
 
         all_done = self.check_if_all_done(dones)
         return self.get_state(), rewards, dones, all_done
@@ -104,24 +108,22 @@ class MapEnvironment:
             return
 
         # this should be moved to the agent class if more complex
-        if action == 'Claim':
+        if action == 4:
             self.map.claim_tile(agent)
+            agent.claimed_tiles.append(self.map.get_tile(agent.x, agent.y))
             return
 
-        if action == 'Move Left':
+        if action == 2:
             agent.x -= 1
-        elif action == 'Move Right':
+        elif action == 3:
             agent.x += 1
-        elif action == 'Move Up':
+        elif action == 0:
             agent.y -= 1
-        elif action == 'Move Down':
+        elif action == 1:
             agent.y += 1
 
         agent.x = max(0, min(agent.x, self.map.max_x_index - 1))
         agent.y = max(0, min(agent.y, self.map.max_y_index - 1))
-
-        agent.budget = agent.budget - 1
-        agent.update()
 
     def get_state(self):
         states = []
@@ -129,3 +131,6 @@ class MapEnvironment:
             state = agent.get_state()
             states.append(state)
         return states
+
+    def get_possible_actions(self):
+        return [0, 1, 2, 3, 4]

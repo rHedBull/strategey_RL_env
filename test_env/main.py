@@ -41,11 +41,6 @@ def main():
 if __name__ == "__main__":
     main()
 
-# TODO proper rewared storing
-# TODO proper stats tracking
-# TODO stats visualization after one game
-# TODO stats visualization after multiple games
-# TODO stats tracking, visualization during game( player)
 
 # TODO Q table for agents
 # TODO more complex map
