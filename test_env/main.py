@@ -37,6 +37,9 @@ def main():
     run = Run(run_settings, hyperparameters, env)
     run.run()
 
+# clear TF logs
+# run TF board
+# tensorboard --logdir logs
 
 if __name__ == "__main__":
     main()

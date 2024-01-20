@@ -31,7 +31,6 @@ class Simulation_run:
             nation.update()
         self.save_step()
 
-
     def run_calculation(self):
 
         for step in range(self.max_steps):
