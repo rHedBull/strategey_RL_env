@@ -1,4 +1,5 @@
 import pygame
+import numpy as np
 
 from Map.Sim_Map import Map
 from agents.Sim_Agent import Agent
@@ -17,6 +18,10 @@ def calculate_reward(agent):
     else:
         return agent.budget
 
+
+def capture_game_state_as_image():
+    screen_capture = pygame.display.get_surface()
+    return np.transpose(pygame.surfarray.array3d(screen_capture), axes=[1, 0, 2])
 
 class MapEnvironment:
     def __init__(self, settings_file, num_agents, render_mode=False, screen=None, game_mode='automated'):

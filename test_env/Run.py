@@ -4,6 +4,7 @@ from datetime import datetime
 import tensorflow as tf
 import pygame
 
+from RL_env.MapEnvironment import capture_game_state_as_image
 from test_env.Agent import Agent
 from test_env.Player import Player
 
@@ -61,11 +62,20 @@ class Run:
             step += 1
 
     def log_stats(self, reward, step):
-        with self.summary_writer.as_default():
-            for i, agent in enumerate(self.agents):
-                tf.summary.scalar('reward_agent_{}'.format(i), reward[i], step=step)
-                # If you want to log actions, convert them to a numerical format
-                # tf.summary.scalar('action_agent_{}'.format(i), numeric_action, step=step)
+        if step % self.settings.get_setting('storing_round_interval') == 0:
+
+            with self.summary_writer.as_default():
+                for i, agent in enumerate(self.agents):
+                    tf.summary.scalar('reward_agent_{}'.format(i), reward[i], step)
+                    # If you want to log actions, convert them to a numerical format
+                    # tf.summary.scalar('action_agent_{}'.format(i), numeric_action, step=step)
+
+        if step % self.settings.get_setting('image_logging_round_interval') == 0:
+            game_state_image = capture_game_state_as_image()
+            tensor_img = tf.convert_to_tensor(game_state_image, dtype=tf.uint8)
+            tensor_img = tf.expand_dims(tensor_img, 0)  # Add the batch dimension
+            with self.summary_writer.as_default():
+                tf.summary.image("Step: " + str(step), tensor_img, step)
 
     def update_agents(self, all_done, running_agents, dones):
         for i, done in zip(running_agents, dones):
