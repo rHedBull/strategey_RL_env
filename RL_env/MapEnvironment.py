@@ -2,6 +2,7 @@ import pygame
 import numpy as np
 
 from Map.Sim_Map import Map
+from RL_env.actions import ActionManager
 from agents.Sim_Agent import Agent
 
 
@@ -37,6 +38,7 @@ class MapEnvironment:
         for agent in self.agents:
             agent.create_agent(self.settings, self.map.max_x_index, self.map.max_y_index)
 
+        self.action_manager = ActionManager(self)
         self.reset()
 
     def reset(self):
@@ -45,12 +47,12 @@ class MapEnvironment:
         for agent in self.agents:
             agent.reset()
 
-    def step(self, actions):
+    def step(self, actions, action_properties=None):
 
         rewards = []
         dones = []
         for action, agent in zip(actions, self.agents):
-            self.apply_action(action, agent)
+            self.apply_action(action, agent, action_properties)
             reward = calculate_reward(agent)
             done = check_done(agent)
             rewards.append(reward)
@@ -100,17 +102,17 @@ class MapEnvironment:
             agent.draw(self.screen, self.map.tile_size, 0, 0, 0)
         pygame.display.flip()
 
-    def apply_action(self, action, agent):
+    def apply_action(self, action, agent, action_properties):
 
         if action == 'None' or agent.state == 'Done':
             return
 
         # this should be moved to the agent class if more complex
         if action == 4:
-            self.map.claim_tile(agent)
-            agent.claimed_tiles.append(self.map.get_tile(agent.x, agent.y))
-            return
+            self.action_manager.claim_tile(agent, action_properties[0], action_properties[1])
 
+
+        # TODO remove option to move
         if action == 2:
             agent.x -= 1
         elif action == 3:

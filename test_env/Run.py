@@ -41,6 +41,7 @@ class Run:
 
             # get actions from agents
             agent_actions = []
+            action_properties = []
             agent_rewards = []
 
             for agent in self.agents:
@@ -49,14 +50,14 @@ class Run:
                     continue
                 # if agent is a player, get action from keyboard
                 if isinstance(agent, Player):
-                    action = agent.get_action(pygame)
+                    action, action_properties = agent.get_action(pygame)
                     print("Player chose action {}".format(action))
                 else:
                     possible_actions = self.env.get_possible_actions()
-                    action = agent.get_action(common_env_state, possible_actions)
+                    action, action_properties = agent.get_action(common_env_state, possible_actions)
                 agent_actions.append(action)
 
-            common_env_state, agent_rewards, dones, all_done = self.env.step(agent_actions)
+            common_env_state, agent_rewards, dones, all_done = self.env.step(agent_actions, action_properties)
 
             self.update_agents(all_done, running_agents, dones)
             self.log_stats(agent_rewards, step, agent_actions)

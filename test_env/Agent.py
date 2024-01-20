@@ -10,6 +10,8 @@ class Agent:
         self.q_table = None
 
     def get_action(self, env_info, possible_actions):
-        action = np.random.choice(possible_actions)
-        self.action = action
-        return self.action
+        #action = np.random.choice(possible_actions)
+        self.action = 4
+        action_properties = [np.random.randint(0, 10), np.random.randint(0, 10)] # TODO change this to map bounds
+        # TODO connect to Q-table or other RL algorithm
+        return self.action, action_properties

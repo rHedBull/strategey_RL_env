@@ -1,3 +1,4 @@
+import numpy as np
 import pygame
 
 
@@ -23,6 +24,8 @@ class Player:
                     keys = game.key.get_pressed()
 
         action = None
+        action_properties = None
+
         if keys[pygame.K_w] or keys[pygame.K_UP]:
             action = 0 #'Move Up'
         elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
@@ -33,9 +36,9 @@ class Player:
             action = 3 #'Move Right'
         elif keys[pygame.K_c]:
             action = 4 #'Claim'
+            action_properties = action_properties = [np.random.randint(0, 10), np.random.randint(0, 10)] # TODO change this to map bounds
 
-        self.action = action
-        return self.action
+        return action, action_properties
 
     def step(self):
         self.env.step(self.action)

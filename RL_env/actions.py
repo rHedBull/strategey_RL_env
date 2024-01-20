@@ -8,7 +8,8 @@ action_dictionary = {
 
 
 class ActionManager:
-    def __init__(self):
+    def __init__(self, env):
+        self.env = env
         self.action_to_int = action_dictionary
         self.int_to_action = {v: k for k, v in self.action_to_int.items()}
 
@@ -18,4 +19,10 @@ class ActionManager:
     def get_action_int(self, action_name):
         return self.action_to_int.get(action_name, -1)
 
+    def claim_tile(self, agent, x, y):
+        # TODO implement action check by money
+        # TODO implement action check map bounds
+        # TODO implement claimng of tiles not standing on
 
+        self.env.map.claim_tile(agent, x, y)
+        agent.claimed_tiles.append(self.env.map.get_tile(x, y))

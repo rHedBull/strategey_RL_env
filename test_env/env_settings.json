@@ -1,7 +1,7 @@
 {
     "map_width": 1000,
     "map_height": 1000,
-    "tiles" : 10,
+    "tiles" : 100,
     "map_agents": 0,
     "map_agents_water": 10,
     "num_agents": 1,
