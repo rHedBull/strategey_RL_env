@@ -44,7 +44,6 @@ class MapEnvironment:
         self.map.reset()
         for agent in self.agents:
             agent.reset()
-        return self.get_state()
 
     def step(self, actions):
 
@@ -58,12 +57,11 @@ class MapEnvironment:
             dones.append(done)
 
         # TODO update environment state
-        # TODO update agent state
         for agent in self.agents:
             agent.update()
 
         all_done = self.check_if_all_done(dones)
-        return self.get_state(), rewards, dones, all_done
+        return self.get_env_state(), rewards, dones, all_done
 
     def check_if_all_done(self, dones):
         # check if all in dones are true
@@ -125,12 +123,17 @@ class MapEnvironment:
         agent.x = max(0, min(agent.x, self.map.max_x_index - 1))
         agent.y = max(0, min(agent.y, self.map.max_y_index - 1))
 
-    def get_state(self):
-        states = []
+    def get_env_state(self):
+
+        map_info = self.map.get_map_as_matrix()
+
+        agent_info = np.zeros((len(self.agents), 3))
         for agent in self.agents:
-            state = agent.get_state()
-            states.append(state)
-        return states
+            info = agent.get_state_for_env_info()
+            agent_info[agent.id] = info
+
+        env_info = [map_info, agent_info]
+        return env_info
 
     def get_possible_actions(self):
         return [0, 1, 2, 3, 4]

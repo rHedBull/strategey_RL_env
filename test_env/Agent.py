@@ -9,7 +9,7 @@ class Agent:
         self.action = 'Running'
         self.q_table = None
 
-    def get_action(self, possible_actions):
+    def get_action(self, env_info, possible_actions):
         action = np.random.choice(possible_actions)
         self.action = action
         return self.action

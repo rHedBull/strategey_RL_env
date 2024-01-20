@@ -1,6 +1,8 @@
 import math
 import random
 
+import numpy as np
+
 from Map.MapAgent import Map_Agent
 from Map.MapSquare import Map_Square
 from RL_env.Settings import Settings
@@ -57,8 +59,14 @@ class Map:
                         running = False
 
     def get_map_as_matrix(self):
-        # Returns the map as a matrix of land values
-        return [[square.get_land_value() for square in row] for row in self.squares]
+
+        # define here what infor is visible to all agents
+        # Assuming full observability of map for now
+        map_info = np.zeros((self.max_x_index, self.max_y_index, 2))
+        for row in self.squares:
+            for square in row:
+                map_info[square.x][square.y] = [square.get_land_value(), square.get_owner()]
+        return map_info
 
     def claim_tile(self, agent):
         self.squares[agent.y][agent.x].claim(agent)

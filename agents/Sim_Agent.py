@@ -59,7 +59,6 @@ class Agent:
         if self.money <= 0: # TODO adapt different state transitions
             self.state = 'Done'
 
-
     def get_state(self):
         return self.state
 
@@ -79,3 +78,9 @@ class Agent:
             possible_actions = ['Left', 'Right', 'Up', 'Down', 'Claim']
 
         return possible_actions
+
+    def get_state_for_env_info(self):
+
+        # define here what information of all agents is visible to all other agents
+
+        return [self.x, self.y, self.money]

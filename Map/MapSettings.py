@@ -5,7 +5,7 @@ COLOR_DEFAULT_BORDER = (255, 255, 255)
 VALUE_DEFAULT_LAND = 0
 VALUE_DEFAULT_WATER = 1
 
-OWNER_DEFAULT_TILE = 0
+OWNER_DEFAULT_TILE = -1
 
 PLAYER_COLOR = (0, 0, 255)
 # agent color red, blue, orange, yellow, purple,

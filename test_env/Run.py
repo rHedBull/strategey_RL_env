@@ -35,6 +35,7 @@ class Run:
         running_agents = [i for i in range(self.num_agents)]
         all_done = False
 
+        common_env_state = self.env.get_env_state()  # TODO different types of observability for different agents
         while not all_done and step < self.max_steps:
             self.env.render()  # checks already if rendering is on
 
@@ -52,10 +53,10 @@ class Run:
                     print("Player chose action {}".format(action))
                 else:
                     possible_actions = self.env.get_possible_actions()
-                    action = agent.get_action(possible_actions)
+                    action = agent.get_action(common_env_state, possible_actions)
                 agent_actions.append(action)
 
-            state, agent_rewards, dones, all_done = self.env.step(agent_actions)
+            common_env_state, agent_rewards, dones, all_done = self.env.step(agent_actions)
 
             self.update_agents(all_done, running_agents, dones)
             self.log_stats(agent_rewards, step, agent_actions)
