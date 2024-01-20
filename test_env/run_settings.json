@@ -1,10 +1,13 @@
 {
+    "playable_game": true,
     "storing_game": true,
     "storing_round_interval": 1,
     "path_to_store": "saveFiles/",
     "rendering_game": true,
     "rendering_round_interval": 1,
+    "image_logging": true,
+    "image_logging_round_interval": 5,
     "screen_size": 1000,
-    "num_agents": 10,
+    "num_agents": 1,
     "max_steps": 100
 }
