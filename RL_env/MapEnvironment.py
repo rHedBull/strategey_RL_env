@@ -26,33 +26,34 @@ def capture_game_state_as_image():
 
 
 class MapEnvironment:
-    def __init__(self, settings_file, num_agents, render_mode=False, screen=None, game_mode='automated'):
+    def __init__(self, env_settings, num_agents, action_cost_settings, render_mode=False, screen=None, game_mode='automated'):
 
         self.game_mode = game_mode
-        self.settings = settings_file
+        self.settings = env_settings
         self.render_mode = render_mode
         self.screen = screen
         self.map = Map()
         self.map.create_map(self.settings)
         self.agents = [Agent(i, self.game_mode) for i in range(num_agents)]
+        self.action_cost = action_cost_settings
         for agent in self.agents:
             agent.create_agent(self.settings, self.map.max_x_index, self.map.max_y_index)
 
-        self.action_manager = ActionManager(self)
+        self.action_manager = ActionManager(self, self.action_cost)
         self.reset()
 
     def reset(self):
 
         self.map.reset()
         for agent in self.agents:
-            agent.reset()
+            agent.reset(self.settings)
 
     def step(self, actions, action_properties=None):
 
         rewards = []
         dones = []
         for action, agent in zip(actions, self.agents):
-            self.apply_action(action, agent, action_properties)
+            self.action_manager.apply_action(action, agent, action_properties)
             reward = calculate_reward(agent)
             done = check_done(agent)
             rewards.append(reward)
@@ -101,29 +102,6 @@ class MapEnvironment:
         for agent in self.agents:
             agent.draw(self.screen, self.map.tile_size, 0, 0, 0)
         pygame.display.flip()
-
-    def apply_action(self, action, agent, action_properties):
-
-        if action == 'None' or agent.state == 'Done':
-            return
-
-        # this should be moved to the agent class if more complex
-        if action == 4:
-            self.action_manager.claim_tile(agent, action_properties[0], action_properties[1])
-
-
-        # TODO remove option to move
-        if action == 2:
-            agent.x -= 1
-        elif action == 3:
-            agent.x += 1
-        elif action == 0:
-            agent.y -= 1
-        elif action == 1:
-            agent.y += 1
-
-        agent.x = max(0, min(agent.x, self.map.max_x_index - 1))
-        agent.y = max(0, min(agent.y, self.map.max_y_index - 1))
 
     def get_env_state(self):
 
