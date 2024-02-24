@@ -49,7 +49,9 @@ class ActionManager:
 
     def claim_tile(self, agent, x, y):
         # TODO implement action check map bounds
-        # TODO implement claimng of tiles not standing on
+
+        if x < 0 or x > self.env.map.max_x_index - 1 or y < 0 or y > self.env.map.max_y_index - 1:
+            return
 
         self.env.map.claim_tile(agent, x, y)
         agent.claimed_tiles.append(self.env.map.get_tile(x, y))
