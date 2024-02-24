@@ -32,19 +32,8 @@ class ActionManager:
             self.claim_tile(agent, action_properties[0], action_properties[1])
             return
 
-
         # TODO remove option to move
-        if action == 2:
-            agent.x -= 1
-        elif action == 3:
-            agent.x += 1
-        elif action == 0:
-            agent.y -= 1
-        elif action == 1:
-            agent.y += 1
-
-        agent.x = max(0, min(agent.x, self.env.map.max_x_index - 1))
-        agent.y = max(0, min(agent.y, self.env.map.max_y_index - 1))
+        self.move_agent(agent, action)
 
     def check_cost(self, agent, action):
         # if action is move up, down, left, right
@@ -64,3 +53,21 @@ class ActionManager:
 
         self.env.map.claim_tile(agent, x, y)
         agent.claimed_tiles.append(self.env.map.get_tile(x, y))
+
+    def move_agent(self, agent, action):
+
+        if action == 2:
+            agent.x -= 1
+
+        elif action == 3:
+            agent.x += 1
+
+        elif action == 0:
+            agent.y -= 1
+        elif action == 1:
+            agent.y += 1
+
+            agent.money -= self.action_cost.get_setting('move_one')
+
+        agent.x = max(0, min(agent.x, self.env.map.max_x_index - 1))
+        agent.y = max(0, min(agent.y, self.env.map.max_y_index - 1))
