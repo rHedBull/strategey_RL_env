@@ -17,7 +17,7 @@ class Agent:
 
         # resources
         self.money = None
-        self.claimed_tiles = [] # TODO see if claimed tiles show up
+        self.claimed_tiles = []
 
         if game_mode == 'player' and id == 0:
             self.color = PLAYER_COLOR
@@ -31,16 +31,12 @@ class Agent:
             self.color = AGENT_COLORS[id % len(AGENT_COLORS)]
 
     def create_agent(self, settings, max_x, max_y):
-        self.initial_budget = settings.get_setting('agent_initial_budget')
-
-        if self.initial_budget is None:
-            raise Exception('Agent budget not set in settings file')
 
         self.max_x = max_x
         self.max_y = max_y
-        self.reset()
+        self.reset(settings)
 
-    def reset(self):
+    def reset(self, settings):
 
         self.x = random.randint(0, self.max_x - 1)
         self.y = random.randint(0, self.max_y - 1)
@@ -48,15 +44,23 @@ class Agent:
         self.state = 'Running'
         # TODO maybe set intial possition as claimed tile
 
-        self.money = 100 # TODO normal distributed money, different scenarios
+        initial_money = settings.get_setting('agent_initial_budget')
+        if settings.get_setting('agent_initial_budget') == 'equal':
+            self.money = initial_money
+        elif settings.get_setting('agent_initial_budget') == 'gauss':
+            # gauss distributed around initial
+            self.money = random.gauss(initial_money, 100)
+        else:
+            # randomly distributed money
+            self.money = random.randint(0, 1000)
 
     def update(self):
         # Update the agent's state
 
         for tile, i in enumerate(self.claimed_tiles):
-            self.money += 10 # TODO differnet money for different tiles
+            self.money += 10  # TODO differnet money for different tiles
 
-        if self.money <= 0: # TODO adapt different state transitions
+        if self.money <= 0:  # TODO adapt different state transitions
             self.state = 'Done'
 
     def get_state(self):

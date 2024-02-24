@@ -5,6 +5,6 @@
     "map_agents": 0,
     "map_agents_water": 10,
     "num_agents": 1,
-    "agent_initial_budget": 100,
-    "render_game": true
+    "agent_initial_budget": 35,
+    "agent_initial_budget_distribution": "equal"
 }
