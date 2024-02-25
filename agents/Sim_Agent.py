@@ -57,8 +57,10 @@ class Agent:
     def update(self):
         # Update the agent's state
 
-        for tile, i in enumerate(self.claimed_tiles):
-            self.money += 10  # TODO differnet money for different tiles
+        for i, tile in enumerate(self.claimed_tiles):
+            self.money += tile.get_round_value()
+
+        # TODO define settings matrix?
 
         if self.money <= 0:  # TODO adapt different state transitions
             self.state = 'Done'
