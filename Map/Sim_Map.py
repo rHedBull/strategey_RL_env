@@ -4,6 +4,8 @@ import random
 import numpy as np
 
 from Map.MapAgent import Map_Agent
+from Map.MapSettings import VALUE_DEFAULT_WATER, VALUE_DEFAULT_WATER_ADJACENT, VALUE_DEFAULT_MOUNTAIN, \
+    VALUE_DEFAULT_DESSERT
 from Map.MapSquare import Map_Square
 from RL_env.Settings import Settings
 
@@ -58,10 +60,35 @@ class Map:
                     if len(agents) == 0:
                         running = False
 
+        # post processing
+        for row in self.squares:
+            for square in row:
+
+                # TODO: add random mountain distribution
+
+                if square.get_land_type() != VALUE_DEFAULT_WATER:
+                    j = np.random.randint(0,10)/10
+
+                    if j >0.75 and j < 0.85:
+                        square.set_land_type(VALUE_DEFAULT_MOUNTAIN)
+                    elif(j > 0.85 and j < 1):
+                        square.set_land_type(VALUE_DEFAULT_DESSERT)
+
+                # TODO: wrong adjacent water distritubion, x y vertausched ?!
+                # check if water arround
+                if (square.x > 0 and self.squares[square.x - 1][square.y].get_land_type() == VALUE_DEFAULT_WATER or # check water left
+                        square.x < self.max_x_index - 1 and self.squares[square.x + 1][
+                            square.y].get_land_type() == VALUE_DEFAULT_WATER or # check waterright
+                        square.y > 0 and self.squares[square.x][square.y - 1].get_land_type() == VALUE_DEFAULT_WATER or # check water up
+                        square.y < self.max_y_index - 1 and self.squares[square.x][
+                            square.y + 1].get_land_type() == VALUE_DEFAULT_WATER): # check water down
+                    square.set_land_type(VALUE_DEFAULT_WATER_ADJACENT)
+
     def get_map_as_matrix(self):
 
-        # define here what infor is visible to all agents
-        # Assuming full observability of map for now
+        """define here what infor is visible to all agents
+        Assuming full observability of map for now
+        """
         map_info = np.zeros((self.max_x_index, self.max_y_index, 2))
         for row in self.squares:
             for square in row:
@@ -69,9 +96,24 @@ class Map:
         return map_info
 
     def claim_tile(self, agent, x, y):
+        """
+        Claim a tile at position (x,y) for an agent
+        :param agent:
+        :param x:
+        :param y:
+        :return:
+        """
         self.squares[y][x].claim(agent)
 
     def draw(self, screen, zoom_level, pan_x, pan_y):
+        """
+        Draw the map on the screen
+        :param screen:
+        :param zoom_level:
+        :param pan_x:
+        :param pan_y:
+        :return:
+        """
         for row in self.squares:
             for square in row:
                 new_x = (square.x * zoom_level) + pan_x
@@ -80,4 +122,10 @@ class Map:
                 square.draw(screen, new_x, new_y, new_size)
 
     def get_tile(self, x, y):
+        """
+        Get the tile at position x, y
+        :param x:
+        :param y:
+        :return:
+        """
         return self.squares[y][x]
