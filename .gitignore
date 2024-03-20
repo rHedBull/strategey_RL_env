@@ -3,3 +3,7 @@
 **/test_env/save_files/**
 /test_env/logs/
 /test_env/saveFiles/
+
+/docs/
+config-file
+
