@@ -46,14 +46,14 @@ class Run:
 
             for agent in self.agents:
                 if agent.state == 'Done':
-                    agent_actions.append('None')
+                    agent_actions.append(-1)
                     continue
                 # if agent is a player, get action from keyboard
                 if isinstance(agent, Player):
                     action, action_properties = agent.get_action(pygame)
                     print("Player chose action {}".format(action))
                 else:
-                    possible_actions = self.env.get_possible_actions()
+                    possible_actions = self.env.get_possible_actions(agent.id)
                     action, action_properties = agent.get_action(common_env_state, possible_actions)
                 agent_actions.append(action)
 

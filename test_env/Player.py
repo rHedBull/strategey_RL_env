@@ -23,8 +23,8 @@ class Player:
                     waiting_for_event = False
                     keys = game.key.get_pressed()
 
-        action = None
-        action_properties = None
+        action = -1
+        action_properties = -1
 
         if keys[pygame.K_w] or keys[pygame.K_UP]:
             action = 0 #'Move Up'
