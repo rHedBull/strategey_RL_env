@@ -7,7 +7,8 @@ class Map_Square:
     Class for a single square/ tile on the map
     """
 
-    def __init__(self, x, y, square_size, land_value=VALUE_DEFAULT_LAND):
+    def __init__(self, id, x, y, square_size, land_value=VALUE_DEFAULT_LAND):
+        self.tile_id = id
         self.x = x
         self.y = y
         self.square_size = square_size
@@ -19,6 +20,10 @@ class Map_Square:
 
         self.land_type = land_value
         self.owner_value = OWNER_DEFAULT_TILE
+        self.buildings = []
+
+        self.land_money_value = land_value
+        # TODO add other resources here
 
     def reset(self):
         self.owner_value = OWNER_DEFAULT_TILE
@@ -50,7 +55,7 @@ class Map_Square:
         return self.land_type
 
     def get_round_value(self):
-        return LAND[self.land_type][1]
+        return self.land_money_value
 
     def claim(self, agent):
         """
@@ -77,3 +82,16 @@ class Map_Square:
             pygame.draw.rect(screen, self.border_color,
                              (self.x * self.square_size, self.y * self.square_size, self.square_size, self.square_size),
                              1)
+
+    def add_building(self, building_id):
+        self.buildings.append(building_id)
+
+    def calculate_land_money_value(self):
+        """
+        Calculate the value of the land
+        :return:
+        """
+        base_value = self.land_type
+        for(building) in self.buildings:
+            base_value += self.buildings[building][2]
+            # TODO test this
