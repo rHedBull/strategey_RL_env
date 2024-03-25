@@ -33,9 +33,9 @@ class Map:
         self.numb_agents = settings.get_setting('map_agents')
 
         # create map squares
-        self.squares = [[Map_Square(x_index, y_index, self.tile_size) for x_index in range(self.max_x_index)]
-                        for y_index in
-                        range(self.max_y_index)]
+        self.squares = [
+            [Map_Square((y_index * self.max_x_index + x_index),x_index, y_index, self.tile_size) for x_index in range(self.max_x_index)]
+            for y_index in range(self.max_y_index)]
 
         self.reset()
 
