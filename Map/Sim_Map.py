@@ -44,11 +44,8 @@ class Map:
             for square in row:
                 square.reset()
 
-        if (self.numb_agents * self.water_budget_per_agent) > 0:
-            agents = [
-                Map_Agent(random.randint(0, int(math.sqrt(self.tiles) - 1)),
-                          random.randint(0, int(math.sqrt(self.tiles) - 1)),
-                          self.water_budget_per_agent) for i in range(self.numb_agents)]
+        # water agents
+        self.let_map_agent_run(self.numb_agents, self.water_budget_per_agent, self.tiles)
 
             running = True
             while running:
@@ -132,3 +129,20 @@ class Map:
         :return:
         """
         return self.squares[y][x]
+
+    def let_map_agent_run(self, numb_agents, tile_budget_per_agent, tiles):
+        if (numb_agents * tile_budget_per_agent) > 0:
+            agents = [
+                Map_Agent(random.randint(0, int(math.sqrt(tiles) - 1)),
+                          random.randint(0, int(math.sqrt(tiles) - 1)),
+                          tile_budget_per_agent) for i in range(numb_agents)]
+
+            running = True
+            while running:
+
+                for agent in agents:
+                    agent.walk(self, tiles)
+                    if agent.water_budget == 0:
+                        agents.remove(agent)
+                    if len(agents) == 0:
+                        running = False
