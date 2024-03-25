@@ -76,13 +76,16 @@ class Map:
 
                 # TODO: wrong adjacent water distritubion, x y vertausched ?!
                 # check if water arround
-                if (square.x > 0 and self.squares[square.x - 1][square.y].get_land_type() == VALUE_DEFAULT_WATER or # check water left
-                        square.x < self.max_x_index - 1 and self.squares[square.x + 1][
-                            square.y].get_land_type() == VALUE_DEFAULT_WATER or # check waterright
-                        square.y > 0 and self.squares[square.x][square.y - 1].get_land_type() == VALUE_DEFAULT_WATER or # check water up
-                        square.y < self.max_y_index - 1 and self.squares[square.x][
-                            square.y + 1].get_land_type() == VALUE_DEFAULT_WATER): # check water down
-                    square.set_land_type(VALUE_DEFAULT_WATER_ADJACENT)
+                if square.get_land_type() != VALUE_DEFAULT_WATER:
+                    if (square.x > 0 and self.squares[square.y][
+                        square.x - 1].get_land_type() == VALUE_DEFAULT_WATER or  # check water left
+                            square.x < self.max_x_index - 1 and self.squares[square.y][
+                                square.x + 1].get_land_type() == VALUE_DEFAULT_WATER or  # check water right
+                            square.y > 0 and self.squares[square.y - 1][
+                                square.x].get_land_type() == VALUE_DEFAULT_WATER or  # check water up
+                            square.y < self.max_y_index - 1 and self.squares[square.y + 1][
+                                square.x].get_land_type() == VALUE_DEFAULT_WATER):  # check water down
+                        square.set_land_type(VALUE_DEFAULT_WATER_ADJACENT)
 
     def get_map_as_matrix(self):
 
