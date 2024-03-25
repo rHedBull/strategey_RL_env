@@ -1,10 +1,14 @@
 {
     "map_width": 1000,
     "map_height": 1000,
-    "tiles" : 100,
-    "map_agents": 0,
-    "map_agents_water": 10,
-    "num_agents": 1,
+    "tiles" : 100000,
+    "numb_water_agents": 3,
+    "water_budget_per_agent": 66,
+    "numb_mountain_agents": 5,
+    "mountain_budget_per_agent": 30,
+    "numb_dessert_agents": 1,
+    "dessert_budget_per_agent": 100,
+    "num_agents": 2,
     "agent_initial_budget": 35,
     "agent_initial_budget_distribution": "equal"
 }

@@ -12,8 +12,13 @@ from RL_env.Settings import Settings
 
 class Map:
     def __init__(self):
-        self.numb_agents = None
+        self.numb_water_agents = None
+        self.numb_mountain_agents = None
         self.water_budget_per_agent = None
+        self.mountain_budget_per_agent = None
+        self.dessert_budget_per_agent = None
+        self.numb_dessert_agents = None
+
         self.tile_size = None
         self.tiles = None
         self.width = None
@@ -29,8 +34,12 @@ class Map:
         self.tile_size = int(self.height / math.sqrt(self.tiles))
         self.max_x_index = int(self.width / self.tile_size)
         self.max_y_index = int(self.height / self.tile_size)
-        self.water_budget_per_agent = settings.get_setting('map_agents_water')
-        self.numb_agents = settings.get_setting('map_agents')
+        self.water_budget_per_agent = settings.get_setting('water_budget_per_agent')
+        self.numb_water_agents = settings.get_setting('numb_water_agents')
+        self.mountain_budget_per_agent = settings.get_setting('mountain_budget_per_agent')
+        self.numb_mountain_agents = settings.get_setting('numb_mountain_agents')
+        self.dessert_budget_per_agent = settings.get_setting('dessert_budget_per_agent')
+        self.numb_dessert_agents = settings.get_setting('numb_dessert_agents')
 
         # create map squares
         self.squares = [
@@ -44,32 +53,34 @@ class Map:
             for square in row:
                 square.reset()
 
+        # mountain agents
+        self.let_map_agent_run(self.numb_mountain_agents, self.mountain_budget_per_agent, self.tiles, VALUE_DEFAULT_MOUNTAIN)
+
+        # dessert agents
+        self.let_map_agent_run(self.numb_dessert_agents, self.dessert_budget_per_agent, self.tiles,
+                               VALUE_DEFAULT_DESSERT)
+
         # water agents
-        self.let_map_agent_run(self.numb_agents, self.water_budget_per_agent, self.tiles)
+        self.let_map_agent_run(self.numb_water_agents, self.water_budget_per_agent, self.tiles, VALUE_DEFAULT_WATER)
 
-            running = True
-            while running:
-
-                for agent in agents:
-                    agent.walk(self, self.tiles)
-                    if agent.water_budget == 0:
-                        agents.remove(agent)
-                    if len(agents) == 0:
-                        running = False
+        # TODO: make importance editable water over mountain over dessert
+        # TODO: make distribution percentage wise locked to tile count
+        # TODO: enable selecttion of land types
+        # TODO: enable distribution method
 
         # post processing
         for row in self.squares:
             for square in row:
 
                 # TODO: add random mountain distribution
-
-                if square.get_land_type() != VALUE_DEFAULT_WATER:
+                # TODO : make the distribution density and type editable
+                """if square.get_land_type() != VALUE_DEFAULT_WATER:
                     j = np.random.randint(0,10)/10
 
                     if j >0.75 and j < 0.85:
                         square.set_land_type(VALUE_DEFAULT_MOUNTAIN)
                     elif(j > 0.85 and j < 1):
-                        square.set_land_type(VALUE_DEFAULT_DESSERT)
+                        square.set_land_type(VALUE_DEFAULT_DESSERT)"""
 
                 # TODO: wrong adjacent water distritubion, x y vertausched ?!
                 # check if water arround
@@ -130,7 +141,7 @@ class Map:
         """
         return self.squares[y][x]
 
-    def let_map_agent_run(self, numb_agents, tile_budget_per_agent, tiles):
+    def let_map_agent_run(self, numb_agents, tile_budget_per_agent, tiles, LAND_TYPE_VALUE):
         if (numb_agents * tile_budget_per_agent) > 0:
             agents = [
                 Map_Agent(random.randint(0, int(math.sqrt(tiles) - 1)),
@@ -141,8 +152,8 @@ class Map:
             while running:
 
                 for agent in agents:
-                    agent.walk(self, tiles)
-                    if agent.water_budget == 0:
+                    agent.walk(self, tiles, LAND_TYPE_VALUE)
+                    if agent.tile_budget == 0:
                         agents.remove(agent)
                     if len(agents) == 0:
                         running = False
