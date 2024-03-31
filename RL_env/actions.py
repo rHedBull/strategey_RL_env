@@ -123,17 +123,19 @@ class ActionManager:
     def add_building(self, building_id, x, y):
         self.env.map.add_building(building_id, x, y)
 
-    def move_agent(self, agent, action):
+    def move_agent(self, agent, action_properties):
 
-        if action == 2:
+        direction = action_properties[0]
+
+        if direction == 2: #left
             agent.x -= 1
 
-        elif action == 3:
+        elif direction == 3: #right
             agent.x += 1
 
-        elif action == 0:
+        elif direction == 0: #up
             agent.y -= 1
-        elif action == 1:
+        elif direction == 1: # down
             agent.y += 1
 
             agent.money -= self.action_cost.get_setting('move_one')
