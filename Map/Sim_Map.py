@@ -12,12 +12,10 @@ from RL_env.Settings import Settings
 
 class Map:
     def __init__(self):
-        self.numb_water_agents = None
-        self.numb_mountain_agents = None
-        self.water_budget_per_agent = None
-        self.mountain_budget_per_agent = None
-        self.dessert_budget_per_agent = None
-        self.numb_dessert_agents = None
+        self.water_percentage = None # TODO differentiate between lakes, oceans, rivers?
+        self.mountain_percentage = None
+        self.dessert_percentage = None
+
 
         self.tile_size = None
         self.tiles = None
@@ -34,12 +32,9 @@ class Map:
         self.tile_size = int(self.height / math.sqrt(self.tiles))
         self.max_x_index = int(self.width / self.tile_size)
         self.max_y_index = int(self.height / self.tile_size)
-        self.water_budget_per_agent = settings.get_setting('water_budget_per_agent')
-        self.numb_water_agents = settings.get_setting('numb_water_agents')
-        self.mountain_budget_per_agent = settings.get_setting('mountain_budget_per_agent')
-        self.numb_mountain_agents = settings.get_setting('numb_mountain_agents')
-        self.dessert_budget_per_agent = settings.get_setting('dessert_budget_per_agent')
-        self.numb_dessert_agents = settings.get_setting('numb_dessert_agents')
+        self.water_percentage = settings.get_setting('water_budget_per_agent')
+        self.mountain_percentage = settings.get_setting('mountain_budget_per_agent')
+        self.dessert_percentage = settings.get_setting('dessert_budget_per_agent')
 
         # create map squares
         self.squares = [
@@ -54,14 +49,14 @@ class Map:
                 square.reset()
 
         # mountain agents
-        self.let_map_agent_run(self.numb_mountain_agents, self.mountain_budget_per_agent, self.tiles, VALUE_DEFAULT_MOUNTAIN)
+        self.let_map_agent_run( self.mountain_percentage, self.tiles, VALUE_DEFAULT_MOUNTAIN)
 
         # dessert agents
-        self.let_map_agent_run(self.numb_dessert_agents, self.dessert_budget_per_agent, self.tiles,
+        self.let_map_agent_run( self.dessert_percentage, self.tiles,
                                VALUE_DEFAULT_DESSERT)
 
         # water agents
-        self.let_map_agent_run(self.numb_water_agents, self.water_budget_per_agent, self.tiles, VALUE_DEFAULT_WATER)
+        self.let_map_agent_run(self.water_percentage, self.tiles, VALUE_DEFAULT_WATER)
 
         # TODO: make importance editable water over mountain over dessert
         # TODO: make distribution percentage wise locked to tile count
@@ -82,7 +77,6 @@ class Map:
                     elif(j > 0.85 and j < 1):
                         square.set_land_type(VALUE_DEFAULT_DESSERT)"""
 
-                # TODO: wrong adjacent water distritubion, x y vertausched ?!
                 # check if water arround
                 if square.get_land_type() != VALUE_DEFAULT_WATER:
                     if (square.x > 0 and self.squares[square.y][
@@ -116,6 +110,9 @@ class Map:
         """
         self.squares[y][x].claim(agent)
 
+    def add_building(self, building_id, x,y):
+        self.squares[y][x].add_building(building_id, x, y)
+
     def draw(self, screen, zoom_level, pan_x, pan_y):
         """
         Draw the map on the screen
@@ -141,7 +138,11 @@ class Map:
         """
         return self.squares[y][x]
 
-    def let_map_agent_run(self, numb_agents, tile_budget_per_agent, tiles, LAND_TYPE_VALUE):
+    def let_map_agent_run(self, land_type_percentage, tiles, LAND_TYPE_VALUE):
+        total_tile_budget =  tiles * (land_type_percentage /100)
+        numb_agents = 10
+        tile_budget_per_agent = total_tile_budget / numb_agents
+
         if (numb_agents * tile_budget_per_agent) > 0:
             agents = [
                 Map_Agent(random.randint(0, int(math.sqrt(tiles) - 1)),
