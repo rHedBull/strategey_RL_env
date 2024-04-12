@@ -81,7 +81,7 @@ class Agent:
         if self.state == 'Done':
             possible_actions = []
         else:
-            possible_actions = ['Left', 'Right', 'Up', 'Down', 'Claim']
+            possible_actions = [1,2,3] # ['move', 'claim_tile', 'build']
 
         return possible_actions
 

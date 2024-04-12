@@ -4,7 +4,7 @@ from datetime import datetime
 import tensorflow as tf
 import pygame
 
-from RL_env.MapEnvironment import capture_game_state_as_image
+from RL_env.Env import capture_game_state_as_image
 from test_env.Agent import Agent
 from test_env.Player import Player
 
@@ -41,23 +41,25 @@ class Run:
 
             # get actions from agents
             agent_actions = []
-            action_properties = []
+            all_agents_action_properties = []
             agent_rewards = []
 
             for agent in self.agents:
+                action_properties = []
                 if agent.state == 'Done':
                     agent_actions.append(-1)
                     continue
                 # if agent is a player, get action from keyboard
                 if isinstance(agent, Player):
-                    action, action_properties = agent.get_action(pygame)
+                    action, action_properties = agent.get_action(pygame, self.env)
                     print("Player chose action {}".format(action))
                 else:
                     possible_actions = self.env.get_possible_actions(agent.id)
                     action, action_properties = agent.get_action(common_env_state, possible_actions)
+                all_agents_action_properties.append(action_properties)
                 agent_actions.append(action)
 
-            common_env_state, agent_rewards, dones, all_done = self.env.step(agent_actions, action_properties)
+            common_env_state, agent_rewards, dones, all_done = self.env.step(agent_actions, all_agents_action_properties)
 
             self.update_agents(all_done, running_agents, dones)
             self.log_stats(agent_rewards, step, agent_actions)
