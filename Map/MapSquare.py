@@ -63,22 +63,29 @@ class Map_Square:
     """
 
     def __init__(self, id, x, y, square_size, land_value=VALUE_DEFAULT_LAND):
+        # coorinates and ids
         self.tile_id = id
         self.x = x
         self.y = y
         self.square_size = square_size
 
+        # ui stuff
         self.default_border_color = COLOR_DEFAULT_BORDER
         self.default_color = COLOR_DEFAULT_LAND
         self.fill_color = COLOR_DEFAULT_LAND
         self.border_color = COLOR_DEFAULT_BORDER
 
+        # land properties
+        self.height = 0 # height as indicator for water, or ocean tiles
+        self.biome = 0
+        self.resources = []
         self.land_type = land_value
+
+        # owner specific
         self.owner_value = OWNER_DEFAULT_TILE
         self.buildings = []
 
         self.land_money_value = land_value
-        # TODO add other resources here
 
     def reset(self):
         self.owner_value = OWNER_DEFAULT_TILE
@@ -95,6 +102,28 @@ class Map_Square:
 
     def get_owner(self):
         return self.owner_value
+
+    def set_height(self, height_value):
+        self.height = height_value
+
+    def get_height(self):
+        return self.height
+
+    def set_biome(self, biome_value):
+        self.biome = biome_value
+
+    def get_biome(self):
+        return self.biome
+
+    def add_resource(self, resource_value):
+        self.resources.append(resource_value)
+
+    def get_resources(self):
+        return self.resources
+
+    def remove_resource(self, resource_value):
+        self.resources.remove(resource_value)
+
 
     def set_land_type(self, land_value):
         """
@@ -147,6 +176,6 @@ class Map_Square:
         :return:
         """
         base_value = self.land_type
-        for(building) in self.buildings:
+        for (building) in self.buildings:
             base_value += self.buildings[building][2]
             # TODO test this

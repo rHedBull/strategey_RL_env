@@ -1,12 +1,48 @@
 {
     "map_width": 1000,
     "map_height": 1000,
-    "tiles" : 100000,
-    "water_budget_per_agent": 20,
+    "tiles" : 10,
+    "water_budget_per_agent": 0,
     "mountain_budget_per_agent": 0,
     "dessert_budget_per_agent": 0,
-    "numb_rivers": 10,
-    "num_agents": 10,
-    "agent_initial_budget": 35,
-    "agent_initial_budget_distribution": "equal"
+    "numb_rivers": 0,
+    "resource_density": 0.1,
+    "num_agents": 3,
+    "agent_initial_budget": 1000,
+    "agent_initial_budget_distribution": "equal",
+    "actions": [
+        {
+            "name": "none",
+            "cost": 0,
+            "reward": 0,
+            "number_action_properties": 0},
+        {
+            "name": "move",
+            "cost": 1,
+            "reward": 0,
+            "number_action_properties": 1
+        },
+        {
+            "name": "claim",
+            "cost": 2,
+            "reward": 10,
+            "number_action_properties": 2
+        },
+        {
+            "name": "build",
+            "cost": 5,
+            "reward": 20,
+            "number_action_properties": 3
+        }
+    ],
+    "buildings": [
+        {
+            "name": "building1",
+            "cost": 1
+        },
+        {
+            "name": "builiding2",
+            "cost": 2
+        }
+    ]
 }

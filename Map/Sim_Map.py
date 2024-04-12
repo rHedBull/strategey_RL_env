@@ -4,7 +4,7 @@ import random
 import numpy as np
 
 from Map.MapAgent import Map_Agent
-from Map.MapSettings import VALUE_DEFAULT_OCEAN, VALUE_DEFAULT_WATER_ADJACENT, VALUE_DEFAULT_MOUNTAIN, \
+from Map.MapSettings import VALUE_DEFAULT_OCEAN, VALUE_DEFAULT_MARSH, VALUE_DEFAULT_MOUNTAIN, \
     VALUE_DEFAULT_DESSERT, VALUE_DEFAULT_RIVER
 from Map.MapSquare import Map_Square
 from RL_env.Settings import Settings
@@ -12,16 +12,21 @@ from RL_env.Settings import Settings
 
 class Map:
     def __init__(self):
-        self.water_percentage = None
-        self.mountain_percentage = None
-        self.dessert_percentage = None
-
         self.tile_size = None
         self.tiles = None
         self.width = None
         self.height = None
+        self.max_y_index = None
+        self.max_x_index = None
 
         self.squares = []
+
+        # land type percentages
+        self.water_percentage = None
+        self.mountain_percentage = None
+        self.dessert_percentage = None
+        self.rivers = None
+        self.resource_density = None
 
     def create_map(self, settings):
         self.width = settings.get_setting('map_width')
@@ -35,6 +40,7 @@ class Map:
         self.mountain_percentage = settings.get_setting('mountain_budget_per_agent')
         self.dessert_percentage = settings.get_setting('dessert_budget_per_agent')
         self.rivers = settings.get_setting('numb_rivers')
+        self.resource_density = settings.get_setting('resource_density')
 
         # create map squares
         self.squares = [
@@ -43,6 +49,18 @@ class Map:
             for y_index in range(self.max_y_index)]
 
         self.reset()
+
+    def distribute_resources(self, square):
+        # resource distribution totally random so far
+        i = np.random.randint(0, 10) / 10
+
+        if i < self.resource_density:
+            if square.get_land_type() != VALUE_DEFAULT_OCEAN:
+                resource = np.random.randint(0, 6)
+                square.add_resource(resource)
+            else:
+                resource = np.random.randint(0, 1)
+                square.add_resource(resource)
 
     def reset(self):
         for row in self.squares:
@@ -71,6 +89,8 @@ class Map:
         for row in self.squares:
             for square in row:
 
+                self.distribute_resources(square)
+
                 # TODO: add random mountain distribution
                 # TODO : make the distribution density and type editable
                 """if square.get_land_type() != VALUE_DEFAULT_WATER:
@@ -91,7 +111,7 @@ class Map:
                                 square.x].get_land_type() == VALUE_DEFAULT_OCEAN or  # check water up
                             square.y < self.max_y_index - 1 and self.squares[square.y + 1][
                                 square.x].get_land_type() == VALUE_DEFAULT_OCEAN):  # check water down
-                        square.set_land_type(VALUE_DEFAULT_WATER_ADJACENT)
+                        square.set_land_type(VALUE_DEFAULT_MARSH)
 
     def get_map_as_matrix(self):
 
