@@ -12,7 +12,7 @@ whitaker_biomes = [['Tundra'],
                    ['tropical forest/ savanna']]
 
 resources = [
- [
+    [
         ['fresh water'],
         ['wood'],
         ['iron'],
@@ -20,10 +20,12 @@ resources = [
         ['oil'],
         ['gold'],
         ['wheat']],
- [
+    [
         ['fish'],
-        ['oil'],]
-        ]
+        ['oil'], ]
+]
+
+height_values = [['ocean'], ['river/ coast'], ['normal'], ['hill'], ['mountain']]
 
 
 def calculate_whitaker_biome(precipitation, temperature):
@@ -76,7 +78,7 @@ class Map_Square:
         self.border_color = COLOR_DEFAULT_BORDER
 
         # land properties
-        self.height = 0 # height as indicator for water, or ocean tiles
+        self.height = 0  # height as indicator for water, or ocean tiles
         self.biome = 0
         self.resources = []
         self.land_type = land_value
@@ -123,7 +125,6 @@ class Map_Square:
 
     def remove_resource(self, resource_value):
         self.resources.remove(resource_value)
-
 
     def set_land_type(self, land_value):
         """
