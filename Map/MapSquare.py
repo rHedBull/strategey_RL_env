@@ -1,6 +1,61 @@
 import pygame
 from Map.MapSettings import *
 
+whitaker_biomes = [['Tundra'],
+                   ['Boreal Forest'],
+                   ['Temperate Rainforest'],
+                   ['Tropical Rainforest'],
+                   ['Temperate forest'],
+                   ['woodland/ Shrubland'],
+                   ['Temperate grassland/ cold dessert'],
+                   ['subtropical desert'],
+                   ['tropical forest/ savanna']]
+
+resources = [
+ [
+        ['fresh water'],
+        ['wood'],
+        ['iron'],
+        ['coal'],
+        ['oil'],
+        ['gold'],
+        ['wheat']],
+ [
+        ['fish'],
+        ['oil'],]
+        ]
+
+
+def calculate_whitaker_biome(precipitation, temperature):
+    if temperature <= 0:
+        return 0  # Tundra
+    elif temperature < 0:
+
+        if precipitation < 25:
+            return 6  # cold dessert
+        elif precipitation < 50:
+            return 5  # woodlands
+        else:
+            return 1  # boreal forest
+    elif temperature < 20:
+
+        if precipitation < 25:
+            return 6  # cold dessert
+        elif precipitation < 100:
+            return 5  # woodlands
+        elif precipitation < 200:
+            return 4  # temperate forest
+        else:
+            return 2  # temperate rainforest
+    else:
+
+        if precipitation < 75:
+            return 7  # subtropical desert
+        elif precipitation < 225:
+            return 8  # tropical forest
+        else:
+            return 3  # tropical rainforest
+
 
 class Map_Square:
     """
