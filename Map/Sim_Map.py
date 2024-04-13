@@ -12,6 +12,7 @@ from RL_env.Settings import Settings
 
 class Map:
     def __init__(self):
+
         self.tile_size = None
         self.tiles = None
         self.width = None
@@ -22,11 +23,16 @@ class Map:
         self.squares = []
 
         # land type percentages
+        self.height_values = None
+        self.sea_resource_definition = None
+        self.land_resource_definition = None
         self.water_percentage = None
         self.mountain_percentage = None
         self.dessert_percentage = None
         self.rivers = None
         self.resource_density = None
+        self.biomes_definition = None
+        self.resource_definition = None
 
     def create_map(self, settings):
         self.width = settings.get_setting('map_width')
@@ -36,11 +42,16 @@ class Map:
         self.tile_size = int(self.height / math.sqrt(self.tiles))
         self.max_x_index = int(self.width / self.tile_size)
         self.max_y_index = int(self.height / self.tile_size)
+
         self.water_percentage = settings.get_setting('water_budget_per_agent')
         self.mountain_percentage = settings.get_setting('mountain_budget_per_agent')
         self.dessert_percentage = settings.get_setting('dessert_budget_per_agent')
         self.rivers = settings.get_setting('numb_rivers')
         self.resource_density = settings.get_setting('resource_density')
+        self.biomes_definition = settings.get_setting('biomes')
+        self.land_resource_definition = settings.get_setting('land_resources')
+        self.sea_resource_definition = settings.get_setting('land_resources')
+        self.height_values = settings.get_setting('height_values')
 
         # create map squares
         self.squares = [
