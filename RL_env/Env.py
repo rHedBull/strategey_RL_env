@@ -91,7 +91,7 @@ class MapEnvironment:
 
     def get_env_state(self):
 
-        map_info = self.map.get_map_as_matrix()  # TODO include building info
+        map_info = self.map.get_observation_of_map_state()  # TODO include building info ?
 
         agent_info = np.zeros((len(self.agents), 3))
         for agent in self.agents:

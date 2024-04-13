@@ -1,32 +1,8 @@
 import pygame
 from Map.MapSettings import *
 
-whitaker_biomes = [['Tundra'],
-                   ['Boreal Forest'],
-                   ['Temperate Rainforest'],
-                   ['Tropical Rainforest'],
-                   ['Temperate forest'],
-                   ['woodland/ Shrubland'],
-                   ['Temperate grassland/ cold dessert'],
-                   ['subtropical desert'],
-                   ['tropical forest/ savanna']]
 
-resources = [
-    [
-        ['fresh water'],
-        ['wood'],
-        ['iron'],
-        ['coal'],
-        ['oil'],
-        ['gold'],
-        ['wheat']],
-    [
-        ['fish'],
-        ['oil'], ]
-]
-
-height_values = [['ocean'], ['river/ coast'], ['normal'], ['hill'], ['mountain']]
-
+# TODO: zooming, moving?
 
 def calculate_whitaker_biome(precipitation, temperature):
     if temperature <= 0:
@@ -79,7 +55,9 @@ class Map_Square:
 
         # land properties
         self.height = 0  # height as indicator for water, or ocean tiles
-        self.biome = 0
+        self.precepitation = 0      # for biomes
+        self.temperature = 0        # for biomes
+        self.biome = 0              # for biomes
         self.resources = []
         self.land_type = land_value
 
@@ -167,6 +145,14 @@ class Map_Square:
             pygame.draw.rect(screen, self.border_color,
                              (self.x * self.square_size, self.y * self.square_size, self.square_size, self.square_size),
                              1)
+
+    def get_full_info(self):
+
+        return [self.height, self.biome, self.resources, self.land_type, self.owner_value, self.buildings]
+
+    def get_observation_state(self):
+        return [self.height, self.biome, self.resources, self.land_type,
+                self.owner_value]  # this is what other agents can see
 
     def add_building(self, building_id):
         self.buildings.append(building_id)

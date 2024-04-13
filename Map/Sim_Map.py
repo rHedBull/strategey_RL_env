@@ -124,7 +124,7 @@ class Map:
                                 square.x].get_land_type() == VALUE_DEFAULT_OCEAN):  # check water down
                         square.set_land_type(VALUE_DEFAULT_MARSH)
 
-    def get_map_as_matrix(self):
+    def get_observation_of_map_state(self):
 
         """define here what infor is visible to all agents
         Assuming full observability of map for now
@@ -132,8 +132,22 @@ class Map:
         map_info = np.zeros((self.max_x_index, self.max_y_index, 2))
         for row in self.squares:
             for square in row:
-                map_info[square.x][square.y] = [square.get_land_type(), square.get_owner()]
+                map_info[square.x][square.y] = square.get_observation_state()
         return map_info
+
+    def get_full_map_as_matrix(self):
+
+        """
+        Get the full map as a matrix. Including each square's full information.
+        Not really meant for the agents to see. Rather to recreate the map later.
+        """
+
+        full_map_info = np.zeros((self.max_x_index, self.max_y_index, 2))
+        for row in self.squares:
+            for square in row:
+                info = square.get_full_info()
+                full_map_info[square.x][square.y] = info
+        return full_map_info
 
     def claim_tile(self, agent, x, y):
         """
