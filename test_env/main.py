@@ -1,4 +1,4 @@
-from RL_env.MapEnvironment import MapEnvironment
+from RL_env.Env import MapEnvironment
 
 import pygame
 
