@@ -27,15 +27,14 @@ def main():
     hyperparameters_path = './test_env/hyperparameters.json'
     env_settings_path = './test_env/env_settings.json'
     run_settings_path = './test_env/run_settings.json'
-    action_cost_settings_path = './test_env/settings/actions_settings.json'
+
     hyperparameters = Settings(hyperparameters_path)
     env_settings = Settings(env_settings_path)
     run_settings = Settings(run_settings_path)
-    action_cost_settings = Settings(action_cost_settings_path)
 
-    check_settings(hyperparameters, env_settings, run_settings)
+    #check_settings(hyperparameters, env_settings, run_settings)
     screen = setup_screen(True, 1000)
-    env = MapEnvironment(env_settings, env_settings.get_setting('num_agents'), action_cost_settings, True, screen, 'player')
+    env = MapEnvironment(env_settings,  True, screen, 'player')
     run = Run(run_settings, hyperparameters, env)
     run.run()
 
