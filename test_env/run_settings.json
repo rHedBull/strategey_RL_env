@@ -5,9 +5,9 @@
     "path_to_store": "saveFiles/",
     "rendering_game": true,
     "rendering_round_interval": 1,
-    "image_logging": true,
-    "image_logging_round_interval": 5,
+    "image_logging": false,
+    "image_logging_round_interval": 1,
     "screen_size": 1000,
-    "num_agents": 1,
+    "num_agents": 3,
     "max_steps": 100
 }

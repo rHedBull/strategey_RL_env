@@ -65,7 +65,7 @@ class ActionManager:
         if not self.check_building_cost(agent, base_construction_cost, building_id, x, y):
             return
 
-        self.env.map.add_building(building_id, x, y)
+        #self.env.map.add_building(building_id, x, y)
 
     def check_building_cost(self, agent, base_construction_cost, building_id, x, y):
         specific_building_cost = buildings[building_id][1]
