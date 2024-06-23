@@ -132,7 +132,7 @@ class Map:
         map_info = np.zeros((self.max_x_index, self.max_y_index, 2))
         for row in self.squares:
             for square in row:
-                map_info[square.x][square.y] = square.get_observation_state()
+                map_info[square.x][square.y] = 0#square.get_observation_state()
         return map_info
 
     def get_full_map_as_matrix(self):
