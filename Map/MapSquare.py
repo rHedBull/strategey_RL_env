@@ -59,7 +59,7 @@ class Map_Square:
         self.temperature = 0        # for biomes
         self.biome = 0              # for biomes
         self.resources = []
-        self.land_type = land_value
+        self.land_type = self.calculate_land_money_value()
 
         # owner specific
         self.owner_value = OWNER_DEFAULT_TILE
