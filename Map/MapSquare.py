@@ -162,7 +162,8 @@ class Map_Square:
         Calculate the value of the land
         :return:
         """
-        base_value = self.land_type
-        for (building) in self.buildings:
-            base_value += self.buildings[building][2]
-            # TODO test this
+        #base_value = self.land_type
+        return 10
+        #for (building) in self.buildings:
+        #    base_value += self.buildings[building][2]
+        #    # TODO test this
