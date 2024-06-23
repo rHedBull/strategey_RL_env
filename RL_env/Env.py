@@ -116,10 +116,10 @@ class MapEnvironment:
             if not i:
                 return False
 
-        self.finish_env()
+        self.close()
         return True
 
-    def finish_env(self):
+    def close(self):
         print("Game Terminated")
         if self.render_mode:
             print("Press any key to close the window")
