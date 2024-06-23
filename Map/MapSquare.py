@@ -63,7 +63,7 @@ class Map_Square:
 
         # owner specific
         self.owner_value = OWNER_DEFAULT_TILE
-        self.buildings = []
+        #self.buildings = []
 
         self.land_money_value = land_value
 
