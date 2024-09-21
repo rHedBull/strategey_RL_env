@@ -1,10 +1,10 @@
 {
     "map_width": 1000,
     "map_height": 1000,
-    "tiles" : 10,
-    "water_budget_per_agent": 0,
-    "mountain_budget_per_agent": 0,
-    "dessert_budget_per_agent": 0,
+    "tiles" : 100,
+    "water_budget_per_agent": 30,
+    "mountain_budget_per_agent": 10,
+    "dessert_budget_per_agent": 10,
     "numb_rivers": 0,
     "resource_density": 0.1,
     "biomes": [
@@ -94,7 +94,6 @@
             "value": 4
         }
     ],
-    "num_agents": 3,
     "agent_initial_budget": 1000,
     "agent_initial_budget_distribution": "equal",
     "actions": [

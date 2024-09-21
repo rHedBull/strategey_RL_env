@@ -8,6 +8,6 @@
     "image_logging": false,
     "image_logging_round_interval": 1,
     "screen_size": 1000,
-    "num_agents": 3,
+    "num_agents": 5,
     "max_steps": 100
 }
