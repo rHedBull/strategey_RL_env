@@ -2,7 +2,7 @@ from rl_env.environment import MapEnvironment
 
 import pygame
 
-from rl_env.Settings import Settings
+from settings.settings import Settings
 from test_env.Run import Run
 
 
