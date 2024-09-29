@@ -2,7 +2,7 @@ import numpy as np
 import pygame
 
 from agents.Sim_Agent import Agent
-from map.Sim_Map import Map
+from map.sim_map import Map
 from rl_env.actions import ActionManager
 
 

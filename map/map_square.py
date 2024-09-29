@@ -1,7 +1,7 @@
 import pygame
 
-from map.MapSettings import (COLOR_DEFAULT_BORDER, COLOR_DEFAULT_LAND, LAND,
-                             OWNER_DEFAULT_TILE, VALUE_DEFAULT_LAND)
+from map.map_settings import (COLOR_DEFAULT_BORDER, COLOR_DEFAULT_LAND, LAND,
+                              OWNER_DEFAULT_TILE, VALUE_DEFAULT_LAND)
 
 # TODO: zooming, moving?
 

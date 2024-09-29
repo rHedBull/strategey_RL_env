@@ -1,7 +1,7 @@
 import math
 import random
 
-from map.MapSettings import VALUE_DEFAULT_OCEAN
+from map.map_settings import VALUE_DEFAULT_OCEAN
 
 
 class Map_Agent:

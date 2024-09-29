@@ -2,7 +2,7 @@ import random
 
 import pygame
 
-from map.MapSettings import AGENT_COLORS, PLAYER_COLOR
+from map.map_settings import AGENT_COLORS, PLAYER_COLOR
 
 
 class Agent:
