@@ -26,7 +26,7 @@ def capture_game_state_as_image():
 
 
 class MapEnvironment:
-    def __init__(self, env_settings, render_mode=False, screen=None,
+    def __init__(self, env_settings, numb_agents, render_mode=False, screen=None,
                  game_mode='automated'):
 
         self.game_mode = game_mode
@@ -35,7 +35,7 @@ class MapEnvironment:
         self.screen = screen
         self.map = Map()
         self.map.create_map(self.settings)
-        self.numb_agents = env_settings.get_setting('num_agents')
+        self.numb_agents = numb_agents
         self.agents = [Agent(i, self.game_mode) for i in range(self.numb_agents)]
 
         for agent in self.agents:
@@ -135,3 +135,7 @@ class MapEnvironment:
             pygame.quit()
         else:
             pygame.quit()
+
+def capture_game_state_as_image():
+    screen_capture = pygame.display.get_surface()
+    return np.transpose(pygame.surfarray.array3d(screen_capture), axes=[1, 0, 2])
