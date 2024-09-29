@@ -1,10 +1,134 @@
 {
     "map_width": 1000,
     "map_height": 1000,
-    "tiles" : 10,
-    "map_agents": 0,
-    "map_agents_water": 10,
-    "num_agents": 1,
-    "agent_initial_budget": 100,
-    "render_game": true
+    "tiles" : 100,
+    "water_budget_per_agent": 0.0001,
+    "mountain_budget_per_agent": 0.1,
+    "dessert_budget_per_agent": 0.1,
+    "numb_rivers": 0,
+    "resource_density": 0.1,
+    "biomes": [
+        {
+            "name": "Tundra"
+        },
+        {
+            "name": "Boreal Forest"
+        },
+        {
+            "name": "Temperate Rainforest"
+        },
+        {
+            "name": "Tropical Rainforest"
+        },
+        {
+            "name": "Temperate forest"
+        },
+        {
+            "name": "woodland/ Shrubland"
+        },
+        {
+            "name": "Temperate grassland/ cold dessert"
+        },
+        {
+            "name": "subtropical desert"
+        },
+        {
+            "name": "tropical forest/ savanna"
+        }
+    ],
+    "land_resources": [
+        {
+            "name": "fresh water"
+        },
+        {
+            "name": "wood"
+        },
+        {
+            "name": "iron"
+
+        },
+        {
+            "name": "gold"
+        },
+        {
+            "name": "coal"
+        },
+        {
+            "name": "oil"
+        },
+        {
+            "name": "wheat"
+        }
+    ],
+    "sea_resources": [
+        {
+            "name": "fish"
+        },
+        {
+            "name": "oil"
+        }
+    ],
+    "height_values": [
+        {
+            "name": "ocean",
+            "value": -1
+        },
+        {
+            "name": "coast",
+            "value": 0
+        },
+        {
+            "name": "river/ lake",
+            "value": 1
+        },
+        {
+            "name": "lowland",
+            "value": 2
+        },
+        {
+            "name": "hill",
+            "value": 3
+        },
+        {
+            "name": "mountain",
+            "value": 4
+        }
+    ],
+    "agent_initial_budget": 1000,
+    "agent_initial_budget_distribution": "equal",
+    "actions": [
+        {
+            "name": "none",
+            "cost": 0,
+            "reward": 0,
+            "number_action_properties": 0},
+        {
+            "name": "move",
+            "cost": 1,
+            "reward": 0,
+            "number_action_properties": 1
+        },
+        {
+            "name": "claim",
+            "cost": 2,
+            "reward": 10,
+            "number_action_properties": 2
+        },
+        {
+            "name": "build",
+            "cost": 5,
+            "reward": 20,
+            "number_action_properties": 3
+        }
+    ],
+    "buildings": [
+        {
+            "name": "building1",
+            "cost": 1
+        },
+        {
+            "name": "builiding2",
+            "cost": 2
+        }
+    ]
 }
