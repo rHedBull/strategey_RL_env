@@ -4,7 +4,7 @@ from datetime import datetime
 import tensorflow as tf
 import pygame
 
-from RL_env.environment import capture_game_state_as_image
+from rl_env.environment import capture_game_state_as_image
 from test_env.Agent import Agent
 from test_env.Player import Player
 

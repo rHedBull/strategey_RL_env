@@ -7,7 +7,7 @@ from Map.MapAgent import Map_Agent
 from Map.MapSettings import VALUE_DEFAULT_OCEAN, VALUE_DEFAULT_MARSH, VALUE_DEFAULT_MOUNTAIN, \
     VALUE_DEFAULT_DESSERT, VALUE_DEFAULT_RIVER
 from Map.MapSquare import Map_Square
-from RL_env.Settings import Settings
+from rl_env.Settings import Settings
 
 
 class Map:

@@ -1,8 +1,8 @@
-from RL_env.environment import MapEnvironment
+from rl_env.environment import MapEnvironment
 
 import pygame
 
-from RL_env.Settings import Settings
+from rl_env.Settings import Settings
 from test_env.Run import Run
 
 

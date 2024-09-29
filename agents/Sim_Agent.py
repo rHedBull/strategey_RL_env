@@ -2,7 +2,7 @@ import random
 import pygame
 
 from Map.MapSettings import AGENT_COLORS, PLAYER_COLOR
-from RL_env.Settings import Settings
+from rl_env.Settings import Settings
 
 
 class Agent:
