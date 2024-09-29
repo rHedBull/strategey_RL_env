@@ -199,9 +199,12 @@ class Map:
             # TODO ad river water adjacent type
 
     def let_map_agent_run(self, land_type_percentage, tiles, LAND_TYPE_VALUE):
-        total_tile_budget = tiles * (land_type_percentage / 100)
-        numb_agents = 10
-        tile_budget_per_agent = total_tile_budget / numb_agents
+        if land_type_percentage < 0:
+            return
+
+        total_tile_budget = tiles * land_type_percentage
+        numb_agents = int(min(10, (tiles * 0.01)+1))
+        tile_budget_per_agent = int((total_tile_budget / numb_agents))
 
         if (numb_agents * tile_budget_per_agent) > 0:
             agents = [
