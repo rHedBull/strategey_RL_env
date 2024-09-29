@@ -1,8 +1,12 @@
 .idea
 
+**/__pycache__/**
+
 **/test_env/save_files/**
 /test_env/logs/
 /test_env/saveFiles/
+
+logs/*
 
 /docs/
 config-file
