@@ -1,5 +1,5 @@
 import pygame
-from Map.MapSettings import *
+from map.MapSettings import *
 
 
 # TODO: zooming, moving?

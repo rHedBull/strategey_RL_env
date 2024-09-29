@@ -3,10 +3,10 @@ import random
 
 import numpy as np
 
-from Map.MapAgent import Map_Agent
-from Map.MapSettings import VALUE_DEFAULT_OCEAN, VALUE_DEFAULT_MARSH, VALUE_DEFAULT_MOUNTAIN, \
+from map.MapAgent import Map_Agent
+from map.MapSettings import VALUE_DEFAULT_OCEAN, VALUE_DEFAULT_MARSH, VALUE_DEFAULT_MOUNTAIN, \
     VALUE_DEFAULT_DESSERT, VALUE_DEFAULT_RIVER
-from Map.MapSquare import Map_Square
+from map.MapSquare import Map_Square
 
 
 class Map:

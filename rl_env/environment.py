@@ -1,7 +1,7 @@
 import pygame
 import numpy as np
 
-from Map.Sim_Map import Map
+from map.Sim_Map import Map
 from rl_env.actions import ActionManager
 from agents.Sim_Agent import Agent
 

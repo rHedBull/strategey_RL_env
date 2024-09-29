@@ -1,7 +1,7 @@
 import random
 import math
 
-from Map.MapSettings import *
+from map.MapSettings import *
 
 
 class Map_Agent:

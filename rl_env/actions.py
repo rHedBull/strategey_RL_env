@@ -1,4 +1,4 @@
-from Map.MapSettings import OWNER_DEFAULT_TILE
+from map.MapSettings import OWNER_DEFAULT_TILE
 
 buildings = [[],['improvement-1', 100, 5]]
 
