@@ -1,13 +1,13 @@
-import pygame
 import numpy as np
+import pygame
 
+from agents.Sim_Agent import Agent
 from map.Sim_Map import Map
 from rl_env.actions import ActionManager
-from agents.Sim_Agent import Agent
 
 
 def check_done(agent):
-    if agent.state == 'Done':
+    if agent.state == "Done":
         return True
     else:
         return False
@@ -26,9 +26,14 @@ def capture_game_state_as_image():
 
 
 class MapEnvironment:
-    def __init__(self, env_settings, numb_agents, render_mode=False, screen=None,
-                 game_mode='automated'):
-
+    def __init__(
+        self,
+        env_settings,
+        numb_agents,
+        render_mode=False,
+        screen=None,
+        game_mode="automated",
+    ):
         self.game_mode = game_mode
         self.settings = env_settings
         self.render_mode = render_mode
@@ -39,19 +44,19 @@ class MapEnvironment:
         self.agents = [Agent(i, self.game_mode) for i in range(self.numb_agents)]
 
         for agent in self.agents:
-            agent.create_agent(self.settings, self.map.max_x_index, self.map.max_y_index)
+            agent.create_agent(
+                self.settings, self.map.max_x_index, self.map.max_y_index
+            )
 
         self.action_manager = ActionManager(self, env_settings)
         self.reset()
 
     def reset(self):
-
         self.map.reset()
         for agent in self.agents:
             agent.reset(self.settings)
 
     def step(self, actions, action_properties=None):
-
         rewards = []
         dones = []
 
@@ -80,7 +85,6 @@ class MapEnvironment:
         return self.get_env_state(), rewards, dones, all_done
 
     def render(self):
-
         if not self.render_mode:
             return
 
@@ -90,7 +94,6 @@ class MapEnvironment:
         pygame.display.flip()
 
     def get_env_state(self):
-
         map_info = self.map.get_observation_of_map_state()
 
         agent_info = np.zeros((len(self.agents), 3))
@@ -102,7 +105,6 @@ class MapEnvironment:
         return env_info
 
     def get_possible_actions(self, agent_id):
-
         possible_actions = []
         agent = self.agents[agent_id]
         possible_actions.append(agent.get_possible_actions())
@@ -135,7 +137,3 @@ class MapEnvironment:
             pygame.quit()
         else:
             pygame.quit()
-
-def capture_game_state_as_image():
-    screen_capture = pygame.display.get_surface()
-    return np.transpose(pygame.surfarray.array3d(screen_capture), axes=[1, 0, 2])
