@@ -1,8 +1,8 @@
 import uuid
 from datetime import datetime
 
-import tensorflow as tf
 import pygame
+import tensorflow as tf
 
 from rl_env.environment import capture_game_state_as_image
 from test_env.Agent import Agent

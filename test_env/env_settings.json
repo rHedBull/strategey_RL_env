@@ -2,9 +2,9 @@
     "map_width": 1000,
     "map_height": 1000,
     "tiles" : 100,
-    "water_budget_per_agent": 30,
-    "mountain_budget_per_agent": 10,
-    "dessert_budget_per_agent": 10,
+    "water_budget_per_agent": 0.0001,
+    "mountain_budget_per_agent": 0.1,
+    "dessert_budget_per_agent": 0.1,
     "numb_rivers": 0,
     "resource_density": 0.1,
     "biomes": [

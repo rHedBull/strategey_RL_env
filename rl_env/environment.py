@@ -68,7 +68,9 @@ class MapEnvironment:
         for agent_index in agent_indices:
             action = actions[agent_index]
             agent = self.agents[agent_index]
-            action_property = action_properties[agent_index]
+            action_property = action_properties[
+                agent_index
+            ]  # probably still some issue with the property not adapting to map size
 
             self.action_manager.apply_action(action, agent, action_property)
             reward = calculate_reward(agent)
