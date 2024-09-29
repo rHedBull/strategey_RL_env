@@ -1,14 +1,15 @@
 import pygame
-from Map.MapSettings import *
 
+from map.map_settings import (COLOR_DEFAULT_BORDER, COLOR_DEFAULT_LAND, LAND,
+                              OWNER_DEFAULT_TILE, VALUE_DEFAULT_LAND)
 
 # TODO: zooming, moving?
+
 
 def calculate_whitaker_biome(precipitation, temperature):
     if temperature <= 0:
         return 0  # Tundra
     elif temperature < 0:
-
         if precipitation < 25:
             return 6  # cold dessert
         elif precipitation < 50:
@@ -16,7 +17,6 @@ def calculate_whitaker_biome(precipitation, temperature):
         else:
             return 1  # boreal forest
     elif temperature < 20:
-
         if precipitation < 25:
             return 6  # cold dessert
         elif precipitation < 100:
@@ -26,7 +26,6 @@ def calculate_whitaker_biome(precipitation, temperature):
         else:
             return 2  # temperate rainforest
     else:
-
         if precipitation < 75:
             return 7  # subtropical desert
         elif precipitation < 225:
@@ -55,15 +54,15 @@ class Map_Square:
 
         # land properties
         self.height = 0  # height as indicator for water, or ocean tiles
-        self.precepitation = 0      # for biomes
-        self.temperature = 0        # for biomes
-        self.biome = 0              # for biomes
+        self.precepitation = 0  # for biomes
+        self.temperature = 0  # for biomes
+        self.biome = 0  # for biomes
         self.resources = []
         self.land_type = self.calculate_land_money_value()
 
         # owner specific
         self.owner_value = OWNER_DEFAULT_TILE
-        #self.buildings = []
+        # self.buildings = []
 
         self.land_money_value = land_value
 
@@ -138,21 +137,48 @@ class Map_Square:
         :param new_square_size:
         :return:
         """
-        pygame.draw.rect(screen, self.fill_color,
-                         (self.x * self.square_size, self.y * self.square_size, self.square_size, self.square_size))
+        pygame.draw.rect(
+            screen,
+            self.fill_color,
+            (
+                self.x * self.square_size,
+                self.y * self.square_size,
+                self.square_size,
+                self.square_size,
+            ),
+        )
 
         if self.border_color != COLOR_DEFAULT_BORDER:
-            pygame.draw.rect(screen, self.border_color,
-                             (self.x * self.square_size, self.y * self.square_size, self.square_size, self.square_size),
-                             1)
+            pygame.draw.rect(
+                screen,
+                self.border_color,
+                (
+                    self.x * self.square_size,
+                    self.y * self.square_size,
+                    self.square_size,
+                    self.square_size,
+                ),
+                1,
+            )
 
     def get_full_info(self):
-
-        return [self.height, self.biome, self.resources, self.land_type, self.owner_value, self.buildings]
+        return [
+            self.height,
+            self.biome,
+            self.resources,
+            self.land_type,
+            self.owner_value,
+            self.buildings,
+        ]
 
     def get_observation_state(self):
-        return [self.height, self.biome, self.resources, self.land_type,
-                self.owner_value]  # this is what other agents can see
+        return [
+            self.height,
+            self.biome,
+            self.resources,
+            self.land_type,
+            self.owner_value,
+        ]  # this is what other agents can see
 
     def add_building(self, building_id):
         self.buildings.append(building_id)
@@ -162,8 +188,8 @@ class Map_Square:
         Calculate the value of the land
         :return:
         """
-        #base_value = self.land_type
+        # base_value = self.land_type
         return 10
-        #for (building) in self.buildings:
+        # for (building) in self.buildings:
         #    base_value += self.buildings[building][2]
         #    # TODO test this
