@@ -1,6 +1,6 @@
-from Map.MapSettings import OWNER_DEFAULT_TILE
+from map.map_settings import OWNER_DEFAULT_TILE
 
-buildings = [[],['improvement-1', 100, 5]]
+buildings = [[], ["improvement-1", 100, 5]]
 
 # TODO : implement graphical building visualization
 
@@ -9,26 +9,25 @@ class ActionManager:
     def __init__(self, env, env_settings):
         self.env = env
         self.env_settings = env_settings
-        self.actions_definition = self.env_settings.get_setting('actions')
+        self.actions_definition = self.env_settings.get_setting("actions")
 
     def apply_action(self, action_index, agent, action_properties):
-
-        if action_index <= 0 or agent.state == 'Done':
+        if action_index <= 0 or agent.state == "Done":
             return
 
-        action_name = self.actions_definition[action_index]['name']
+        action_name = self.actions_definition[action_index]["name"]
 
-        if action_name == 'move':
+        if action_name == "move":
             self.move_agent(agent, action_index, action_properties)
-        elif action_name == 'claim':
+        elif action_name == "claim":
             self.claim_tile(agent, action_index, action_properties)
-        elif action_name == 'build':
+        elif action_name == "build":
             self.add_building(agent, action_index, action_properties)
         else:
             return
 
     def claim_tile(self, agent, action_index, action_properties):
-        base_claim_cost = self.actions_definition[action_index]['cost']
+        base_claim_cost = self.actions_definition[action_index]["cost"]
         x = action_properties[0]
         y = action_properties[1]
 
@@ -39,9 +38,14 @@ class ActionManager:
         agent.claimed_tiles.append(self.env.map.get_tile(x, y))
 
     def check_claim_cost(self, agent, base_claim_cost, x, y):
-
         # check if properties correctly defined
-        if x < 0 or y < 0 or x > self.env.map.max_x_index or y > self.env.map.max_y_index or None in [x, y]:
+        if (
+            x < 0
+            or y < 0
+            or x > self.env.map.max_x_index
+            or y > self.env.map.max_y_index
+            or None in [x, y]
+        ):
             return False
 
         # check if the tile is already claimed by someone
@@ -58,14 +62,16 @@ class ActionManager:
     def add_building(self, agent, action_index, action_properties):
         x = action_properties[0]
         y = action_properties[1]
-        base_construction_cost = self.actions_definition[action_index]['cost']
+        base_construction_cost = self.actions_definition[action_index]["cost"]
 
         building_id = action_properties[2]
 
-        if not self.check_building_cost(agent, base_construction_cost, building_id, x, y):
+        if not self.check_building_cost(
+            agent, base_construction_cost, building_id, x, y
+        ):
             return
 
-        self.env.map.add_building(building_id, x, y)
+        # self.env.map.add_building(building_id, x, y)
 
     def check_building_cost(self, agent, base_construction_cost, building_id, x, y):
         specific_building_cost = buildings[building_id][1]
@@ -92,10 +98,9 @@ class ActionManager:
         return True
 
     def move_agent(self, agent, action_index, action_properties):
-
         direction = action_properties[0]
 
-        move_cost = self.actions_definition[action_index]['cost']
+        move_cost = self.actions_definition[action_index]["cost"]
 
         if not self.check_move_cost(agent, move_cost):
             return
@@ -116,7 +121,6 @@ class ActionManager:
         agent.y = max(0, min(agent.y, self.env.map.max_y_index - 1))
 
     def check_move_cost(self, agent, basic_move_cost):
-
         if agent.money < basic_move_cost:
             return False
 

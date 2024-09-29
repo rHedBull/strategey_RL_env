@@ -1,7 +1,7 @@
-import random
 import math
+import random
 
-from Map.MapSettings import *
+from map.map_settings import VALUE_DEFAULT_OCEAN
 
 
 class Map_Agent:
@@ -16,7 +16,9 @@ class Map_Agent:
         # Random walk step
         step_x = random.choice([-1, 0, 1])
         step_y = random.choice([-1, 0, 1])
-        if random.choice([True, False]):  # Randomly decide to move horizontally or vertically
+        if random.choice(
+            [True, False]
+        ):  # Randomly decide to move horizontally or vertically
             self.x += step_x
         else:
             self.y += step_y
@@ -34,19 +36,24 @@ class Map_Agent:
                 self.tile_budget -= 1
 
     def river_walk(self, world_map, tiles_in_map, LAND_TYPE_VALUE):
-
-
         # Initialize with a random direction to start
         self.last_move_x = random.choice([-1, 1])
-        self.last_move_y = 0  # Start with horizontal movement, could also randomize this
+        self.last_move_y = (
+            0  # Start with horizontal movement, could also randomize this
+        )
 
         while self.tile_budget > 0:
             # Introduce a slight chance to more drastically change direction
-            if random.random() < 0.2:  # 20% chance to consider changing direction more significantly
+            if (
+                random.random() < 0.2
+            ):  # 20% chance to consider changing direction more significantly
                 step_x_choices = [-1, 0, 1]
                 step_y_choices = [-1, 0, 1]
             else:
-                step_x_choices = [0, self.last_move_x]  # Continue or stay, avoid direct reversal
+                step_x_choices = [
+                    0,
+                    self.last_move_x,
+                ]  # Continue or stay, avoid direct reversal
                 step_y_choices = [0, self.last_move_y]  # Same for y direction
 
             # Randomly decide to prioritize horizontal or vertical movement
@@ -75,8 +82,14 @@ class Map_Agent:
             # Create water if not already water
             current_square = world_map.squares[self.y][self.x]
 
-            if current_square.get_land_type() == VALUE_DEFAULT_OCEAN or self.x == 0 or self.x == int(math.sqrt(tiles_in_map)) - 1 or self.y == 0 or self.y == int(math.sqrt(tiles_in_map)) - 1:
-                return # Stop the river if it reaches the ocean
+            if (
+                current_square.get_land_type() == VALUE_DEFAULT_OCEAN
+                or self.x == 0
+                or self.x == int(math.sqrt(tiles_in_map)) - 1
+                or self.y == 0
+                or self.y == int(math.sqrt(tiles_in_map)) - 1
+            ):
+                return  # Stop the river if it reaches the ocean
 
             elif current_square.get_land_type() != LAND_TYPE_VALUE:
                 current_square.set_land_type(LAND_TYPE_VALUE)

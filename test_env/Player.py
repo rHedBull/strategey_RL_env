@@ -3,14 +3,14 @@ import pygame
 
 
 class Player:
-
-    def __init__(self, ):
+    def __init__(
+        self,
+    ):
         self.env = None
         self.action = None
-        self.state = 'Running'
+        self.state = "Running"
 
     def get_action(self, game, env):
-
         # wait for event
         keys = None
         waiting_for_event = True
@@ -28,7 +28,7 @@ class Player:
 
         if keys[pygame.K_w] or keys[pygame.K_UP]:
             action = 1
-            action_properties = [2] #'Move Up'
+            action_properties = [2]  # 'Move Up'
         elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
             action = 1
             action_properties = [3]  # 'Move down'
@@ -39,15 +39,22 @@ class Player:
             action = 1
             action_properties = [1]  # 'Move Right'
         elif keys[pygame.K_c]:
-            action = 2 #'Claim'
+            action = 2  # 'Claim'
             x_max = env.map.max_x_index
             y_max = env.map.max_y_index
-            action_properties = action_properties = [np.random.randint(0, x_max), np.random.randint(0, y_max)] # TODO change this to map bounds
+            action_properties = action_properties = [
+                np.random.randint(0, x_max),
+                np.random.randint(0, y_max),
+            ]  # TODO change this to map bounds
         elif keys[pygame.K_b]:
-            action = 3 #build sthb
+            action = 3  # build sthb
             x_max = env.map.max_x_index
             y_max = env.map.max_y_index
-            action_properties = [np.random.randint(0, x_max), np.random.randint(0, y_max), 1] # TODO to make this editable
+            action_properties = [
+                np.random.randint(0, x_max),
+                np.random.randint(0, y_max),
+                1,
+            ]  # TODO to make this editable
         return action, action_properties
 
     def step(self):
