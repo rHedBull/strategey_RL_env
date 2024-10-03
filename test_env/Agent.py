@@ -10,12 +10,24 @@ class Agent:
 
     def get_action(self, env_info, possible_actions):
         # action = np.random.choice(possible_actions)
+
+        # action dictionary mask
+        selected_action = {
+            "move":None,
+            "claim":{
+                "x":None,
+                "y":None
+            },
+        }
+        # expand default action dictionary mask
         self.action = 2
-        x_max = env_info[0].shape[0]
-        y_max = env_info[0].shape[1]
-        action_properties = [
-            np.random.randint(0, x_max),
-            np.random.randint(0, y_max),
-        ]  # TODO change this to map bounds
+
+        x_max = 99#env_info[0].shape[0]
+        y_max = 99#env_info[0].shape[1] # TODO change this to map bounds
+
+        selected_action["claim"]["x"] = np.random.randint(0, x_max)
+        selected_action["claim"]["y"] = np.random.randint(0, y_max)
+
+        # TODO: vectorize and normalize the env_info here!!
         # TODO connect to Q-table or other RL algorithm
-        return self.action, action_properties
+        return selected_action

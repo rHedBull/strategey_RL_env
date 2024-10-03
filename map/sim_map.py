@@ -139,7 +139,7 @@ class Map:
                     ):  # check water down
                         square.set_land_type(VALUE_DEFAULT_MARSH)
 
-    def get_observation_of_map_state(self):
+    def get_observation(self):
         """define here what infor is visible to all agents
         Assuming full observability of map for now
         """

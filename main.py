@@ -37,7 +37,7 @@ def main():
     # check_settings(hyperparameters, env_settings, run_settings)
     numb_agents = run_settings.get_setting("num_agents")
     screen = setup_screen(True, 1000)
-    env = MapEnvironment(env_settings, numb_agents, True, screen, "player")
+    env = MapEnvironment(env_settings, numb_agents, screen, False, "player")
     run = Run(run_settings, hyperparameters, env)
     run.run()
 

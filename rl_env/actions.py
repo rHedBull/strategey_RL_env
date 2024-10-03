@@ -1,3 +1,9 @@
+import math
+from typing import List, Any, Dict, Tuple
+
+import numpy as np
+from pettingzoo.classic.go.go_base import Position
+
 from map.map_settings import OWNER_DEFAULT_TILE
 
 buildings = [[], ["improvement-1", 100, 5]]
@@ -6,30 +12,148 @@ buildings = [[], ["improvement-1", 100, 5]]
 
 
 class ActionManager:
+    """
+        Manages the application of movement actions within the environment,
+        detecting conflicts when multiple agents attempt to move to the same tile
+        and randomly resolving those conflicts.
+    """
     def __init__(self, env, env_settings):
         self.env = env
         self.env_settings = env_settings
         self.actions_definition = self.env_settings.get_setting("actions")
 
-    def apply_action(self, action_index, agent, action_properties):
-        if action_index <= 0 or agent.state == "Done":
-            return
+    def apply_actions(self, actions: Any, agents: List['Agent']) -> Dict[int, Dict[str, Any]]:
+        """
+                Processes the movement actions of all agents, resolves conflicts,
+                and returns the outcomes for each agent.
 
-        action_name = self.actions_definition[action_index]["name"]
+                Args:
+                    actions (List[Dict[str, Any]]): List of action dictionaries from each agent.
+                    agents (List[Agent]): List of agent instances.
 
-        if action_name == "move":
-            self.move_agent(agent, action_index, action_properties)
-        elif action_name == "claim":
-            self.claim_tile(agent, action_index, action_properties)
-        elif action_name == "build":
-            self.add_building(agent, action_index, action_properties)
-        else:
-            return
+                Returns:
+                    Dict[int, Dict[str, Any]]: A dictionary mapping agent IDs to their action outcomes.
+        """
 
-    def claim_tile(self, agent, action_index, action_properties):
-        base_claim_cost = self.actions_definition[action_index]["cost"]
-        x = action_properties[0]
-        y = action_properties[1]
+        proposed_actions = np.zeros(len(agents), dtype=object)
+        rewards = np.zeros(len(agents), dtype=float)
+        dones = np.zeros(len(agents), dtype=bool)
+
+        for agent, selected_action in zip(agents, actions):
+
+            move_direction = selected_action.get("move", None)
+
+            if  move_direction is not None:
+                new_position = self._calculate_new_position(agent.position, move_direction)
+                if self._is_valid_position(new_position): # TODO: also check for cost
+                    proposed_actions[agent.id] = selected_action # simplify position passing here
+                    rewards[agent.id] = 1 # TODO: adapt this
+                else:
+                    # Invalid move (out of bounds), action denied
+                    proposed_actions[agent.id] = None
+                    rewards[agent.id] = -1
+
+            #elif selected_action["claim"]["x"] is not None and selected_action["claim"]["y"] is not None:
+
+                # propose
+                # outcome = self.check_claim_cost(agent, self.actions_definition.get("claim", None).get("cost", 0), selected_action["claim"]["x"], selected_action["claim"]["y"])
+                # if not outcome:
+                #     self.claim_tile(agent, selected_action["claim"]["x"], selected_action["claim"]["y"])
+            else:
+                # No valid action
+                # Invalid move (out of bounds), action denied
+                proposed_actions[agent.id] = None
+                rewards[agent.id] = -1
+
+            # Detect conflicts: positions with more than one agent moving into them
+            # position_to_agents = {}
+            # for agent, position in proposed_moves.items():
+            #     position_to_agents.setdefault(position, []).append(agent)
+            #
+            # # Resolve conflicts
+            # for position, agents_moving in position_to_agents.items():
+            #     if len(agents_moving) == 1:
+            #         # Only one agent moving to this position
+            #         agent = agents_moving[0]
+            #         action_outcomes[agent.id] = {
+            #             'success': True,
+            #             'reason': 'Move successful',
+            #             'reward': self.env_settings.get('move_reward', 0),
+            #             'new_position': position
+            #         }
+            #     else:
+            #         # Conflict detected, randomly select one agent to move
+            #         chosen_agent = np.random.choice(agents_moving)
+            #         for agent in agents_moving:
+            #             if agent == chosen_agent:
+            #                 # Move allowed
+            #                 action_outcomes[agent.id] = {
+            #                     'success': True,
+            #                     'reason': 'Move successful (conflict resolved)',
+            #                     'reward': self.env_settings.get('move_reward', 0),
+            #                     'new_position': position
+            #                 }
+            #             else:
+            #                 # Move denied due to conflict
+            #                 action_outcomes[agent.id] = {
+            #                     'success': False,
+            #                     'reason': 'Move denied due to conflict',
+            #                     'reward': self.env_settings.get('conflict_penalty', -1),
+            #                     'new_position': agent.position
+            #                 }
+
+            # in theory do sth global to update all of the action_outcomes
+        # TODO add some conflict hanlding here or just increased tile purchase cost
+        # apply the actions
+        for outcome, agent  in zip(proposed_actions, agents): # Fix the way the criteria for the actions are tested and the action is later applied
+            if outcome:
+                done = agent.apply_action(outcome)
+                dones [agent.id] = done
+
+        # TODO : check dones and rewards again after all actions are applied
+
+        return rewards, dones
+
+    def _calculate_new_position(self, current_position: Tuple[int, int], move_direction: int) -> Tuple[int, int]:
+        """
+        Calculates the new position based on the current position and move direction.
+
+        Args:
+            current_position (Tuple[int, int]): The agent's current position.
+            move_direction (int): Direction to move (0: No move, 1: Up, 2: Down, 3: Left, 4: Right).
+
+        Returns:
+            Tuple[int, int]: The new position after the move.
+        """
+        x, y = current_position
+        if move_direction == 1:  # Up
+            y -= 1
+        elif move_direction == 2:  # Down
+            y += 1
+        elif move_direction == 3:  # Left
+            x -= 1
+        elif move_direction == 4:  # Right
+            x += 1
+        # No move if move_direction is 0 or unrecognized
+        return (x, y)
+
+    def _is_valid_position(self, position: Tuple[int, int]) -> bool:
+        """
+        Checks if the new position is within the environment bounds.
+
+        Args:
+            position (Tuple[int, int]): The position to check.
+
+        Returns:
+            bool: True if the position is valid, False otherwise.
+        """
+        x, y = position
+        max_x = self.env.map.max_x_index
+        max_y = self.env.map.max_y_index # assuming a square map
+        return 0 <= x < max_x and 0 <= y < max_y
+
+    def claim_tile(self, agent, x, y):
+        base_claim_cost = self.actions_definition.get("claim", None).get("cost", 0)
 
         if not self.check_claim_cost(agent, base_claim_cost, x, y):
             return
@@ -39,6 +163,7 @@ class ActionManager:
 
     def check_claim_cost(self, agent, base_claim_cost, x, y):
         # check if properties correctly defined
+        # check if move generally possible, ignoring cheks for moves of other agents in this round
         if (
             x < 0
             or y < 0
@@ -46,18 +171,34 @@ class ActionManager:
             or y > self.env.map.max_y_index
             or None in [x, y]
         ):
-            return False
+            return  {
+                        'success': False,
+                        'reason': 'Invalid move (out of bounds)',
+                        'reward': self.env_settings.get('invalid_action_penalty', -1),
+                    }
 
         # check if the tile is already claimed by someone
         if self.env.map.squares[x][y].get_owner() != OWNER_DEFAULT_TILE:
-            return False
-        # TODO add some conflict hanlding here or just increased tile purchase cost
+            return {
+                        'success': False,
+                        'reason': 'Invalid move conflict with other Agent',
+                        'reward': self.env_settings.get('invalid_action_penalty', -1),
+                    }
+
 
         # check if enough money to claim tile
         if agent.money < base_claim_cost:
-            return True
+            return {
+                        'success': False,
+                        'reason': 'Not enough money to claim tile',
+                        'reward': self.env_settings.get('invalid_action_penalty', -1),
+                    }
         # all checks passed
-        return True
+        return {
+            'success': True,
+            'reason': '',
+            'reward': 0, # ??
+        }
 
     def add_building(self, agent, action_index, action_properties):
         x = action_properties[0]
@@ -96,29 +237,6 @@ class ActionManager:
 
         # all checks passed
         return True
-
-    def move_agent(self, agent, action_index, action_properties):
-        direction = action_properties[0]
-
-        move_cost = self.actions_definition[action_index]["cost"]
-
-        if not self.check_move_cost(agent, move_cost):
-            return
-
-        if direction == 0:  # left
-            agent.x -= 1
-
-        elif direction == 1:  # right
-            agent.x += 1
-
-        elif direction == 2:  # up
-            agent.y -= 1
-        elif direction == 3:  # down
-            agent.y += 1
-
-        agent.money -= move_cost
-        agent.x = max(0, min(agent.x, self.env.map.max_x_index - 1))
-        agent.y = max(0, min(agent.y, self.env.map.max_y_index - 1))
 
     def check_move_cost(self, agent, basic_move_cost):
         if agent.money < basic_move_cost:

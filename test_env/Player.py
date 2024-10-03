@@ -11,6 +11,16 @@ class Player:
         self.state = "Running"
 
     def get_action(self, game, env):
+
+        # action dictionary mask
+        selected_action = {
+            "move": None,
+            "claim": {
+                "x": None,
+                "y": None
+            },
+        }
+
         # wait for event
         keys = None
         waiting_for_event = True
@@ -28,24 +38,22 @@ class Player:
 
         if keys[pygame.K_w] or keys[pygame.K_UP]:
             action = 1
-            action_properties = [2]  # 'Move Up'
+            selected_action["move"] = 1 # 'Move Up'
         elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
             action = 1
-            action_properties = [3]  # 'Move down'
+            selected_action["move"] = 2 # 'Move down'
         elif keys[pygame.K_a] or keys[pygame.K_LEFT]:
             action = 1
-            action_properties = [0]  # 'Move Left'
+            selected_action["move"] = 3 # 'Move Left'
         elif keys[pygame.K_d] or keys[pygame.K_RIGHT]:
             action = 1
-            action_properties = [1]  # 'Move Right'
+            selected_action["move"] = 4 # 'Move Right'
         elif keys[pygame.K_c]:
-            action = 2  # 'Claim'
+
             x_max = env.map.max_x_index
             y_max = env.map.max_y_index
-            action_properties = action_properties = [
-                np.random.randint(0, x_max),
-                np.random.randint(0, y_max),
-            ]  # TODO change this to map bounds
+            selected_action["claim"]["x"] = np.random.randint(0, x_max)
+            selected_action["claim"]["y"] = np.random.randint(0, y_max) # TODO change this to map bounds
         elif keys[pygame.K_b]:
             action = 3  # build sthb
             x_max = env.map.max_x_index
@@ -55,7 +63,8 @@ class Player:
                 np.random.randint(0, y_max),
                 1,
             ]  # TODO to make this editable
-        return action, action_properties
+
+        return selected_action
 
     def step(self):
         self.env.step(self.action)

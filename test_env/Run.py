@@ -43,40 +43,41 @@ class Run:
 
             # get actions from agents
             agent_actions = []
-            all_agents_action_properties = []
-            agent_rewards = []
 
             for agent in self.agents:
-                action_properties = []
                 if agent.state == "Done":
                     agent_actions.append(-1)
                     continue
                 # if agent is a player, get action from keyboard
                 if isinstance(agent, Player):
-                    action, action_properties = agent.get_action(pygame, self.env)
+                    action = agent.get_action(pygame, self.env)
                     print("Player chose action {}".format(action))
                 else:
-                    possible_actions = self.env.get_possible_actions(agent.id)
-                    action, action_properties = agent.get_action(
+                    possible_actions = self.env.get_possible_actions(agent.id) # TODO is this important? should this be done?
+                    action = agent.get_action(
                         common_env_state, possible_actions
                     )
-                all_agents_action_properties.append(action_properties)
+
                 agent_actions.append(action)
 
             common_env_state, agent_rewards, dones, all_done = self.env.step(
-                agent_actions, all_agents_action_properties
+                agent_actions
             )
 
             self.update_agents(all_done, running_agents, dones)
             self.log_stats(agent_rewards, step, agent_actions)
+
+            self.check_if_all_done(dones)
             step += 1
+
+        self.close()
 
     def log_stats(self, reward, step, actions):
         if step % self.settings.get_setting("storing_round_interval") == 0:
             with self.summary_writer.as_default():
                 for i, _ in enumerate(self.agents):
                     tf.summary.scalar("reward_agent_{}".format(i), reward[i], step)
-                    tf.summary.scalar("action_agent_{}".format(i), actions[i], step)
+                    # tf.summary.scalar("action_agent_{}".format(i), actions[i], step) # TODO: reenable this
 
         if step % self.settings.get_setting("image_logging_round_interval") == 0:
             game_state_image = capture_game_state_as_image()
@@ -99,8 +100,8 @@ class Run:
         ]
 
         # check if the game is over
-        if all_done:
-            print("game done")
+        # if all_done:
+        #     print("game done")
 
     def setup_agents(self):
         if self.settings.get_setting("playable_game"):
@@ -112,3 +113,30 @@ class Run:
             for i in range(self.num_agents):
                 agent = Agent(i)
                 self.agents.append(agent)
+
+    def check_if_all_done(self, dones):
+        # check if all in dones are true
+
+        for i in dones:
+            if not i:
+                return False
+
+        self.close()
+        return True
+
+    def close(self):
+        print("Game Terminated")
+        if self.env.render_mode:
+            print("Press q to close the window")
+            # keep the window open until the user closes it manually
+            running = True
+            while running:
+                for event in pygame.event.get():
+                    if event.type == pygame.KEYDOWN:
+                        keys = pygame.key.get_pressed()
+                        if keys[pygame.K_q]:
+                            running = False
+
+            pygame.quit()
+        else:
+            pygame.quit()
