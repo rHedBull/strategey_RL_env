@@ -51,9 +51,7 @@ class ActionManager:
         x = self.env.map.max_x_index
         y = self.env.map.max_y_index
         # Define a structured array with the fields 'action' and 'agent_id'.
-        self.conflict_map = np.zeros(
-            (x, y), dtype=[("action", "O"), ("agent_id", "i4")]
-        )
+        self.conflict_map = self.conflict_map = [[[] for _ in range(y)] for _ in range(x)]
 
     def apply_actions(
         self, actions: Any, agents: List[Agent]
@@ -86,12 +84,10 @@ class ActionManager:
                         agent.id
                     ] = selected_action  # simplify position passing here
                     # add to map conflict map
-                    self.conflict_map[new_position[0], new_position[1]][
-                        "agent_id"
-                    ] = agent.id
-                    self.conflict_map[new_position[0], new_position[1]][
-                        "action"
-                    ] = selected_action
+                    self.conflict_map[new_position[0]][new_position[1]].append({
+                        'agent_id': agent.id,
+                        'action': selected_action
+                    })
 
                 else:
                     # Invalid move (out of bounds), action denied
@@ -101,10 +97,10 @@ class ActionManager:
                 if self.check_claim(agent, selected_action["claim"]):
                     proposed_actions[agent.id] = selected_action
                     claim_pos = selected_action["claim"]
-                    self.conflict_map[claim_pos[1], claim_pos[0]]["agent_id"] = agent.id
-                    self.conflict_map[claim_pos[1], claim_pos[0]][
-                        "action"
-                    ] = selected_action
+                    self.conflict_map[claim_pos[1]][claim_pos[0]].append({
+                        'agent_id': agent.id,
+                        'action': selected_action
+                    })
                 else:
                     proposed_actions[agent.id] = None
 
@@ -115,6 +111,7 @@ class ActionManager:
                 rewards[agent.id] = -1
 
         # TODO add some conflict hanlding here
+
 
         # apply the actions
         for determined_action, agent in zip(proposed_actions, agents):
