@@ -78,18 +78,16 @@ class ActionManager:
                     proposed_actions[
                         agent.id
                     ] = selected_action  # simplify position passing here
-                    rewards[agent.id] = 1  # TODO: adapt this
+
                 else:
                     # Invalid move (out of bounds), action denied
                     proposed_actions[agent.id] = None
-                    rewards[agent.id] = -1
 
             elif claim_happens:
                 if self.check_claim(agent, selected_action["claim"]):
                     proposed_actions[agent.id] = selected_action
                 else:
                     proposed_actions[agent.id] = None
-                    rewards[agent.id] = -1
 
             else:
                 # No valid action
@@ -99,18 +97,21 @@ class ActionManager:
 
         # TODO add some conflict hanlding here or just increased tile purchase cost
 
-        # TODO : make this prettier!!
         # apply the actions
         for determined_action, agent in zip(proposed_actions, agents):
             if determined_action:
                 move_direction = determined_action["move"].get("direction", None)
                 claim_happens = determined_action["claim"] is not None
 
+                reward = 0
                 if move_direction:
-                    self.move_agent(agent, determined_action["move"]["new_position"])
+                    reward = self.move_agent(
+                        agent, determined_action["move"]["new_position"]
+                    )
                 if claim_happens:
-                    self.claim_tile(agent, determined_action["claim"])
+                    reward = self.claim_tile(agent, determined_action["claim"])
 
+                rewards[agent.id] = reward
                 dones[agent.id] = False
 
         # TODO : check dones and rewards again after all actions are applied
@@ -130,17 +131,18 @@ class ActionManager:
         # all checks passed
         return True, new_position
 
-    def move_agent(self, agent: Agent, new_position: Tuple[int, int]) -> None:
+    def move_agent(self, agent: Agent, new_position: Tuple[int, int]) -> int:
         # Update position
         agent.position = new_position
         print(f"Agent {agent.id}: Move successful to position {agent.position}.")
+        return 1
 
     # claim a tile
 
     def check_claim(self, agent: Agent, position: Tuple[int, int]) -> bool:
         # check if move generally possible, ignoring checks for moves of other agents at this stage
 
-        #base_claim_cost = self.actions_definition.get("claim", None).get("cost", 0)
+        # base_claim_cost = self.actions_definition.get("claim", None).get("cost", 0)
 
         if not self.check_position_on_map(position):
             return False
@@ -163,9 +165,11 @@ class ActionManager:
         # all checks passed
         return True
 
-    def claim_tile(self, agent: Agent, pos: [int, int]) -> None:
+    def claim_tile(self, agent: Agent, pos: [int, int]) -> int:
         self.env.map.claim_tile(agent, pos)
         agent.claimed_tiles.append(self.env.map.get_tile(pos))
+
+        return 1
 
     # build a building
     def check_building(self, agent, base_construction_cost, building_id, x, y):

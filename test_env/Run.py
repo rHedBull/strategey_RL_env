@@ -64,7 +64,7 @@ class Run:
                 agent_actions
             )
 
-            self.update_agents(all_done, running_agents, dones)
+            self.update_agents(all_done, running_agents, dones, agent_rewards)
             self.log_stats(agent_rewards, step, agent_actions)
 
             self.check_if_all_done(dones)
@@ -86,14 +86,15 @@ class Run:
             with self.summary_writer.as_default():
                 tf.summary.image("Step: " + str(step), tensor_img, step)
 
-    def update_agents(self, all_done, running_agents, dones):
-        for i, done in zip(running_agents, dones):
+    def update_agents(self, all_done, running_agents, dones, rewards):
+        for i, done, reward in zip(running_agents, dones, rewards):
             if done:
                 if isinstance(self.agents[i], Player):
                     print("Player {} is done".format(i))
                 else:
                     print("Agent {} is done".format(i))
                 self.agents[i].state = "Done"
+            self.agents[i].update(reward)
 
         running_agents = [
             agent for agent, done in zip(running_agents, dones) if not done

@@ -8,6 +8,8 @@ class Agent:
         self.action = "Running"
         self.q_table = None
 
+        self.reward = 0
+
     def get_action(self, env_info, possible_actions):
         # action = np.random.choice(possible_actions)
 
@@ -31,3 +33,6 @@ class Agent:
         # TODO: vectorize and normalize the env_info here!!
         # TODO connect to Q-table or other RL algorithm
         return selected_action
+
+    def update(self, reward):
+        self.reward += reward

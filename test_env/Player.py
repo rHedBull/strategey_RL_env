@@ -9,12 +9,13 @@ class Player:
         self.env = None
         self.action = None
         self.state = "Running"
+        self.reward = 0
 
     def get_action(self, game, env):
         # action dictionary mask
         selected_action = {
-            "move": None,
-            "claim": {"x": None, "y": None},
+            "move": {"direction": None, "new_position": None},
+            "claim": None,  # position goes here
         }
 
         # wait for event
@@ -62,5 +63,5 @@ class Player:
 
         return selected_action
 
-    def step(self):
-        self.env.step(self.action)
+    def update(self, reward):
+        self.reward += reward
