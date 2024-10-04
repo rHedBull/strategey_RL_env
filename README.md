@@ -28,3 +28,11 @@ It must be executed manually!
 ```bash
 pre-commit run -a
 ```
+
+### TF logs
+clear TF logs
+run TF board
+
+```bash
+tensorboard --logdir logs
+```

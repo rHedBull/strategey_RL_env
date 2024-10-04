@@ -22,8 +22,8 @@ class Agent:
         # expand default action dictionary mask
         self.action = 2
 
-        x_max = 99#env_info[0].shape[0]
-        y_max = 99#env_info[0].shape[1] # TODO change this to map bounds
+        x_max = 9#env_info[0].shape[0]
+        y_max = 9#env_info[0].shape[1] # TODO change this to map bounds
 
         selected_action["claim"]["x"] = np.random.randint(0, x_max)
         selected_action["claim"]["y"] = np.random.randint(0, y_max)

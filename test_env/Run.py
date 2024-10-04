@@ -104,7 +104,7 @@ class Run:
         #     print("game done")
 
     def setup_agents(self):
-        if self.settings.get_setting("playable_game"):
+        if self.env.player:
             self.agents = [Player()]
             for i in range(self.num_agents - 1):
                 agent = Agent(i)
@@ -127,15 +127,18 @@ class Run:
     def close(self):
         print("Game Terminated")
         if self.env.render_mode:
-            print("Press q to close the window")
-            # keep the window open until the user closes it manually
-            running = True
-            while running:
-                for event in pygame.event.get():
-                    if event.type == pygame.KEYDOWN:
-                        keys = pygame.key.get_pressed()
-                        if keys[pygame.K_q]:
-                            running = False
+
+            if self.env.player:
+
+                print("Press q to close the window")
+                # keep the window open until the user closes it manually
+                running = True
+                while running:
+                    for event in pygame.event.get():
+                        if event.type == pygame.KEYDOWN:
+                            keys = pygame.key.get_pressed()
+                            if keys[pygame.K_q]:
+                                running = False
 
             pygame.quit()
         else:

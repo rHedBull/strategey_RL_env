@@ -1,9 +1,8 @@
-import math
 from typing import List, Any, Dict, Tuple
 
 import numpy as np
-from pettingzoo.classic.go.go_base import Position
 
+from agents.Sim_Agent import Agent
 from map.map_settings import OWNER_DEFAULT_TILE
 
 buildings = [[], ["improvement-1", 100, 5]]
@@ -22,7 +21,7 @@ class ActionManager:
         self.env_settings = env_settings
         self.actions_definition = self.env_settings.get_setting("actions")
 
-    def apply_actions(self, actions: Any, agents: List['Agent']) -> Dict[int, Dict[str, Any]]:
+    def apply_actions(self, actions: Any, agents: List[Agent]) -> Dict[int, Dict[str, Any]]:
         """
                 Processes the movement actions of all agents, resolves conflicts,
                 and returns the outcomes for each agent.
@@ -53,62 +52,31 @@ class ActionManager:
                     proposed_actions[agent.id] = None
                     rewards[agent.id] = -1
 
-            #elif selected_action["claim"]["x"] is not None and selected_action["claim"]["y"] is not None:
+            elif selected_action["claim"]["x"] is not None and selected_action["claim"]["y"] is not None:
 
-                # propose
-                # outcome = self.check_claim_cost(agent, self.actions_definition.get("claim", None).get("cost", 0), selected_action["claim"]["x"], selected_action["claim"]["y"])
-                # if not outcome:
-                #     self.claim_tile(agent, selected_action["claim"]["x"], selected_action["claim"]["y"])
+                # TODO: implement claim checking
+                proposed_actions[agent.id] = selected_action
+
             else:
                 # No valid action
                 # Invalid move (out of bounds), action denied
                 proposed_actions[agent.id] = None
                 rewards[agent.id] = -1
 
-            # Detect conflicts: positions with more than one agent moving into them
-            # position_to_agents = {}
-            # for agent, position in proposed_moves.items():
-            #     position_to_agents.setdefault(position, []).append(agent)
-            #
-            # # Resolve conflicts
-            # for position, agents_moving in position_to_agents.items():
-            #     if len(agents_moving) == 1:
-            #         # Only one agent moving to this position
-            #         agent = agents_moving[0]
-            #         action_outcomes[agent.id] = {
-            #             'success': True,
-            #             'reason': 'Move successful',
-            #             'reward': self.env_settings.get('move_reward', 0),
-            #             'new_position': position
-            #         }
-            #     else:
-            #         # Conflict detected, randomly select one agent to move
-            #         chosen_agent = np.random.choice(agents_moving)
-            #         for agent in agents_moving:
-            #             if agent == chosen_agent:
-            #                 # Move allowed
-            #                 action_outcomes[agent.id] = {
-            #                     'success': True,
-            #                     'reason': 'Move successful (conflict resolved)',
-            #                     'reward': self.env_settings.get('move_reward', 0),
-            #                     'new_position': position
-            #                 }
-            #             else:
-            #                 # Move denied due to conflict
-            #                 action_outcomes[agent.id] = {
-            #                     'success': False,
-            #                     'reason': 'Move denied due to conflict',
-            #                     'reward': self.env_settings.get('conflict_penalty', -1),
-            #                     'new_position': agent.position
-            #                 }
 
-            # in theory do sth global to update all of the action_outcomes
         # TODO add some conflict hanlding here or just increased tile purchase cost
+
+        # TODO : make this prettier!!
         # apply the actions
-        for outcome, agent  in zip(proposed_actions, agents): # Fix the way the criteria for the actions are tested and the action is later applied
-            if outcome:
-                done = agent.apply_action(outcome)
-                dones [agent.id] = done
+        for determined_action, agent  in zip(proposed_actions, agents): # Fix the way the criteria for the actions are tested and the action is later applied
+            if determined_action:
+                if determined_action.get("move", None) is not None:
+                    agent.apply_action(determined_action)
+                if determined_action["claim"]["x"] is not None and determined_action["claim"]["y"] is not None:
+                    self.env.map.claim_tile(agent, determined_action["claim"]["x"], determined_action["claim"]["y"])
+
+
+                dones [agent.id] = False
 
         # TODO : check dones and rewards again after all actions are applied
 
@@ -155,7 +123,7 @@ class ActionManager:
     def claim_tile(self, agent, x, y):
         base_claim_cost = self.actions_definition.get("claim", None).get("cost", 0)
 
-        if not self.check_claim_cost(agent, base_claim_cost, x, y):
+        if not self.check_claim_cost(agent, base_claim_cost, x, y): # TODO: remove checks here , this should be just to apply the action, if it is possible has already been checked
             return
 
         self.env.map.claim_tile(agent, x, y)

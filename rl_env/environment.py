@@ -50,16 +50,22 @@ class MapEnvironment(gym.Env):
         env_settings: Dict[str, Any],
         num_agents: int,
         screen,
-        player,
-        render_mode: bool = False
+        render_mode: str = "rgb_array",
+        game_type: str = "automated"
     ):
         super(MapEnvironment, self).__init__()
+
+        if game_type == "human":
+            self.render_mode = "human"
+            self.player = True
+        else:
+            self.player = False
+
         self.env_settings = env_settings
         self.num_agents = num_agents
         self.render_mode = render_mode
 
         self.screen = screen
-        self.player = player
 
         # Initialize the map
         self.map = Map()
@@ -133,7 +139,7 @@ class MapEnvironment(gym.Env):
         return observations, rewards, dones, info
 
 
-    def render(self, mode: str = 'human') -> Optional[np.ndarray]:
+    def render(self) -> Optional[np.ndarray]:
         """
         Renders the environment.
 
@@ -144,19 +150,20 @@ class MapEnvironment(gym.Env):
             Optional[np.ndarray]: The rendered image array if mode is 'rgb_array', else None.
         """
 
-        if mode == 'human':
+        if self.render_mode == 'human':
             # Implement rendering logic using Pygame or another library
             self.map.draw(self.screen, 1, 0, 0)
             for agent in self.agents:
                 agent.draw(self.screen, 100, 0, 0, 0)
             # Update the display
             pygame.display.flip()
-        elif mode == 'rgb_array':
+
+        elif self.render_mode == 'rgb_array':
             # Return an RGB array of the current frame
             screen_capture = self.capture_game_state_as_image()
             return screen_capture
         else:
-            raise NotImplementedError(f"Render mode '{mode}' is not implemented.")
+            raise NotImplementedError(f"Unknown ender mode !!")
 
     def get_env_state(self):
         map_info = self.map.get_observation()
