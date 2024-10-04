@@ -1,3 +1,4 @@
+import random
 from typing import Any, Dict, List, Tuple
 
 import numpy as np
@@ -51,7 +52,9 @@ class ActionManager:
         x = self.env.map.max_x_index
         y = self.env.map.max_y_index
         # Define a structured array with the fields 'action' and 'agent_id'.
-        self.conflict_map = self.conflict_map = [[[] for _ in range(y)] for _ in range(x)]
+        self.conflict_map = self.conflict_map = [
+            [[] for _ in range(y)] for _ in range(x)
+        ]
 
     def apply_actions(
         self, actions: Any, agents: List[Agent]
@@ -84,10 +87,9 @@ class ActionManager:
                         agent.id
                     ] = selected_action  # simplify position passing here
                     # add to map conflict map
-                    self.conflict_map[new_position[0]][new_position[1]].append({
-                        'agent_id': agent.id,
-                        'action': selected_action
-                    })
+                    self.conflict_map[new_position[0]][new_position[1]].append(
+                        {"agent_id": agent.id, "action": selected_action}
+                    )
 
                 else:
                     # Invalid move (out of bounds), action denied
@@ -97,10 +99,9 @@ class ActionManager:
                 if self.check_claim(agent, selected_action["claim"]):
                     proposed_actions[agent.id] = selected_action
                     claim_pos = selected_action["claim"]
-                    self.conflict_map[claim_pos[1]][claim_pos[0]].append({
-                        'agent_id': agent.id,
-                        'action': selected_action
-                    })
+                    self.conflict_map[claim_pos[1]][claim_pos[0]].append(
+                        {"agent_id": agent.id, "action": selected_action}
+                    )
                 else:
                     proposed_actions[agent.id] = None
 
@@ -110,8 +111,8 @@ class ActionManager:
                 proposed_actions[agent.id] = None
                 rewards[agent.id] = -1
 
-        # TODO add some conflict hanlding here
-
+        # TODO testing if conflicts handled correctly?
+        proposed_actions = self.resolve_conflict(proposed_actions)
 
         # apply the actions
         for determined_action, agent in zip(proposed_actions, agents):
@@ -131,8 +132,65 @@ class ActionManager:
                 dones[agent.id] = False
 
         # TODO : check dones and rewards again after all actions are applied
+        # clear conflict map
+        x = self.env.map.max_x_index
+        y = self.env.map.max_y_index
+        self.conflict_map = [[[] for _ in range(y)] for _ in range(x)]
 
         return rewards, dones
+
+    def resolve_conflict(self, proposed_actions) -> Dict[str, Any]:
+        # iterate over conflict map and resolve conflicts
+        for x in range(len(self.conflict_map)):
+            for y in range(len(self.conflict_map[x])):
+                if len(self.conflict_map[x][y]) > 1:
+                    # Resolve conflicts for the actions at position (x, y)
+                    print(f"Potential Conflict at position {x}, {y}")
+
+                    # Split actions into movements and claims for separate handling
+                    moves = [
+                        action
+                        for action in self.conflict_map[x][y]
+                        if "move" in action["action"]
+                    ]
+                    claims = [
+                        action
+                        for action in self.conflict_map[x][y]
+                        if "claim" in action["action"]
+                    ]
+
+                    # Resolve move conflicts
+                    if len(moves) > 1:
+                        # First mover wins, so we keep the first action and invalidate the rest
+                        first_mover = moves[0]
+                        print(
+                            f"Agent {first_mover['agent_id']} wins the move conflict at ({x}, {y})."
+                        )
+                        for move in moves[1:]:
+                            agent_id = move["agent_id"]
+                            print(
+                                f"Invalidating move for agent {agent_id} at ({x}, {y})."
+                            )
+                            # Invalidate the move (set proposed action to None or handle differently)
+                            proposed_actions[agent_id] = None
+
+                    # Resolve claim conflicts
+                    if len(claims) > 1:
+                        # Randomly select one agent to win the claim
+                        winner = random.choice(claims)
+                        print(
+                            f"Agent {winner['agent_id']} wins the claim conflict at ({x}, {y})."
+                        )
+                        for claim in claims:
+                            agent_id = claim["agent_id"]
+                            if claim != winner:
+                                print(
+                                    f"Invalidating claim for agent {agent_id} at ({x}, {y})."
+                                )
+                                # Invalidate the claim (set proposed action to None or handle differently)
+                                proposed_actions[agent_id] = None
+
+        return proposed_actions
 
     # move
     def check_move(self, agent: Agent, direction: int) -> Tuple[bool, Tuple[int, int]]:
