@@ -1,3 +1,4 @@
+from random import random
 from typing import Any, Dict, Tuple
 
 import numpy as np
@@ -61,15 +62,18 @@ class Agent:
         self.money = 100  # for now
         # TODO maybe set intial possition as claimed tile
 
-        # initial_money = env_settings.get_setting("agent_initial_budget")
-        # if env_settings.get_setting("agent_initial_budget") == "equal":
-        #     self.money = initial_money
-        # elif env_settings.get_setting("agent_initial_budget") == "gauss":
-        #     # gauss distributed around initial
-        #     self.money = random.gauss(initial_money, 100)
-        # else:
-        #     # randomly distributed money
-        #     self.money = random.randint(0, 1000)
+        initial_money = env_settings.get_setting("agent_initial_budget")
+        distribution_mode = env_settings.get_setting(
+            "agent_initial_budget_distribution"
+        )
+        if distribution_mode == "equal":
+            self.money = initial_money
+        elif distribution_mode == "gauss":
+            # gauss distributed around initial
+            self.money = random.gauss(initial_money, 100)
+        else:
+            # randomly distributed money
+            self.money = random.randint(0, 1000)
 
     def update(self):
         # Update the agent's state

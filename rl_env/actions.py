@@ -120,9 +120,9 @@ class ActionManager:
 
     # move
     def check_move(self, agent: Agent, direction: int) -> Tuple[bool, Tuple[int, int]]:
-        # basic_move_cost = self.actions_definition.get("move", None).get("cost", 0)
-        # if agent.money < basic_move_cost:
-        #     return False, (-1, -1)
+        basic_move_cost = self.env_settings.get_setting("actions")["move"]["cost"]
+        if agent.money < basic_move_cost:
+            return False, (-1, -1)
 
         new_position = _calculate_new_position(agent.position, direction)
         if not self.check_position_on_map(new_position):
@@ -134,15 +134,17 @@ class ActionManager:
     def move_agent(self, agent: Agent, new_position: Tuple[int, int]) -> int:
         # Update position
         agent.position = new_position
+        agent.money -= self.env_settings.get_setting("actions")["move"]["cost"]
         print(f"Agent {agent.id}: Move successful to position {agent.position}.")
-        return 1
+        reward = self.env_settings.get_setting("actions")["move"]["reward"]
+        return reward
 
     # claim a tile
 
     def check_claim(self, agent: Agent, position: Tuple[int, int]) -> bool:
         # check if move generally possible, ignoring checks for moves of other agents at this stage
 
-        # base_claim_cost = self.actions_definition.get("claim", None).get("cost", 0)
+        base_claim_cost = self.env_settings.get_setting("actions")["claim"]["cost"]
 
         if not self.check_position_on_map(position):
             return False
@@ -156,20 +158,18 @@ class ActionManager:
         #     }
         #
         # # check if enough money to claim tile
-        # if agent.money < base_claim_cost:
-        #     return {
-        #         "success": False,
-        #         "reason": "Not enough money to claim tile",
-        #         "reward": self.env_settings.get("invalid_action_penalty", -1),
-        #     }
+        if agent.money < base_claim_cost:
+            return False
+
         # all checks passed
         return True
 
     def claim_tile(self, agent: Agent, pos: [int, int]) -> int:
         self.env.map.claim_tile(agent, pos)
         agent.claimed_tiles.append(self.env.map.get_tile(pos))
-
-        return 1
+        agent.money -= self.env_settings.get_setting("actions")["claim"]["cost"]
+        reward = self.env_settings.get_setting("actions")["claim"]["reward"]
+        return reward
 
     # build a building
     def check_building(self, agent, base_construction_cost, building_id, x, y):
@@ -199,8 +199,9 @@ class ActionManager:
         # all checks passed
         return True
 
-    def add_building(self, agent):
-        pass
+    def add_building(self, agent: Agent) -> int:
+        reward = self.env_settings.get_setting("actions")["build"]["reward"]
+        return reward
 
         # self.env.map.add_building(building_id, x, y)
 

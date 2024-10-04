@@ -98,15 +98,15 @@
     "agent_initial_budget_distribution": "equal",
     "actions": {
         "move": {
-            "cost": 1,
+            "cost": 10,
             "reward": 0
         },
         "claim": {
-            "cost": 2,
+            "cost":100,
             "reward": 10
         },
         "build": {
-            "cost": 5,
+            "cost": 200,
             "reward": 20
         }
     },
