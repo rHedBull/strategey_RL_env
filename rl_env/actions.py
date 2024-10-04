@@ -1,4 +1,4 @@
-from typing import List, Any, Dict, Tuple
+from typing import Any, Dict, List, Tuple
 
 import numpy as np
 
@@ -12,26 +12,29 @@ buildings = [[], ["improvement-1", 100, 5]]
 
 class ActionManager:
     """
-        Manages the application of movement actions within the environment,
-        detecting conflicts when multiple agents attempt to move to the same tile
-        and randomly resolving those conflicts.
+    Manages the application of movement actions within the environment,
+    detecting conflicts when multiple agents attempt to move to the same tile
+    and randomly resolving those conflicts.
     """
+
     def __init__(self, env, env_settings):
         self.env = env
         self.env_settings = env_settings
         self.actions_definition = self.env_settings.get_setting("actions")
 
-    def apply_actions(self, actions: Any, agents: List[Agent]) -> Dict[int, Dict[str, Any]]:
+    def apply_actions(
+        self, actions: Any, agents: List[Agent]
+    ) -> Dict[int, Dict[str, Any]]:
         """
-                Processes the movement actions of all agents, resolves conflicts,
-                and returns the outcomes for each agent.
+        Processes the movement actions of all agents, resolves conflicts,
+        and returns the outcomes for each agent.
 
-                Args:
-                    actions (List[Dict[str, Any]]): List of action dictionaries from each agent.
-                    agents (List[Agent]): List of agent instances.
+        Args:
+            actions (List[Dict[str, Any]]): List of action dictionaries from each agent.
+            agents (List[Agent]): List of agent instances.
 
-                Returns:
-                    Dict[int, Dict[str, Any]]: A dictionary mapping agent IDs to their action outcomes.
+        Returns:
+            Dict[int, Dict[str, Any]]: A dictionary mapping agent IDs to their action outcomes.
         """
 
         proposed_actions = np.zeros(len(agents), dtype=object)
@@ -39,21 +42,26 @@ class ActionManager:
         dones = np.zeros(len(agents), dtype=bool)
 
         for agent, selected_action in zip(agents, actions):
-
             move_direction = selected_action.get("move", None)
 
-            if  move_direction is not None:
-                new_position = self._calculate_new_position(agent.position, move_direction)
-                if self._is_valid_position(new_position): # TODO: also check for cost
-                    proposed_actions[agent.id] = selected_action # simplify position passing here
-                    rewards[agent.id] = 1 # TODO: adapt this
+            if move_direction is not None:
+                new_position = self._calculate_new_position(
+                    agent.position, move_direction
+                )
+                if self._is_valid_position(new_position):  # TODO: also check for cost
+                    proposed_actions[
+                        agent.id
+                    ] = selected_action  # simplify position passing here
+                    rewards[agent.id] = 1  # TODO: adapt this
                 else:
                     # Invalid move (out of bounds), action denied
                     proposed_actions[agent.id] = None
                     rewards[agent.id] = -1
 
-            elif selected_action["claim"]["x"] is not None and selected_action["claim"]["y"] is not None:
-
+            elif (
+                selected_action["claim"]["x"] is not None
+                and selected_action["claim"]["y"] is not None
+            ):
                 # TODO: implement claim checking
                 proposed_actions[agent.id] = selected_action
 
@@ -63,26 +71,35 @@ class ActionManager:
                 proposed_actions[agent.id] = None
                 rewards[agent.id] = -1
 
-
         # TODO add some conflict hanlding here or just increased tile purchase cost
 
         # TODO : make this prettier!!
         # apply the actions
-        for determined_action, agent  in zip(proposed_actions, agents): # Fix the way the criteria for the actions are tested and the action is later applied
+        for determined_action, agent in zip(
+            proposed_actions, agents
+        ):  # Fix the way the criteria for the actions are tested and the action is later applied
             if determined_action:
                 if determined_action.get("move", None) is not None:
                     agent.apply_action(determined_action)
-                if determined_action["claim"]["x"] is not None and determined_action["claim"]["y"] is not None:
-                    self.env.map.claim_tile(agent, determined_action["claim"]["x"], determined_action["claim"]["y"])
+                if (
+                    determined_action["claim"]["x"] is not None
+                    and determined_action["claim"]["y"] is not None
+                ):
+                    self.env.map.claim_tile(
+                        agent,
+                        determined_action["claim"]["x"],
+                        determined_action["claim"]["y"],
+                    )
 
-
-                dones [agent.id] = False
+                dones[agent.id] = False
 
         # TODO : check dones and rewards again after all actions are applied
 
         return rewards, dones
 
-    def _calculate_new_position(self, current_position: Tuple[int, int], move_direction: int) -> Tuple[int, int]:
+    def _calculate_new_position(
+        self, current_position: Tuple[int, int], move_direction: int
+    ) -> Tuple[int, int]:
         """
         Calculates the new position based on the current position and move direction.
 
@@ -117,13 +134,15 @@ class ActionManager:
         """
         x, y = position
         max_x = self.env.map.max_x_index
-        max_y = self.env.map.max_y_index # assuming a square map
+        max_y = self.env.map.max_y_index  # assuming a square map
         return 0 <= x < max_x and 0 <= y < max_y
 
     def claim_tile(self, agent, x, y):
         base_claim_cost = self.actions_definition.get("claim", None).get("cost", 0)
 
-        if not self.check_claim_cost(agent, base_claim_cost, x, y): # TODO: remove checks here , this should be just to apply the action, if it is possible has already been checked
+        if not self.check_claim_cost(
+            agent, base_claim_cost, x, y
+        ):  # TODO: remove checks here , this should be just to apply the action, if it is possible has already been checked
             return
 
         self.env.map.claim_tile(agent, x, y)
@@ -139,33 +158,32 @@ class ActionManager:
             or y > self.env.map.max_y_index
             or None in [x, y]
         ):
-            return  {
-                        'success': False,
-                        'reason': 'Invalid move (out of bounds)',
-                        'reward': self.env_settings.get('invalid_action_penalty', -1),
-                    }
+            return {
+                "success": False,
+                "reason": "Invalid move (out of bounds)",
+                "reward": self.env_settings.get("invalid_action_penalty", -1),
+            }
 
         # check if the tile is already claimed by someone
         if self.env.map.squares[x][y].get_owner() != OWNER_DEFAULT_TILE:
             return {
-                        'success': False,
-                        'reason': 'Invalid move conflict with other Agent',
-                        'reward': self.env_settings.get('invalid_action_penalty', -1),
-                    }
-
+                "success": False,
+                "reason": "Invalid move conflict with other Agent",
+                "reward": self.env_settings.get("invalid_action_penalty", -1),
+            }
 
         # check if enough money to claim tile
         if agent.money < base_claim_cost:
             return {
-                        'success': False,
-                        'reason': 'Not enough money to claim tile',
-                        'reward': self.env_settings.get('invalid_action_penalty', -1),
-                    }
+                "success": False,
+                "reason": "Not enough money to claim tile",
+                "reward": self.env_settings.get("invalid_action_penalty", -1),
+            }
         # all checks passed
         return {
-            'success': True,
-            'reason': '',
-            'reward': 0, # ??
+            "success": True,
+            "reason": "",
+            "reward": 0,  # ??
         }
 
     def add_building(self, agent, action_index, action_properties):

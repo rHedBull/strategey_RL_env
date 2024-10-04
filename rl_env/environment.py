@@ -1,12 +1,9 @@
-from typing import Dict, Any, List, Tuple, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import gymnasium as gym
 import numpy as np
 import pygame
-
 from gymnasium.vector.utils import spaces
-
-
 
 from agents.Sim_Agent import Agent
 from map.sim_map import Map
@@ -34,24 +31,26 @@ def capture_game_state_as_image():
 
 class MapEnvironment(gym.Env):
     """
-        A reinforcement learning environment for a multi-agent 2D Gridworld.
+    A reinforcement learning environment for a multi-agent 2D Gridworld.
 
-        Attributes:
-            env_settings (dict): Configuration settings for the environment.
-            num_agents (int): Number of agents in the environment.
-            render_mode (bool): Whether to render the environment.
-            map (Map): The grid map of the environment.
-            agents (List[Agent]): List of agents in the environment.
-            action_manager (ActionManager): Manages the application of actions.
-        """
-    metadata = {'render.modes': ['human', 'rgb_array']}
+    Attributes:
+        env_settings (dict): Configuration settings for the environment.
+        num_agents (int): Number of agents in the environment.
+        render_mode (bool): Whether to render the environment.
+        map (Map): The grid map of the environment.
+        agents (List[Agent]): List of agents in the environment.
+        action_manager (ActionManager): Manages the application of actions.
+    """
+
+    metadata = {"render.modes": ["human", "rgb_array"]}
+
     def __init__(
         self,
         env_settings: Dict[str, Any],
         num_agents: int,
         screen,
         render_mode: str = "rgb_array",
-        game_type: str = "automated"
+        game_type: str = "automated",
     ):
         super(MapEnvironment, self).__init__()
 
@@ -72,35 +71,42 @@ class MapEnvironment(gym.Env):
         self.map.create_map(self.env_settings)
 
         # Initialize agents
-        self.agents: List[Agent] = [
-            Agent(i) for i in range(self.num_agents)
-        ]
+        self.agents: List[Agent] = [Agent(i) for i in range(self.num_agents)]
 
         # Initialize action manager
         self.action_manager = ActionManager(self, self.env_settings)
 
         # Define action and observation spaces
-        self.action_space = spaces.Tuple([
-            spaces.Dict({
-                'move': spaces.Discrete(5),  # 0: No move, 1: Up, 2: Down, 3: Left, 4: Right
-            }) for _ in range(self.num_agents)
-        ])
+        self.action_space = spaces.Tuple(
+            [
+                spaces.Dict(
+                    {
+                        "move": spaces.Discrete(
+                            5
+                        ),  # 0: No move, 1: Up, 2: Down, 3: Left, 4: Right
+                    }
+                )
+                for _ in range(self.num_agents)
+            ]
+        )
 
         # TODO: check if observation space is correct
-        self.observation_space = spaces.Dict({
-            'map': spaces.Box(
-                low=0,
-                high=1,
-                shape=(self.map.height, self.map.width, self.map.tiles),
-                dtype=np.float32
-            ),
-            'agents': spaces.Box(
-                low=0,
-                high=max(self.map.width, self.map.height),
-                shape=(self.num_agents, 3),  # Example: [x, y, state]
-                dtype=np.float32
-            )
-        })
+        self.observation_space = spaces.Dict(
+            {
+                "map": spaces.Box(
+                    low=0,
+                    high=1,
+                    shape=(self.map.height, self.map.width, self.map.tiles),
+                    dtype=np.float32,
+                ),
+                "agents": spaces.Box(
+                    low=0,
+                    high=max(self.map.width, self.map.height),
+                    shape=(self.num_agents, 3),  # Example: [x, y, state]
+                    dtype=np.float32,
+                ),
+            }
+        )
 
         self.reset()
 
@@ -117,7 +123,9 @@ class MapEnvironment(gym.Env):
 
         return self._get_observation()
 
-    def step(self, actions: Any) -> Tuple[dict[str,Any], List[float], List[bool], Dict]:
+    def step(
+        self, actions: Any
+    ) -> Tuple[dict[str, Any], List[float], List[bool], Dict]:
         """
         Executes the actions for all agents and updates the environment state.
 
@@ -138,7 +146,6 @@ class MapEnvironment(gym.Env):
         info = {}
         return observations, rewards, dones, info
 
-
     def render(self) -> Optional[np.ndarray]:
         """
         Renders the environment.
@@ -150,7 +157,7 @@ class MapEnvironment(gym.Env):
             Optional[np.ndarray]: The rendered image array if mode is 'rgb_array', else None.
         """
 
-        if self.render_mode == 'human':
+        if self.render_mode == "human":
             # Implement rendering logic using Pygame or another library
             self.map.draw(self.screen, 1, 0, 0)
             for agent in self.agents:
@@ -158,12 +165,12 @@ class MapEnvironment(gym.Env):
             # Update the display
             pygame.display.flip()
 
-        elif self.render_mode == 'rgb_array':
+        elif self.render_mode == "rgb_array":
             # Return an RGB array of the current frame
             screen_capture = self.capture_game_state_as_image()
             return screen_capture
         else:
-            raise NotImplementedError(f"Unknown ender mode !!")
+            raise NotImplementedError("Unknown ender mode !!")
 
     def get_env_state(self):
         map_info = self.map.get_observation()
@@ -173,10 +180,7 @@ class MapEnvironment(gym.Env):
             info = agent.get_state_for_env_info()
             agent_info[agent.id] = info
 
-        env_info = {
-            'map_info': map_info,
-            'agent_info': agent_info
-        }
+        env_info = {"map_info": map_info, "agent_info": agent_info}
         return env_info
 
     def get_possible_actions(self, agent_id):
@@ -186,14 +190,12 @@ class MapEnvironment(gym.Env):
 
         return possible_actions
 
-
-
     def _update_environment_state(self):
         """
         Updates the environment state after actions have been applied.
         """
         # Update map dynamics if any
-        #self.map.update()
+        # self.map.update()
         # Update agents
         for agent in self.agents:
             agent.update()
@@ -206,11 +208,10 @@ class MapEnvironment(gym.Env):
             observation (Dict[str, Any]): The current observation.
         """
         map_observation = self.map.get_observation()
-        agent_observations = np.array([agent.get_observation() for agent in self.agents])
-        observation = {
-            'map': map_observation,
-            'agents': agent_observations
-        }
+        agent_observations = np.array(
+            [agent.get_observation() for agent in self.agents]
+        )
+        observation = {"map": map_observation, "agents": agent_observations}
         return observation
 
     def capture_game_state_as_image(self):

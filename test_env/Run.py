@@ -53,10 +53,10 @@ class Run:
                     action = agent.get_action(pygame, self.env)
                     print("Player chose action {}".format(action))
                 else:
-                    possible_actions = self.env.get_possible_actions(agent.id) # TODO is this important? should this be done?
-                    action = agent.get_action(
-                        common_env_state, possible_actions
-                    )
+                    possible_actions = self.env.get_possible_actions(
+                        agent.id
+                    )  # TODO is this important? should this be done?
+                    action = agent.get_action(common_env_state, possible_actions)
 
                 agent_actions.append(action)
 
@@ -127,9 +127,7 @@ class Run:
     def close(self):
         print("Game Terminated")
         if self.env.render_mode:
-
             if self.env.player:
-
                 print("Press q to close the window")
                 # keep the window open until the user closes it manually
                 running = True
