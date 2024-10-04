@@ -48,6 +48,13 @@ class ActionManager:
         self.env_settings = env_settings
         self.actions_definition = self.env_settings.get_setting("actions")
 
+        x = self.env.map.max_x_index
+        y = self.env.map.max_y_index
+        # Define a structured array with the fields 'action' and 'agent_id'.
+        self.conflict_map = np.zeros(
+            (x, y), dtype=[("action", "O"), ("agent_id", "i4")]
+        )
+
     def apply_actions(
         self, actions: Any, agents: List[Agent]
     ) -> Tuple[List[float], List[bool]]:
@@ -73,11 +80,18 @@ class ActionManager:
 
             if move_direction is not None:
                 valid, new_position = self.check_move(agent, move_direction)
-                if valid:  # TODO: also check for cost
+                if valid:
                     selected_action["move"]["new_position"] = new_position
                     proposed_actions[
                         agent.id
                     ] = selected_action  # simplify position passing here
+                    # add to map conflict map
+                    self.conflict_map[new_position[0], new_position[1]][
+                        "agent_id"
+                    ] = agent.id
+                    self.conflict_map[new_position[0], new_position[1]][
+                        "action"
+                    ] = selected_action
 
                 else:
                     # Invalid move (out of bounds), action denied
@@ -86,6 +100,11 @@ class ActionManager:
             elif claim_happens:
                 if self.check_claim(agent, selected_action["claim"]):
                     proposed_actions[agent.id] = selected_action
+                    claim_pos = selected_action["claim"]
+                    self.conflict_map[claim_pos[1], claim_pos[0]]["agent_id"] = agent.id
+                    self.conflict_map[claim_pos[1], claim_pos[0]][
+                        "action"
+                    ] = selected_action
                 else:
                     proposed_actions[agent.id] = None
 
@@ -95,7 +114,7 @@ class ActionManager:
                 proposed_actions[agent.id] = None
                 rewards[agent.id] = -1
 
-        # TODO add some conflict hanlding here or just increased tile purchase cost
+        # TODO add some conflict hanlding here
 
         # apply the actions
         for determined_action, agent in zip(proposed_actions, agents):

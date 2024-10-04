@@ -5,16 +5,6 @@ import numpy as np
 import pygame
 
 from map.map_settings import AGENT_COLORS, PLAYER_COLOR
-from test_env.Agent import Agent
-
-
-class Player(Agent):
-    def __init__(self):
-        super().__init__(0)
-
-        self.color = PLAYER_COLOR
-
-        # TODO: check if sth else needed for player class
 
 
 class Agent:
@@ -60,7 +50,6 @@ class Agent:
         self.position = (np.random.randint(0, max_x), np.random.randint(0, max_x))
         self.state = "active"
         self.money = 100  # for now
-        # TODO maybe set intial possition as claimed tile
 
         initial_money = env_settings.get_setting("agent_initial_budget")
         distribution_mode = env_settings.get_setting(
@@ -80,8 +69,6 @@ class Agent:
 
         for _, tile in enumerate(self.claimed_tiles):
             self.money += tile.get_round_value()
-
-        # TODO define settings matrix?
 
         if self.money <= 0:  # TODO adapt different state transitions
             self.state = "Done"
