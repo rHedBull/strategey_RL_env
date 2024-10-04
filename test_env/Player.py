@@ -34,23 +34,22 @@ class Player:
 
         if keys[pygame.K_w] or keys[pygame.K_UP]:
             action = 1
-            selected_action["move"] = 1  # 'Move Up'
+            selected_action["move"]["direction"] = 1  # 'Move Up'
         elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
             action = 1
-            selected_action["move"] = 2  # 'Move down'
+            selected_action["move"]["direction"] = 2  # 'Move down'
         elif keys[pygame.K_a] or keys[pygame.K_LEFT]:
             action = 1
-            selected_action["move"] = 3  # 'Move Left'
+            selected_action["move"]["direction"] = 3  # 'Move Left'
         elif keys[pygame.K_d] or keys[pygame.K_RIGHT]:
             action = 1
-            selected_action["move"] = 4  # 'Move Right'
+            selected_action["move"]["direction"] = 4  # 'Move Right'
         elif keys[pygame.K_c]:
             x_max = env.map.max_x_index
             y_max = env.map.max_y_index
-            selected_action["claim"]["x"] = np.random.randint(0, x_max)
-            selected_action["claim"]["y"] = np.random.randint(
-                0, y_max
-            )  # TODO change this to map bounds
+            position = [np.random.randint(0, x_max), np.random.randint(0, y_max)]
+            selected_action["claim"] = position
+
         elif keys[pygame.K_b]:
             action = 3  # build sthb
             x_max = env.map.max_x_index

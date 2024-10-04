@@ -8,6 +8,7 @@ from map.map_settings import (VALUE_DEFAULT_DESSERT, VALUE_DEFAULT_MARSH,
                               VALUE_DEFAULT_MOUNTAIN, VALUE_DEFAULT_OCEAN,
                               VALUE_DEFAULT_RIVER)
 from map.map_square import Map_Square
+from test_env.Agent import Agent
 
 
 class Map:
@@ -162,7 +163,7 @@ class Map:
                 full_map_info[square.x][square.y] = info
         return full_map_info
 
-    def claim_tile(self, agent, x, y):
+    def claim_tile(self, agent: Agent, position: [int, int]) -> None:
         """
         Claim a tile at position (x,y) for an agent
         :param agent:
@@ -170,6 +171,7 @@ class Map:
         :param y:
         :return:
         """
+        x, y = position
         self.squares[y][x].claim(agent)
 
     def add_building(self, building_id, x, y):
@@ -191,13 +193,14 @@ class Map:
                 new_size = square.square_size * zoom_level
                 square.draw(screen, new_x, new_y, new_size)
 
-    def get_tile(self, x, y):
+    def get_tile(self, position: [int, int]) -> Map_Square:
         """
         Get the tile at position x, y
         :param x:
         :param y:
         :return:
         """
+        x, y = position
         return self.squares[y][x]
 
     def river_agents(self, tiles, rivers):

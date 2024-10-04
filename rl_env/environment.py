@@ -143,7 +143,6 @@ class MapEnvironment(gym.Env):
         # Collect observations
         observations = self._get_observation()
 
-        info = {}
         return observations, rewards, dones, info
 
     def render(self) -> Optional[np.ndarray]:

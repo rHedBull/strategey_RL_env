@@ -47,36 +47,6 @@ class Agent:
         self.done = False
         # TODO probably call self.reset() here
 
-    # def decide_action(self, observation: Dict[str, Any]) -> Dict[str, int]:
-    #     """
-    #     Decides on an action based on the observation.
-    #
-    #     Args:
-    #         observation (Dict[str, Any]): The current observation.
-    #
-    #     Returns:
-    #         Dict[str, int]: The action dictionary.
-    #     """
-    #     # For simplicity, randomly choose a movement direction
-    #     move_direction = np.random.choice([0, 1, 2, 3, 4])  # 0: No move, 1-4: Directions
-    #     return {'move': move_direction}
-
-    def apply_action(self, action: Dict[str, Any]):
-        """
-        Updates the agent's internal state based on the action result.
-
-        Args:
-            action_result (Dict[str, Any]): The outcome of the action.
-        """
-        move_direction = action.get("move", None)
-        if move_direction:
-            new_position = self._calculate_new_position(self.position, move_direction)
-            # Update position
-            self.position = new_position
-            print(f"Agent {self.id}: Move successful to position {self.position}.")
-
-        return False
-
     def reset(self, env_settings: Dict[str, Any]):
         """
         Resets the agent to the initial state.
