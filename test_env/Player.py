@@ -1,6 +1,8 @@
 import numpy as np
 import pygame
 
+from map.map_settings import PLAYER_COLOR
+
 
 class Player:
     def __init__(
@@ -10,6 +12,7 @@ class Player:
         self.action = None
         self.state = "Running"
         self.reward = 0
+        self.color = PLAYER_COLOR
 
     def get_action(self, game, env):
         # action dictionary mask

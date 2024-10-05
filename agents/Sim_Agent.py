@@ -30,9 +30,12 @@ class Agent:
 
         # exclude player color id 0
         c = self.id
-        if self.id % len(AGENT_COLORS) == 0:
-            c = 1
-        self.color = AGENT_COLORS[c % len(AGENT_COLORS)]
+        if self.id == 0:
+            self.color = PLAYER_COLOR
+        else:
+            if self.id % len(AGENT_COLORS) == 0:
+                c = 1
+            self.color = AGENT_COLORS[c % len(AGENT_COLORS)]
 
         self.reward = 0.0
         self.done = False
