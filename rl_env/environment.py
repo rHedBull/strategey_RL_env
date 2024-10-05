@@ -89,14 +89,14 @@ class MapEnvironment(gym.Env):
                 for _ in range(self.num_agents)
             ]
         )
-
+        num_features_per_tile = 3
         # TODO: check if observation space is correct
         self.observation_space = spaces.Dict(
             {
                 "map": spaces.Box(
                     low=0,
                     high=1,
-                    shape=(self.map.height, self.map.width, self.map.tiles),
+                    shape=(self.map.max_x_index, self.map.max_y_index, num_features_per_tile),
                     dtype=np.float32,
                 ),
                 "agents": spaces.Box(
