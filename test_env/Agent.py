@@ -2,11 +2,13 @@ import numpy as np
 
 
 class Agent:
-    def __init__(self, id):
+    def __init__(self, id, x_max, y_max):
         self.id = id
         self.state = None
         self.action = "Running"
         self.q_table = None
+        self.x_max = x_max
+        self.y_max = y_max
 
         self.reward = 0
 
@@ -21,11 +23,8 @@ class Agent:
         # expand default action dictionary mask
         self.action = 2
 
-        x_max = 9  # env_info[0].shape[0]
-        y_max = 9  # env_info[0].shape[1] # TODO change this to map bounds
-
-        x = np.random.randint(0, x_max)
-        y = np.random.randint(0, y_max)
+        x = np.random.randint(0, self.x_max)
+        y = np.random.randint(0, self.y_max)
 
         pos = [x, y]
         selected_action["claim"] = pos
