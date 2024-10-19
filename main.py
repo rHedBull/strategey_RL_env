@@ -102,7 +102,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--map_file",
         type=str,
-        default="None",
+        default=None,
         help="Path to the pre generated map file",
     )
     parser.add_argument(
