@@ -1,51 +1,67 @@
-import random
+import math
+from random import random
+from typing import Any, Dict, Tuple
 
+import numpy as np
 import pygame
 
 from map.map_settings import AGENT_COLORS, PLAYER_COLOR
 
 
 class Agent:
-    def __init__(self, id, game_mode):
-        self.id = id
-        self.max_x = None
-        self.max_y = None
-        self.y = None
-        self.x = None
+    """
+    Represents an agent in the environment.
 
-        self.state = None
+    Attributes:
+        id (int): Unique identifier for the agent.
+        position (Tuple[int, int]): Current position of the agent.
+        reward (float): Accumulated reward for the agent.
+        done (bool): Whether the agent has completed its task.
+    """
+
+    def __init__(self, agent_id: int):
+        self.id = agent_id
+        self.position = (0, 0)
+
+        self.state = "active"
 
         # resources
         self.money = None
         self.claimed_tiles = []
 
-        if game_mode == "player" and id == 0:
+        # exclude player color id 0
+        c = self.id
+        if self.id == 0:
             self.color = PLAYER_COLOR
-        elif game_mode == "player":
-            # exclude player color id 0
-            c = self.id
+        else:
             if self.id % len(AGENT_COLORS) == 0:
                 c = 1
             self.color = AGENT_COLORS[c % len(AGENT_COLORS)]
-        else:
-            self.color = AGENT_COLORS[id % len(AGENT_COLORS)]
 
-    def create_agent(self, settings, max_x, max_y):
-        self.max_x = max_x
-        self.max_y = max_y
-        self.reset(settings)
+        self.reward = 0.0
+        self.done = False
+        # TODO probably call self.reset() here
 
-    def reset(self, settings):
-        self.x = random.randint(0, self.max_x - 1)
-        self.y = random.randint(0, self.max_y - 1)
+    def reset(self, env_settings: Dict[str, Any]):
+        """
+        Resets the agent to the initial state.
 
-        self.state = "Running"
-        # TODO maybe set intial possition as claimed tile
+        Args:
+            env_settings (Dict[str, Any]): Environment settings.
+        """
+        max_x = int(math.sqrt(env_settings.get_setting("tiles")))
 
-        initial_money = settings.get_setting("agent_initial_budget")
-        if settings.get_setting("agent_initial_budget") == "equal":
+        self.position = (np.random.randint(0, max_x), np.random.randint(0, max_x))
+        self.state = "active"
+        self.money = 100  # for now
+
+        initial_money = env_settings.get_setting("agent_initial_budget")
+        distribution_mode = env_settings.get_setting(
+            "agent_initial_budget_distribution"
+        )
+        if distribution_mode == "equal":
             self.money = initial_money
-        elif settings.get_setting("agent_initial_budget") == "gauss":
+        elif distribution_mode == "gauss":
             # gauss distributed around initial
             self.money = random.gauss(initial_money, 100)
         else:
@@ -58,12 +74,10 @@ class Agent:
         for _, tile in enumerate(self.claimed_tiles):
             self.money += tile.get_round_value()
 
-        # TODO define settings matrix?
-
         if self.money <= 0:  # TODO adapt different state transitions
             self.state = "Done"
 
-    def get_state(self):
+    def get_observation(self):
         return self.state
 
     def draw(self, screen, square_size, zoom_level, pan_x, pan_y):
@@ -73,7 +87,10 @@ class Agent:
         pygame.draw.circle(
             screen,
             self.color,
-            ((self.x * square_size) + radius, (self.y * square_size) + radius),
+            (
+                (self.position[0] * square_size) + radius,
+                (self.position[1] * square_size) + radius,
+            ),
             radius,
         )
 
@@ -85,7 +102,31 @@ class Agent:
 
         return possible_actions
 
-    def get_state_for_env_info(self):
+    def get_state_for_env_info(self) -> Dict[str, Any]:
         # define here what information of all agents is visible to all other agents
+        return {"position": self.position, "money": self.money}
 
-        return [self.x, self.y, self.money]
+    def _calculate_new_position(
+        self, current_position: Tuple[int, int], move_direction: int
+    ) -> Tuple[int, int]:
+        """
+        Calculates the new position based on the current position and move direction.
+
+        Args:
+            current_position (Tuple[int, int]): The agent's current position.
+            move_direction (int): Direction to move (0: No move, 1: Up, 2: Down, 3: Left, 4: Right).
+
+        Returns:
+            Tuple[int, int]: The new position after the move.
+        """
+        x, y = current_position
+        if move_direction == 1:  # Up
+            y -= 1
+        elif move_direction == 2:  # Down
+            y += 1
+        elif move_direction == 3:  # Left
+            x -= 1
+        elif move_direction == 4:  # Right
+            x += 1
+        # No move if move_direction is 0 or unrecognized
+        return (x, y)

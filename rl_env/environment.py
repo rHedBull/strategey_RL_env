@@ -1,5 +1,9 @@
+from typing import Any, Dict, List, Optional, Tuple
+
+import gymnasium as gym
 import numpy as np
 import pygame
+from gymnasium.vector.utils import spaces
 
 from agents.Sim_Agent import Agent
 from map.sim_map import Map
@@ -25,85 +29,157 @@ def capture_game_state_as_image():
     return np.transpose(pygame.surfarray.array3d(screen_capture), axes=[1, 0, 2])
 
 
-class MapEnvironment:
+class MapEnvironment(gym.Env):
+    """
+    A reinforcement learning environment for a multi-agent 2D Gridworld.
+
+    Attributes:
+        env_settings (dict): Configuration settings for the environment.
+        num_agents (int): Number of agents in the environment.
+        render_mode (bool): Whether to render the environment.
+        map (Map): The grid map of the environment.
+        agents (List[Agent]): List of agents in the environment.
+        action_manager (ActionManager): Manages the application of actions.
+    """
+
+    metadata = {"render.modes": ["human", "rgb_array"]}
+
     def __init__(
         self,
-        env_settings,
-        numb_agents,
-        render_mode=False,
-        screen=None,
-        game_mode="automated",
+        env_settings: Dict[str, Any],
+        num_agents: int,
+        screen,
+        render_mode: str = "rgb_array",
+        game_type: str = "automated",
     ):
-        self.game_mode = game_mode
-        self.settings = env_settings
+        super(MapEnvironment, self).__init__()
+
+        if game_type == "human":
+            self.render_mode = "human"
+            self.player = True
+        else:
+            self.player = False
+
+        self.env_settings = env_settings
+        self.num_agents = num_agents
         self.render_mode = render_mode
+
         self.screen = screen
+
+        # Initialize the map
         self.map = Map()
-        self.map.create_map(self.settings)
-        self.numb_agents = numb_agents
-        self.agents = [Agent(i, self.game_mode) for i in range(self.numb_agents)]
+        self.map.create_map(self.env_settings)
 
-        for agent in self.agents:
-            agent.create_agent(
-                self.settings, self.map.max_x_index, self.map.max_y_index
-            )
+        # Initialize agents
+        self.agents: List[Agent] = [Agent(i) for i in range(self.num_agents)]
 
-        self.action_manager = ActionManager(self, env_settings)
+        # Initialize action manager
+        self.action_manager = ActionManager(self, self.env_settings)
+
+        # Define action and observation spaces
+        self.action_space = spaces.Tuple(
+            [
+                spaces.Dict(
+                    {
+                        "move": spaces.Discrete(
+                            5
+                        ),  # 0: No move, 1: Up, 2: Down, 3: Left, 4: Right
+                    }
+                )
+                for _ in range(self.num_agents)
+            ]
+        )
+        num_features_per_tile = 3
+        # TODO: check if observation space is correct
+        self.observation_space = spaces.Dict(
+            {
+                "map": spaces.Box(
+                    low=0,
+                    high=1,
+                    shape=(self.map.max_x_index, self.map.max_y_index, num_features_per_tile),
+                    dtype=np.float32,
+                ),
+                "agents": spaces.Box(
+                    low=0,
+                    high=max(self.map.width, self.map.height),
+                    shape=(self.num_agents, 3),  # Example: [x, y, state]
+                    dtype=np.float32,
+                ),
+            }
+        )
+
         self.reset()
 
-    def reset(self):
+    def reset(self) -> Dict[str, Any]:
+        """
+        Resets the environment to an initial state and returns an initial observation.
+
+        Returns:
+            observation (Dict[str, Any]): The initial observation of the environment.
+        """
         self.map.reset()
         for agent in self.agents:
-            agent.reset(self.settings)
+            agent.reset(self.env_settings)
 
-    def step(self, actions, action_properties=None):
-        rewards = []
-        dones = []
+        return self._get_observation()
 
-        # make action order random
-        # list of agent indices from 0 to number of agents
-        agent_indices = [i for i in range(self.numb_agents)]
-        np.random.shuffle(agent_indices)
+    def step(
+        self, actions: Any
+    ) -> Tuple[dict[str, Any], List[float], List[bool], Dict]:
+        """
+        Executes the actions for all agents and updates the environment state.
 
-        for agent_index in agent_indices:
-            action = actions[agent_index]
-            agent = self.agents[agent_index]
-            action_property = action_properties[
-                agent_index
-            ]  # probably still some issue with the property not adapting to map size
+        Args:
+            actions (List[Dict[str, int]]): A list of action dictionaries for each agent.
+        """
+        info = {}
 
-            self.action_manager.apply_action(action, agent, action_property)
-            reward = calculate_reward(agent)
-            done = check_done(agent)
-            rewards.append(reward)
-            dones.append(done)
+        # Apply actions using ActionManager
+        rewards, dones = self.action_manager.apply_actions(actions, self.agents)
 
-        for agent in self.agents:
-            agent.update()
+        # Update environment state
+        self._update_environment_state()
 
-        # TODO: update env state
+        # Collect observations
+        observations = self._get_observation()
 
-        all_done = self.check_if_all_done(dones)
-        return self.get_env_state(), rewards, dones, all_done
+        return observations, rewards, dones, info
 
-    def render(self):
-        if not self.render_mode:
-            return
+    def render(self) -> Optional[np.ndarray]:
+        """
+        Renders the environment.
 
-        self.map.draw(self.screen, 0, 0, 0)
-        for agent in self.agents:
-            agent.draw(self.screen, self.map.tile_size, 0, 0, 0)
-        pygame.display.flip()
+        Args:
+            mode (str): The mode to render with. Options are 'human' or 'rgb_array'.
+
+        Returns:
+            Optional[np.ndarray]: The rendered image array if mode is 'rgb_array', else None.
+        """
+
+        if self.render_mode == "human":
+            # Implement rendering logic using Pygame or another library
+            self.map.draw(self.screen, 1, 0, 0)
+            for agent in self.agents:
+                agent.draw(self.screen, self.map.tile_size, 0, 0, 0)
+            # Update the display
+            pygame.display.flip()
+
+        elif self.render_mode == "rgb_array":
+            # Return an RGB array of the current frame
+            screen_capture = self.capture_game_state_as_image()
+            return screen_capture
+        else:
+            raise NotImplementedError("Unknown ender mode !!")
 
     def get_env_state(self):
-        map_info = self.map.get_observation_of_map_state()
+        map_info = self.map.get_observation()
 
-        agent_info = np.zeros((len(self.agents), 3))
+        agent_info = {}
         for agent in self.agents:
             info = agent.get_state_for_env_info()
             agent_info[agent.id] = info
 
-        env_info = [map_info, agent_info]
+        env_info = {"map_info": map_info, "agent_info": agent_info}
         return env_info
 
     def get_possible_actions(self, agent_id):
@@ -113,29 +189,30 @@ class MapEnvironment:
 
         return possible_actions
 
-    def check_if_all_done(self, dones):
-        # check if all in dones are true
+    def _update_environment_state(self):
+        """
+        Updates the environment state after actions have been applied.
+        """
+        # Update map dynamics if any
+        # self.map.update()
+        # Update agents
+        for agent in self.agents:
+            agent.update()
 
-        for i in dones:
-            if not i:
-                return False
+    def _get_observation(self) -> Dict[str, Any]:
+        """
+        Constructs the observation dictionary.
 
-        self.close()
-        return True
+        Returns:
+            observation (Dict[str, Any]): The current observation.
+        """
+        map_observation = self.map.get_observation()
+        agent_observations = np.array(
+            [agent.get_observation() for agent in self.agents]
+        )
+        observation = {"map": map_observation, "agents": agent_observations}
+        return observation
 
-    def close(self):
-        print("Game Terminated")
-        if self.render_mode:
-            print("Press any key to close the window")
-            # keep the window open until the user closes it manually
-            running = True
-            while running:
-                for event in pygame.event.get():
-                    if event.type == pygame.KEYDOWN:
-                        keys = pygame.key.get_pressed()
-                        if keys[pygame.K_q]:
-                            running = False
-
-            pygame.quit()
-        else:
-            pygame.quit()
+    def capture_game_state_as_image(self):
+        screen_capture = pygame.display.get_surface()
+        return np.transpose(pygame.surfarray.array3d(screen_capture), axes=[1, 0, 2])

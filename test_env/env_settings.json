@@ -96,31 +96,20 @@
     ],
     "agent_initial_budget": 1000,
     "agent_initial_budget_distribution": "equal",
-    "actions": [
-        {
-            "name": "none",
-            "cost": 0,
-            "reward": 0,
-            "number_action_properties": 0},
-        {
-            "name": "move",
-            "cost": 1,
-            "reward": 0,
-            "number_action_properties": 1
+    "actions": {
+        "move": {
+            "cost": 10,
+            "reward": 0
         },
-        {
-            "name": "claim",
-            "cost": 2,
-            "reward": 10,
-            "number_action_properties": 2
+        "claim": {
+            "cost":100,
+            "reward": 10
         },
-        {
-            "name": "build",
-            "cost": 5,
-            "reward": 20,
-            "number_action_properties": 3
+        "build": {
+            "cost": 200,
+            "reward": 20
         }
-    ],
+    },
     "buildings": [
         {
             "name": "building1",
