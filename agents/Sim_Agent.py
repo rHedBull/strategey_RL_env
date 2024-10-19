@@ -1,3 +1,4 @@
+import math
 from random import random
 from typing import Any, Dict, Tuple
 
@@ -48,8 +49,8 @@ class Agent:
         Args:
             env_settings (Dict[str, Any]): Environment settings.
         """
-        # max_x = int(math.sqrt(env_settings("tiles")))
-        max_x = 10
+        max_x = int(math.sqrt(env_settings.get_setting("tiles")))
+
         self.position = (np.random.randint(0, max_x), np.random.randint(0, max_x))
         self.state = "active"
         self.money = 100  # for now

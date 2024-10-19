@@ -160,7 +160,7 @@ class MapEnvironment(gym.Env):
             # Implement rendering logic using Pygame or another library
             self.map.draw(self.screen, 1, 0, 0)
             for agent in self.agents:
-                agent.draw(self.screen, 100, 0, 0, 0)
+                agent.draw(self.screen, self.map.tile_size, 0, 0, 0)
             # Update the display
             pygame.display.flip()
 

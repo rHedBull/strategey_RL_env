@@ -85,15 +85,25 @@ python -m memory_profiler your_script.py
 ## Map
 - [ ] write script that just creates multiple maps of various sizes and save them to be used later
 - [ ] create some maps with different sizes and different land type and resource distributions
-- [ ] add some resources
+  - [ ] add some resources
+- make importance editable water over mountain over dessert
+-   make distribution percentage wise locked to tile count
+-  enable selection of land types
+-  enable distribution method
+- add random mountain distribution
+-  make the distribution density and type editable
+- add river water adjacent type
 
 ## RL
 - [ ] add more actions
 - [ ] calculate rewards better, decide what rewards to give
 - [ ] train simple claiming AI
 - [ ] calculate just execution time for different map sizes and agent counts on hardware
-- 
+- [ ] different types of observability for different agents
 
+## UI
+- [ ] zooming, moving?
+- 
 ## Far fetched
 - [ ] tech tree, some actions only possible if reached a level
 - [ ] 
