@@ -34,7 +34,7 @@ class Map:
         self.biomes_definition = None
         self.resource_definition = None
 
-    def create_map(self, settings):
+    def load_settings(self, settings):
         self.width = settings.get_setting("map_width")
         self.height = settings.get_setting("map_height")
 
@@ -52,6 +52,9 @@ class Map:
         self.land_resource_definition = settings.get_setting("land_resources")
         self.sea_resource_definition = settings.get_setting("land_resources")
         self.height_values = settings.get_setting("height_values")
+
+    def create_map(self, settings):
+        self.load_settings(settings)
 
         # create map squares
         self.squares = [
