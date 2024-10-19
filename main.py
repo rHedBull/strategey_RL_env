@@ -38,6 +38,7 @@ def main(args):
     hyperparameters_path = args.hyperparameters_path
     env_settings_path = args.env_settings_path
     run_settings_path = args.run_settings_path
+    map_file = args.map_file
 
     hyperparameters = Settings(hyperparameters_path)
     env_settings = Settings(env_settings_path)
@@ -54,7 +55,7 @@ def main(args):
         args.rendering, args.screen_size
     )  # Set up the rendering screen if required
     env = MapEnvironment(
-        env_settings, numb_agents, screen, render_mode=rendering, game_type=game_type
+        env_settings, numb_agents, screen, render_mode=rendering, game_type=game_type, map_file=map_file
     )  # Initialize the environment
     run = Run(
         run_settings, hyperparameters, env
@@ -97,6 +98,12 @@ if __name__ == "__main__":
         type=str,
         default="human",
         help="Flag to enable or human player",
+    )
+    parser.add_argument(
+        "--map_file",
+        type=str,
+        default="None",
+        help="Path to the pre generated map file",
     )
     parser.add_argument(
         "--logging", type=bool, default=True, help="Flag to enable or disable logging"

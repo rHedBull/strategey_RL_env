@@ -46,11 +46,12 @@ class MapEnvironment(gym.Env):
 
     def __init__(
         self,
-        env_settings: Dict[str, Any],
+        env_settings: Any,
         num_agents: int,
         screen,
         render_mode: str = "rgb_array",
         game_type: str = "automated",
+        map_file : str = None
     ):
         super(MapEnvironment, self).__init__()
 
@@ -68,7 +69,10 @@ class MapEnvironment(gym.Env):
 
         # Initialize the map
         self.map = Map()
-        self.map.create_map(self.env_settings)
+        if map_file is None:
+            self.map.create_map(self.env_settings)
+        else:
+            self.map.load_topography_resources(map_file, self.env_settings)
 
         # Initialize agents
         self.agents: List[Agent] = [Agent(i) for i in range(self.num_agents)]
@@ -108,7 +112,8 @@ class MapEnvironment(gym.Env):
             }
         )
 
-        self.reset()
+        for agent in self.agents:
+            agent.reset(self.env_settings)
 
     def reset(self) -> Dict[str, Any]:
         """

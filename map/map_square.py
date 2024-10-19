@@ -40,17 +40,21 @@ class Map_Square:
     """
 
     def __init__(self, id, x, y, square_size, land_value=VALUE_DEFAULT_LAND):
-        # coorinates and ids
+        # coordinates and ids
         self.tile_id = id
         self.x = x
         self.y = y
         self.square_size = square_size
+        self.land_type = VALUE_DEFAULT_LAND
 
         # ui stuff
         self.default_border_color = COLOR_DEFAULT_BORDER
         self.default_color = COLOR_DEFAULT_LAND
         self.fill_color = COLOR_DEFAULT_LAND
         self.border_color = COLOR_DEFAULT_BORDER
+
+        if land_value is not None:
+            self.set_land_type(land_value)
 
         # land properties
         self.height = 0  # height as indicator for water, or ocean tiles

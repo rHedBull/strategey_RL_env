@@ -1,4 +1,5 @@
 import math
+import pickle
 import random
 
 import numpy as np
@@ -105,25 +106,10 @@ class Map:
         # river agents
         self.river_agents(self.tiles, self.rivers)
 
-        # TODO: make importance editable water over mountain over dessert
-        # TODO: make distribution percentage wise locked to tile count
-        # TODO: enable selecttion of land types
-        # TODO: enable distribution method
-
         # post processing
         for row in self.squares:
             for square in row:
                 self.distribute_resources(square)
-
-                # TODO: add random mountain distribution
-                # TODO : make the distribution density and type editable
-                """if square.get_land_type() != VALUE_DEFAULT_WATER:
-                    j = np.random.randint(0,10)/10
-
-                    if j >0.75 and j < 0.85:
-                        square.set_land_type(VALUE_DEFAULT_MOUNTAIN)
-                    elif(j > 0.85 and j < 1):
-                        square.set_land_type(VALUE_DEFAULT_DESSERT)"""
 
                 # check if water arround
                 if square.get_land_type() != VALUE_DEFAULT_OCEAN:
@@ -219,7 +205,6 @@ class Map:
         ]
         for agent in agents:
             agent.river_walk(self, tiles, VALUE_DEFAULT_RIVER)
-            # TODO ad river water adjacent type
 
     def let_map_agent_run(self, land_type_percentage, tiles, LAND_TYPE_VALUE):
         if land_type_percentage < 0:
@@ -247,3 +232,68 @@ class Map:
                         agents.remove(agent)
                     if len(agents) == 0:
                         running = False
+
+    def serialize_topography_resources(self):
+        """Serialize the topography, resources, and key map attributes."""
+        map_data = {
+            'width': self.width,
+            'height': self.height,
+            'max_x_index': self.max_x_index,
+            'max_y_index': self.max_y_index,
+            'water_percentage': self.water_percentage,
+            'mountain_percentage': self.mountain_percentage,
+            'dessert_percentage': self.dessert_percentage,
+            'resource_density': self.resource_density,
+            'squares': [
+                [
+                    {
+                        'id': square.tile_id,
+                        'x': square.x,
+                        'y': square.y,
+                        'land_type': square.get_land_type(),
+                        'resources': square.get_resources(),  # Assuming this returns a list of resources
+                    }
+                    for square in row
+                ]
+                for row in self.squares
+            ]
+        }
+        return map_data
+
+    def save_topography_resources(self, file_path):
+        """Save the serialized topography and resources using pickle."""
+        map_data = self.serialize_topography_resources()
+        with open(file_path, 'wb') as file:
+            pickle.dump(map_data, file)
+
+    def load_topography_resources(self, file_path, settings):
+        """Load the map topography and resources from a pickle file."""
+
+        self.load_settings(settings)
+        with open(file_path, 'rb') as file:
+            map_data = pickle.load(file)
+
+        # Reconstruct the map object
+
+        self.width = map_data['width']
+        self.height = map_data['height']
+        self.max_x_index = map_data['max_x_index']
+        self.max_y_index = map_data['max_y_index']
+
+        # recalculate tile size since it depends on the tiles and screen size
+        self.tile_size = int(self.height / math.sqrt(self.tiles))
+
+        self.squares = []
+        squares = map_data['squares']
+        for row_data in squares:
+            row = [
+                Map_Square(
+                    id=square_data['id'],
+                    x=square_data['x'],
+                    y=square_data['y'],
+                    square_size=self.tile_size,
+                    land_value=square_data['land_type']
+                )
+                for square_data in row_data
+            ]
+            self.squares.append(row)
