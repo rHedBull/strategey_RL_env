@@ -214,23 +214,61 @@ class ActionManager:
 
         base_claim_cost = self.env_settings.get_setting("actions")["claim"]["cost"]
 
+        #  check if enough money to claim tile
+        if agent.money < base_claim_cost:
+            return False
+
         if not self.check_position_on_map(position):
             return False
 
-        # # check if the tile is already claimed by someone
-        # if self.env.map.squares[x][y].get_owner() != OWNER_DEFAULT_TILE:
-        #     return {
-        #         "success": False,
-        #         "reason": "Invalid move conflict with other Agent",
-        #         "reward": self.env_settings.get("invalid_action_penalty", -1),
-        #     }
-        #
-        # # check if enough money to claim tile
-        if agent.money < base_claim_cost:
+        # check if agent already owns the tile
+        if not self.agent_does_not_own_tile_already(agent, position):
+            return False
+
+        # check if tile is next to another claimed tile
+        if not self.is_adjacent_to_claimed(agent, position):
             return False
 
         # all checks passed
         return True
+
+    def agent_does_not_own_tile_already(
+        self, agent: Agent, position: Tuple[int, int]
+    ) -> bool:
+        x, y = position
+        if self.env.map.get_tile((x, y)).get_owner() == agent:
+            return False
+        return True
+
+    def is_adjacent_to_claimed(self, agent: Agent, position: Tuple[int, int]) -> bool:
+        x, y = position
+        already_claimed = agent.get_claimed_tiles()
+        # Define the four possible adjacent positions (up, down, left, right)
+        adjacent_positions = [
+            (x, y - 1),  # Up
+            (x, y + 1),  # Down
+            (x - 1, y),  # Left
+            (x + 1, y),  # Right
+        ]
+
+        for adj in adjacent_positions:
+            if self.check_position_on_map(adj) and adj in already_claimed:
+                # we found an adjacent claimed tile
+                return True
+
+        # Optionally, consider diagonal adjacency by uncommenting the following lines:
+        # diagonal_positions = [
+        #     (x - 1, y - 1),
+        #     (x + 1, y - 1),
+        #     (x - 1, y + 1),
+        #     (x + 1, y + 1)
+        # ]
+        # for adj in diagonal_positions:
+        #     if self.check_position_on_map(adj) and adj in agent.claimed_tiles:
+        #         print(f"Diagonally adjacent claimed tile found at {adj}.")
+        #         return True
+
+        return False
 
     def claim_tile(self, agent: Agent, pos: [int, int]) -> int:
         self.env.map.claim_tile(agent, pos)
