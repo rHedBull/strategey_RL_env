@@ -13,13 +13,13 @@ from test_env.Agent import Agent
 
 
 class Map:
-    def __init__(self):
-        self.tile_size = None
+    def __init__(self, screen_size):
         self.tiles = None
+        self.tile_size = None
         self.width = None
         self.height = None
-        self.max_y_index = None
-        self.max_x_index = None
+
+        self.screen_size = screen_size
 
         self.squares = []
 
@@ -35,14 +35,18 @@ class Map:
         self.biomes_definition = None
         self.resource_definition = None
 
-    def load_settings(self, settings):
+    def load_settings(self, settings, ):
         self.width = settings.get_setting("map_width")
         self.height = settings.get_setting("map_height")
 
-        self.tiles = settings.get_setting("tiles")
-        self.tile_size = int(self.height / math.sqrt(self.tiles))
-        self.max_x_index = int(self.width / self.tile_size)
-        self.max_y_index = int(self.height / self.tile_size)
+        self.tiles = self.height * self.width
+
+        if self.height > self.width:
+            self.tile_size = int(self.screen_size / self.height)
+        else:
+            self.tile_size = int(self.screen_size / self.width)
+
+        self.continuous_map = settings.get_setting("continuous_map")
 
         self.water_percentage = settings.get_setting("water_budget_per_agent")
         self.mountain_percentage = settings.get_setting("mountain_budget_per_agent")
@@ -61,14 +65,14 @@ class Map:
         self.squares = [
             [
                 Map_Square(
-                    (y_index * self.max_x_index + x_index),
+                    (y_index * self.width + x_index),
                     x_index,
                     y_index,
                     self.tile_size,
                 )
-                for x_index in range(self.max_x_index)
+                for x_index in range(self.width)
             ]
-            for y_index in range(self.max_y_index)
+            for y_index in range(self.height)
         ]
 
         self.reset()
@@ -117,13 +121,13 @@ class Map:
                         square.x > 0
                         and self.squares[square.y][square.x - 1].get_land_type()
                         == VALUE_DEFAULT_OCEAN
-                        or square.x < self.max_x_index - 1  # check water left
+                        or square.x < self.width - 1  # check water left
                         and self.squares[square.y][square.x + 1].get_land_type()
                         == VALUE_DEFAULT_OCEAN
                         or square.y > 0  # check water right
                         and self.squares[square.y - 1][square.x].get_land_type()
                         == VALUE_DEFAULT_OCEAN
-                        or square.y < self.max_y_index - 1  # check water up
+                        or square.y < self.height - 1  # check water up
                         and self.squares[square.y + 1][square.x].get_land_type()
                         == VALUE_DEFAULT_OCEAN
                     ):  # check water down
@@ -133,7 +137,7 @@ class Map:
         """define here what infor is visible to all agents
         Assuming full observability of map for now
         """
-        map_info = np.zeros((self.max_x_index, self.max_y_index, 2))
+        map_info = np.zeros((self.width, self.height, 2))
         for row in self.squares:
             for square in row:
                 map_info[square.x][square.y] = 0  # square.get_observation_state()
@@ -145,7 +149,7 @@ class Map:
         Not really meant for the agents to see. Rather to recreate the map later.
         """
 
-        full_map_info = np.zeros((self.max_x_index, self.max_y_index, 2))
+        full_map_info = np.zeros((self.width, self.height, 2))
         for row in self.squares:
             for square in row:
                 info = square.get_full_info()
@@ -155,9 +159,8 @@ class Map:
     def claim_tile(self, agent: Agent, position: [int, int]) -> None:
         """
         Claim a tile at position (x,y) for an agent
+        :param position:
         :param agent:
-        :param x:
-        :param y:
         :return:
         """
         x, y = position
@@ -236,63 +239,64 @@ class Map:
     def serialize_topography_resources(self):
         """Serialize the topography, resources, and key map attributes."""
         map_data = {
-            'width': self.width,
-            'height': self.height,
-            'max_x_index': self.max_x_index,
-            'max_y_index': self.max_y_index,
-            'water_percentage': self.water_percentage,
-            'mountain_percentage': self.mountain_percentage,
-            'dessert_percentage': self.dessert_percentage,
-            'resource_density': self.resource_density,
-            'squares': [
+            "width": self.width,
+            "height": self.height,
+            #"max_x_index": self.max_x_index,
+            #"max_y_index": self.max_y_index,
+            "water_percentage": self.water_percentage,
+            "mountain_percentage": self.mountain_percentage,
+            "dessert_percentage": self.dessert_percentage,
+            "resource_density": self.resource_density,
+            "squares": [
                 [
                     {
-                        'id': square.tile_id,
-                        'x': square.x,
-                        'y': square.y,
-                        'land_type': square.get_land_type(),
-                        'resources': square.get_resources(),  # Assuming this returns a list of resources
+                        "id": square.tile_id,
+                        "x": square.x,
+                        "y": square.y,
+                        "land_type": square.get_land_type(),
+                        "resources": square.get_resources(),  # Assuming this returns a list of resources
                     }
                     for square in row
                 ]
                 for row in self.squares
-            ]
+            ],
         }
         return map_data
 
     def save_topography_resources(self, file_path):
         """Save the serialized topography and resources using pickle."""
         map_data = self.serialize_topography_resources()
-        with open(file_path, 'wb') as file:
+        with open(file_path, "wb") as file:
             pickle.dump(map_data, file)
 
     def load_topography_resources(self, file_path, settings):
         """Load the map topography and resources from a pickle file."""
 
         self.load_settings(settings)
-        with open(file_path, 'rb') as file:
+        with open(file_path, "rb") as file:
             map_data = pickle.load(file)
 
         # Reconstruct the map object
 
-        self.width = map_data['width']
-        self.height = map_data['height']
-        self.max_x_index = map_data['max_x_index']
-        self.max_y_index = map_data['max_y_index']
+        self.width = map_data["width"]
+        self.height = map_data["height"]
+        self.tiles = self.height * self.width
+
 
         # recalculate tile size since it depends on the tiles and screen size
+        # TODO: differentiate between window size and map size !!!
         self.tile_size = int(self.height / math.sqrt(self.tiles))
 
         self.squares = []
-        squares = map_data['squares']
+        squares = map_data["squares"]
         for row_data in squares:
             row = [
                 Map_Square(
-                    id=square_data['id'],
-                    x=square_data['x'],
-                    y=square_data['y'],
+                    id=square_data["id"],
+                    x=square_data["x"],
+                    y=square_data["y"],
                     square_size=self.tile_size,
-                    land_value=square_data['land_type']
+                    land_value=square_data["land_type"],
                 )
                 for square_data in row_data
             ]
