@@ -51,7 +51,7 @@ class MapEnvironment(gym.Env):
         screen,
         render_mode: str = "rgb_array",
         game_type: str = "automated",
-        map_file : str = None
+        map_file: str = None,
     ):
         super(MapEnvironment, self).__init__()
 
@@ -68,7 +68,7 @@ class MapEnvironment(gym.Env):
         self.screen = screen
 
         # Initialize the map
-        self.map = Map()
+        self.map = Map(self.screen.get_width())
         if map_file is None:
             self.map.create_map(self.env_settings)
         else:
@@ -100,7 +100,11 @@ class MapEnvironment(gym.Env):
                 "map": spaces.Box(
                     low=0,
                     high=1,
-                    shape=(self.map.max_x_index, self.map.max_y_index, num_features_per_tile),
+                    shape=(
+                        self.map.width,
+                        self.map.height,
+                        num_features_per_tile,
+                    ),
                     dtype=np.float32,
                 ),
                 "agents": spaces.Box(

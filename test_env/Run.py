@@ -108,11 +108,11 @@ class Run:
         if self.env.player:
             self.agents = [Player()]
             for i in range(self.num_agents - 1):
-                agent = Agent(i, self.env.map.max_x_index, self.env.map.max_y_index)
+                agent = Agent(i, self.env.map.width, self.env.map.height)
                 self.agents.append(agent)
         else:
             for i in range(self.num_agents):
-                agent = Agent(i, self.env.map.max_x_index, self.env.map.max_y_index)
+                agent = Agent(i, self.env.map.width, self.env.map.height)
                 self.agents.append(agent)
 
     def check_if_all_done(self, dones):

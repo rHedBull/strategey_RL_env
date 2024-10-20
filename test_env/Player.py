@@ -49,15 +49,15 @@ class Player:
             action = 1
             selected_action["move"]["direction"] = 4  # 'Move Right'
         elif keys[pygame.K_c]:
-            x_max = env.map.max_x_index
-            y_max = env.map.max_y_index
+            x_max = env.map.width
+            y_max = env.map.height
             position = [np.random.randint(0, x_max), np.random.randint(0, y_max)]
             selected_action["claim"] = position
 
         elif keys[pygame.K_b]:
             action = 3  # build sthb
-            x_max = env.map.max_x_index
-            y_max = env.map.max_y_index
+            x_max = env.map.width
+            y_max = env.map.height
             action_properties = [
                 np.random.randint(0, x_max),
                 np.random.randint(0, y_max),

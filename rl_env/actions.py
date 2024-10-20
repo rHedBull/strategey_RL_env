@@ -49,8 +49,8 @@ class ActionManager:
         self.env_settings = env_settings
         self.actions_definition = self.env_settings.get_setting("actions")
 
-        x = self.env.map.max_x_index
-        y = self.env.map.max_y_index
+        x = self.env.map.width
+        y = self.env.map.height
         # Define a structured array with the fields 'action' and 'agent_id'.
         self.conflict_map = {}
 
@@ -283,8 +283,8 @@ class ActionManager:
         :return:
         """
         x, y = position
-        max_x = self.env.map.max_x_index
-        max_y = self.env.map.max_y_index  # assuming a square map
+        max_x = self.env.map.width
+        max_y = self.env.map.height  # assuming a square map
         if 0 <= x < max_x and 0 <= y < max_y:
             return True
         return False
