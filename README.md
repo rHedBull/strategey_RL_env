@@ -41,9 +41,9 @@ tensorboard --logdir logs
 ```bash
 python -m cProfile -o output.prof main.py
 snakeviz output.prof
-``` 
+```
 
-| tiles | sim_map.create_map | map_square.draw | 
+| tiles | sim_map.create_map | map_square.draw |
 |-------|--------------------|-----------------|
 | 10    | 0.000              | 0.000           |
 | 10^2  | 0.000              | 0.000           |
@@ -68,7 +68,7 @@ run the script with the following command
 python -m memory_profiler your_script.py
 ```
 
-| memory | spike 1 | spike_2 | 
+| memory | spike 1 | spike_2 |
 |--------|---------|---------|
 | 10     | 0.000   | 0.000   |
 | 10^2   | 0.000   | 0.000   |
@@ -78,14 +78,27 @@ python -m memory_profiler your_script.py
 | 10^6   | 23.6    | 9.08    |
 | 10^9   | 0.000   | 0.000   |
 
+# Docs
+
+## ActionManager
+for every action there exists:
+- function to check if action is possible for the agent check_action()
+- function to execute the action apply_action()
+
+first the check_action() function is called, for each agent. After that conflicts within the actions the agents want to execute are detected.
+Then there is some kind of conflict resolution, which decides what happens where conflicts occur. In the end all actions with the conflict resolutions are then executed using apply_action().
 
 # TODOs
 
+## Utils
 - [ ] write profiler script for memory and time for different map sizes and agent counts-> write to a file/ table, maybe markdown?
+- [ ] map previewer
+
 ## Map
-- [ ] write script that just creates multiple maps of various sizes and save them to be used later
+- [ ] extend map generator script to create maps of different settings
 - [ ] create some maps with different sizes and different land type and resource distributions
   - [ ] add some resources
+
 - make importance editable water over mountain over dessert
 -   make distribution percentage wise locked to tile count
 -  enable selection of land types
@@ -95,15 +108,29 @@ python -m memory_profiler your_script.py
 - add river water adjacent type
 
 ## RL
-- [ ] add more actions
-- [ ] calculate rewards better, decide what rewards to give
-- [ ] train simple claiming AI
+
 - [ ] calculate just execution time for different map sizes and agent counts on hardware
+- [ ] make some kind of run setup to run on the different maps of different settings and logg 
+
+### Observation
 - [ ] different types of observability for different agents
+- [ ] correctly implement the observation space
+  - [ ] add option for continuos map
+
+### Rewards
+- [ ] calculate rewards better, decide what rewards to give
+
+### AI
+- [ ] train simple claiming AI
+- [ ] some kind of feature extractor out of observation
+
+### Actions
+- [ ] add more actions
+- [ ] account for continuous maps in action checks
 
 ## UI
 - [ ] zooming, moving?
-- 
+- [ ] implement graphical building visualization
+
 ## Far fetched
 - [ ] tech tree, some actions only possible if reached a level
-- [ ] 

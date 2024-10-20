@@ -8,7 +8,7 @@ from map.map_settings import OWNER_DEFAULT_TILE
 
 buildings = [[], ["improvement-1", 100, 5]]
 
-# TODO : implement graphical building visualization
+
 
 
 def _calculate_new_position(

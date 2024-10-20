@@ -45,6 +45,7 @@ class Map:
             self.tile_size = int(self.screen_size / self.height)
         else:
             self.tile_size = int(self.screen_size / self.width)
+        self.tile_size = max(1, self.tile_size)
 
         self.continuous_map = settings.get_setting("continuous_map")
 

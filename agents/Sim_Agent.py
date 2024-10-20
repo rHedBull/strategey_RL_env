@@ -42,16 +42,17 @@ class Agent:
         self.done = False
         # TODO probably call self.reset() here
 
-    def reset(self, env_settings: Dict[str, Any]):
+    def reset(self, env_settings: Any):
         """
         Resets the agent to the initial state.
 
         Args:
             env_settings (Dict[str, Any]): Environment settings.
         """
-        max_x = int(math.sqrt(env_settings.get_setting("tiles")))
+        max_x = env_settings.get_setting("map_width")
+        max_y = env_settings.get_setting("map_height")
 
-        self.position = (np.random.randint(0, max_x), np.random.randint(0, max_x))
+        self.position = (np.random.randint(0, max_x), np.random.randint(0, max_y))
         self.state = "active"
         self.money = 100  # for now
 
