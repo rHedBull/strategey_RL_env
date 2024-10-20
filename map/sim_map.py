@@ -35,7 +35,10 @@ class Map:
         self.biomes_definition = None
         self.resource_definition = None
 
-    def load_settings(self, settings, ):
+    def load_settings(
+        self,
+        settings,
+    ):
         self.width = settings.get_setting("map_width")
         self.height = settings.get_setting("map_height")
 
@@ -138,10 +141,10 @@ class Map:
         """define here what infor is visible to all agents
         Assuming full observability of map for now
         """
-        map_info = np.zeros((self.width, self.height, 2))
+        map_info = np.zeros((self.width, self.height, 5))  # number of features per tile
         for row in self.squares:
             for square in row:
-                map_info[square.x][square.y] = 0  # square.get_observation_state()
+                map_info[square.x][square.y] = square.get_observation_state()
         return map_info
 
     def get_full_map_as_matrix(self):
@@ -242,8 +245,8 @@ class Map:
         map_data = {
             "width": self.width,
             "height": self.height,
-            #"max_x_index": self.max_x_index,
-            #"max_y_index": self.max_y_index,
+            # "max_x_index": self.max_x_index,
+            # "max_y_index": self.max_y_index,
             "water_percentage": self.water_percentage,
             "mountain_percentage": self.mountain_percentage,
             "dessert_percentage": self.dessert_percentage,
@@ -282,7 +285,6 @@ class Map:
         self.width = map_data["width"]
         self.height = map_data["height"]
         self.tiles = self.height * self.width
-
 
         # recalculate tile size since it depends on the tiles and screen size
         # TODO: differentiate between window size and map size !!!

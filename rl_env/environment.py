@@ -93,31 +93,110 @@ class MapEnvironment(gym.Env):
                 for _ in range(self.num_agents)
             ]
         )
-        num_features_per_tile = 3
-        # TODO: check if observation space is correct
-        self.observation_space = spaces.Dict(
-            {
-                "map": spaces.Box(
-                    low=0,
-                    high=1,
-                    shape=(
-                        self.map.width,
-                        self.map.height,
-                        num_features_per_tile,
-                    ),
-                    dtype=np.float32,
-                ),
-                "agents": spaces.Box(
-                    low=0,
-                    high=max(self.map.width, self.map.height),
-                    shape=(self.num_agents, 3),  # Example: [x, y, state]
-                    dtype=np.float32,
-                ),
-            }
-        )
 
         for agent in self.agents:
             agent.reset(self.env_settings)
+
+    def define_observation_space(self):
+        # Number of features per tile on the map (as per your 'get_full_info' method)
+        num_features_per_tile = 5  # 'height', 'biome', 'resources', 'land_type', 'owner_value', 'land_money_value'
+
+        # Define the minimum and maximum values for each map feature
+        # Replace these with the actual min and max values appropriate for your environment
+        min_height = 0.0
+        max_height = 100.0
+
+        min_biome = 0  # Assuming biome is an integer code (e.g., 0 to 10)
+        max_biome = 10
+
+        # min_resources = 0.0
+        # max_resources = 1000.0
+
+        min_land_type = 0  # Assuming land_type is an integer code (e.g., 0 to 5)
+        max_land_type = 5
+
+        min_owner_value = (
+            0  # Assuming owner_value is an integer (e.g., agent ID starting from 0)
+        )
+        max_owner_value = (
+            self.num_agents - 1
+        )  # Agent IDs range from 0 to num_agents - 1
+
+        min_land_money_value = 0.0
+        max_land_money_value = 10000.0
+
+        # Create arrays for the minimum and maximum values of the map features
+        map_feature_mins = np.array(
+            [
+                min_height,
+                min_biome,
+                # min_resources,
+                min_land_type,
+                min_owner_value,
+                min_land_money_value,
+            ],
+            dtype=np.float32,
+        )
+
+        map_feature_maxs = np.array(
+            [
+                max_height,
+                max_biome,
+                # max_resources,
+                max_land_type,
+                max_owner_value,
+                max_land_money_value,
+            ],
+            dtype=np.float32,
+        )
+
+        # Create the low and high arrays for the map observation space
+        # These arrays have the shape (map_width, map_height, num_features_per_tile)
+        map_low = (
+            np.zeros(
+                (self.map.width, self.map.height, num_features_per_tile),
+                dtype=np.float32,
+            )
+            + map_feature_mins
+        )
+        map_high = (
+            np.zeros(
+                (self.map.width, self.map.height, num_features_per_tile),
+                dtype=np.float32,
+            )
+            + map_feature_maxs
+        )
+
+        # Define the map observation space
+        map_observation_space = spaces.Box(low=map_low, high=map_high, dtype=np.float32)
+
+        # Number of features per agent ('state' and 'money')
+        num_agent_features = 2
+
+        # Define the minimum and maximum values for each agent feature
+        # Replace these with the actual min and max values appropriate for your environment
+        state_min = 0.0
+        state_max = 1.0
+
+        money_min = 0.0
+        money_max = 1000.0
+
+        # Create arrays for the minimum and maximum values of the agent features
+        agent_feature_mins = np.array([state_min, money_min], dtype=np.float32)
+        agent_feature_maxs = np.array([state_max, money_max], dtype=np.float32)
+
+        # Define the agents' observation space
+        agents_observation_space = spaces.Box(
+            low=agent_feature_mins,
+            high=agent_feature_maxs,
+            shape=(self.num_agents, num_agent_features),
+            dtype=np.float32,
+        )
+
+        # Define the overall observation space using spaces.Dict
+        self.observation_space = spaces.Dict(
+            {"map": map_observation_space, "agents": agents_observation_space}
+        )
 
     def reset(self) -> Dict[str, Any]:
         """
@@ -150,7 +229,7 @@ class MapEnvironment(gym.Env):
         self._update_environment_state()
 
         # Collect observations
-        observations = self._get_observation()
+        observations = self.get_observation()
 
         return observations, rewards, dones, info
 
@@ -180,17 +259,6 @@ class MapEnvironment(gym.Env):
         else:
             raise NotImplementedError("Unknown ender mode !!")
 
-    def get_env_state(self):
-        map_info = self.map.get_observation()
-
-        agent_info = {}
-        for agent in self.agents:
-            info = agent.get_state_for_env_info()
-            agent_info[agent.id] = info
-
-        env_info = {"map_info": map_info, "agent_info": agent_info}
-        return env_info
-
     def get_possible_actions(self, agent_id):
         possible_actions = []
         agent = self.agents[agent_id]
@@ -208,7 +276,7 @@ class MapEnvironment(gym.Env):
         for agent in self.agents:
             agent.update()
 
-    def _get_observation(self) -> Dict[str, Any]:
+    def get_observation(self) -> Dict[str, Any]:
         """
         Constructs the observation dictionary.
 
@@ -217,7 +285,8 @@ class MapEnvironment(gym.Env):
         """
         map_observation = self.map.get_observation()
         agent_observations = np.array(
-            [agent.get_observation() for agent in self.agents]
+            [agent.get_observation() for agent in self.agents],
+            dtype=np.float32,
         )
         observation = {"map": map_observation, "agents": agent_observations}
         return observation

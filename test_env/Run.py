@@ -36,7 +36,7 @@ class Run:
         all_done = False
 
         common_env_state = (
-            self.env.get_env_state()
+            self.env.get_observation()
         )  # TODO different types of observability for different agents
         while not all_done and step < self.max_steps:
             self.env.render()  # checks already if rendering is on

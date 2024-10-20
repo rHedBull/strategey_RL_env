@@ -110,12 +110,13 @@ Then there is some kind of conflict resolution, which decides what happens where
 ## RL
 
 - [ ] calculate just execution time for different map sizes and agent counts on hardware
-- [ ] make some kind of run setup to run on the different maps of different settings and logg 
+- [ ] make some kind of run setup to run on the different maps of different settings and logg
 
 ### Observation
 - [ ] different types of observability for different agents
-- [ ] correctly implement the observation space
+- [ ] adjust height, biomes and other min and max values in obs space
   - [ ] add option for continuos map
+  - differentiate between tiles seen and claimed and how it influences where actions can happen
 
 ### Rewards
 - [ ] calculate rewards better, decide what rewards to give
@@ -126,6 +127,7 @@ Then there is some kind of conflict resolution, which decides what happens where
 
 ### Actions
 - [ ] add more actions
+- [ ] !! adjust action space
 - [ ] account for continuous maps in action checks
 
 ## UI

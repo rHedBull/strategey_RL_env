@@ -166,23 +166,18 @@ class Map_Square:
             )
 
     def get_full_info(self):
-        return [
+        state = [
             self.height,
             self.biome,
-            self.resources,
+            # self.resources,
             self.land_type,
             self.owner_value,
-            self.buildings,
+            self.land_money_value,
         ]
+        return state
 
     def get_observation_state(self):
-        return [
-            self.height,
-            self.biome,
-            self.resources,
-            self.land_type,
-            self.owner_value,
-        ]  # this is what other agents can see
+        return self.get_full_info()
 
     def add_building(self, building_id):
         self.buildings.append(building_id)
