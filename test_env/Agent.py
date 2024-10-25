@@ -1,5 +1,5 @@
 import numpy as np
-
+import random as rd
 
 class Agent:
     def __init__(self, id, x_max, y_max):
@@ -13,7 +13,6 @@ class Agent:
         self.reward = 0
 
     def get_action(self, env_info, possible_actions):
-        # action = np.random.choice(possible_actions)
 
         # action dictionary mask
         selected_action = {
@@ -23,10 +22,11 @@ class Agent:
         # expand default action dictionary mask
         self.action = 2
 
-        x = np.random.randint(0, self.x_max)
-        y = np.random.randint(0, self.y_max)
+        claimable_tiles = possible_actions[0]
 
-        pos = [x, y]
+        # select a random tile from set
+        pos = rd.choice(list(claimable_tiles))
+
         selected_action["claim"] = pos
 
         # TODO: vectorize and normalize the env_info here!!

@@ -203,7 +203,7 @@ class ActionManager:
         # Update position
         agent.position = new_position
         agent.money -= self.env_settings.get_setting("actions")["move"]["cost"]
-        print(f"Agent {agent.id}: Move successful to position {agent.position}.")
+        #print(f"Agent {agent.id}: Move successful to position {agent.position}.")
         reward = self.env_settings.get_setting("actions")["move"]["reward"]
         return reward
 
@@ -272,7 +272,9 @@ class ActionManager:
 
     def claim_tile(self, agent: Agent, pos: [int, int]) -> int:
         self.env.map.claim_tile(agent, pos)
-        agent.claimed_tiles.append(self.env.map.get_tile(pos))
+        agent.claimed_tiles.add(pos)
+        self.update_claimable_tiles(agent, pos)
+
         agent.money -= self.env_settings.get_setting("actions")["claim"]["cost"]
         reward = self.env_settings.get_setting("actions")["claim"]["reward"]
         return reward
@@ -313,7 +315,6 @@ class ActionManager:
 
     def check_position_on_map(self, position: Tuple[int, int]) -> bool:
         """
-
         :param self:
         :param position:
         :return:
@@ -324,3 +325,45 @@ class ActionManager:
         if 0 <= x < max_x and 0 <= y < max_y:
             return True
         return False
+
+    def update_claimable_tiles(self, agent: Agent, new_claimed_tile: Tuple[int, int]):
+        """
+        Updates the agent's set of claimable tiles by adding new adjacent tiles
+        to the newly claimed tile. Limits the number of additions to 3 (or 5 if diagonals are allowed).
+
+        :param agent: The agent who claimed the new tile.
+        :param new_claimed_tile: The position of the newly claimed tile.
+        """
+        x, y = new_claimed_tile
+
+        # remove claimed tile
+        agent.claimable_tiles.discard(new_claimed_tile)
+
+        new_possible = [
+            (x, y - 1),  # Up
+            (x, y + 1),  # Down
+            (x - 1, y),  # Left
+            (x + 1, y),  # Right
+        ]
+
+        # if allow_diagonal:
+        # diagonal_positions = [
+        #         #     (x - 1, y - 1),
+        #         #     (x + 1, y - 1),
+        #         #     (x - 1, y + 1),
+        #         #     (x + 1, y + 1)
+        #         # ]
+        claimed_copy = agent.claimed_tiles.copy()
+        claimable_copy = agent.claimable_tiles.copy()
+
+        new_claimable = []
+        for pos in new_possible:
+            # Check if the position is valid and not already listed as claimed or claimable
+            if (
+                    self.check_position_on_map(pos) and
+                    pos not in claimed_copy and
+                    pos not in claimable_copy
+            ):
+                new_claimable.append(pos)
+
+        agent.claimable_tiles.update(new_claimable)

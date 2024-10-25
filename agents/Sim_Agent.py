@@ -1,4 +1,3 @@
-import math
 from random import random
 from typing import Any, Dict, Tuple
 
@@ -30,7 +29,8 @@ class Agent:
 
         # resources
         self.money = None
-        self.claimed_tiles = []
+        self.claimed_tiles = set()
+        self.claimable_tiles = set()
 
         # exclude player color id 0
         c = self.id
@@ -55,8 +55,11 @@ class Agent:
         self.max_x = env_settings.get_setting("map_width")
         self.max_y = env_settings.get_setting("map_height")
 
+        self.claimed_tiles.clear()
+        self.claimable_tiles.clear()
+
         self.position = (np.random.randint(0, self.max_x), np.random.randint(0, self.max_y))
-        self.claimed_tiles.append(self.position)  # initial spawn is a claimed tile
+        self.claimed_tiles.add(self.position)  # initial spawn is a claimed tile
 
         self.update_claimable_tiles(self.position)
 
@@ -79,8 +82,9 @@ class Agent:
     def update(self):
         # Update the agent's state
 
-        for _, tile in enumerate(self.claimed_tiles):
-            self.money += tile.get_round_value()
+        # TODO: reenable this
+        # for _, tile in enumerate(self.claimed_tiles):
+        # self.money += tile.get_round_value()
 
         if self.money <= 0:  # TODO adapt different state transitions
             self.state = "Done"
@@ -103,7 +107,7 @@ class Agent:
         if self.state == "Done":
             possible_actions = []
         else:
-            possible_actions = [1, 2, 3]  # ['move', 'claim_tile', 'build']
+            possible_actions = self.claimable_tiles  # for now only claimable intersting
 
         return possible_actions
 
@@ -137,3 +141,56 @@ class Agent:
             x += 1
         # No move if move_direction is 0 or unrecognized
         return (x, y)
+
+    def get_claimed_tiles(self):
+        return self.claimed_tiles
+
+    def update_claimable_tiles(self, new_claimed_tile: Tuple[int, int]):
+        """
+        Updates the agent's set of claimable tiles by adding new adjacent tiles
+        to the newly claimed tile. Limits the number of additions to 3 (or 5 if diagonals are allowed).
+
+        :param agent: The agent who claimed the new tile.
+        :param new_claimed_tile: The position of the newly claimed tile.
+        """
+        x, y = new_claimed_tile
+
+        new_possible = [
+            (x, y - 1),  # Up
+            (x, y + 1),  # Down
+            (x - 1, y),  # Left
+            (x + 1, y),  # Right
+        ]
+
+        #if allow_diagonal:
+        # diagonal_positions = [
+        #         #     (x - 1, y - 1),
+        #         #     (x + 1, y - 1),
+        #         #     (x - 1, y + 1),
+        #         #     (x + 1, y + 1)
+        #         # ]
+        claimed_copy = self.claimed_tiles.copy()
+        claimable_copy = self.claimable_tiles.copy()
+
+        new_claimable = []
+        for pos in new_possible:
+            # Check if the position is valid and not already listed as claimed or claimable
+            if (
+                    self.check_position_on_map(pos) and
+                    pos not in claimed_copy and
+                    pos not in claimable_copy
+            ):
+                new_claimable.append(pos)
+
+        self.claimable_tiles.update(new_claimable)
+
+    def check_position_on_map(self, position: Tuple[int, int]) -> bool:
+        """
+        :param position:
+        :return:
+        """
+        x, y = position
+
+        if 0 <= x < self.max_x and 0 <= y < self.max_y:
+            return True
+        return False
