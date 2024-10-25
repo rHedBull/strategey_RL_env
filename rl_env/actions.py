@@ -47,8 +47,6 @@ class ActionManager:
         self.env_settings = env_settings
         self.actions_definition = self.env_settings.get_setting("actions")
 
-        x = self.env.map.width
-        y = self.env.map.height
         # Define a structured array with the fields 'action' and 'agent_id'.
         self.conflict_map = {}
 
@@ -203,7 +201,7 @@ class ActionManager:
         # Update position
         agent.position = new_position
         agent.money -= self.env_settings.get_setting("actions")["move"]["cost"]
-        #print(f"Agent {agent.id}: Move successful to position {agent.position}.")
+        # print(f"Agent {agent.id}: Move successful to position {agent.position}.")
         reward = self.env_settings.get_setting("actions")["move"]["reward"]
         return reward
 
@@ -279,38 +277,6 @@ class ActionManager:
         reward = self.env_settings.get_setting("actions")["claim"]["reward"]
         return reward
 
-    # build a building
-    def check_building(self, agent, base_construction_cost, building_id, x, y):
-        specific_building_cost = buildings[building_id][1]
-
-        total_cost = base_construction_cost + specific_building_cost
-        if agent.money < total_cost:
-            return False
-
-        if not self.check_position_on_map((x, y)):
-            return False
-
-        # check if building is possible
-        tile_for_planned_building = self.env.map.get_tile(x, y)
-
-        # check if agent owns the tile to build on
-        if tile_for_planned_building.get_owner() != agent:
-            return False
-
-        current_buildings_on_tile = tile_for_planned_building.get_buildings()
-
-        # check if building already exists
-        for building in current_buildings_on_tile:
-            if building == building_id:
-                return False
-
-        # all checks passed
-        return True
-
-    def add_building(self, agent: Agent) -> int:
-        reward = self.env_settings.get_setting("actions")["build"]["reward"]
-        return reward
-
         # self.env.map.add_building(building_id, x, y)
 
     def check_position_on_map(self, position: Tuple[int, int]) -> bool:
@@ -360,9 +326,9 @@ class ActionManager:
         for pos in new_possible:
             # Check if the position is valid and not already listed as claimed or claimable
             if (
-                    self.check_position_on_map(pos) and
-                    pos not in claimed_copy and
-                    pos not in claimable_copy
+                self.check_position_on_map(pos)
+                and pos not in claimed_copy
+                and pos not in claimable_copy
             ):
                 new_claimable.append(pos)
 
