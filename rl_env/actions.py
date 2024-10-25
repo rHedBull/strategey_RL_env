@@ -33,6 +33,15 @@ def _calculate_new_position(
     return x, y
 
 
+def is_claimable(agent: Agent, position: Tuple[int, int]) -> bool:
+    # check if position is in agent's claimable_tiles list
+
+    if position in agent.claimable_tiles:
+        return True
+    else:
+        return False
+
+
 class ActionManager:
     """
     Manages the application of movement actions within the environment,
@@ -222,7 +231,7 @@ class ActionManager:
             return False
 
         # check if tile is next to another claimed tile
-        if not self.is_adjacent_to_claimed(agent, position):
+        if not is_claimable(agent, position):
             return False
 
         # all checks passed
@@ -235,36 +244,6 @@ class ActionManager:
         if self.env.map.get_tile((x, y)).get_owner() == agent:
             return False
         return True
-
-    def is_adjacent_to_claimed(self, agent: Agent, position: Tuple[int, int]) -> bool:
-        x, y = position
-        already_claimed = agent.get_claimed_tiles()
-        # Define the four possible adjacent positions (up, down, left, right)
-        adjacent_positions = [
-            (x, y - 1),  # Up
-            (x, y + 1),  # Down
-            (x - 1, y),  # Left
-            (x + 1, y),  # Right
-        ]
-
-        for adj in adjacent_positions:
-            if self.check_position_on_map(adj) and adj in already_claimed:
-                # we found an adjacent claimed tile
-                return True
-
-        # Optionally, consider diagonal adjacency by uncommenting the following lines:
-        # diagonal_positions = [
-        #     (x - 1, y - 1),
-        #     (x + 1, y - 1),
-        #     (x - 1, y + 1),
-        #     (x + 1, y + 1)
-        # ]
-        # for adj in diagonal_positions:
-        #     if self.check_position_on_map(adj) and adj in agent.claimed_tiles:
-        #         print(f"Diagonally adjacent claimed tile found at {adj}.")
-        #         return True
-
-        return False
 
     def claim_tile(self, agent: Agent, pos: [int, int]) -> int:
         self.env.map.claim_tile(agent, pos)
