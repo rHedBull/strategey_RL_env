@@ -50,8 +50,10 @@ class Map_Square:
         # ui stuff
         self.default_border_color = COLOR_DEFAULT_BORDER
         self.default_color = COLOR_DEFAULT_LAND
-        self.fill_color = COLOR_DEFAULT_LAND
-        self.border_color = COLOR_DEFAULT_BORDER
+
+        self.land_type_color = COLOR_DEFAULT_LAND
+        self.owner_color = COLOR_DEFAULT_BORDER
+
 
         if land_value is not None:
             self.set_land_type(land_value)
@@ -73,15 +75,10 @@ class Map_Square:
     def reset(self):
         self.owner_value = OWNER_DEFAULT_TILE
         self.land_type = VALUE_DEFAULT_LAND
-        self.fill_color = COLOR_DEFAULT_LAND
-        self.border_color = COLOR_DEFAULT_BORDER
+        self.land_type_color = COLOR_DEFAULT_LAND
+        self.owner_color = COLOR_DEFAULT_BORDER
 
-    def set_owner(self, owner_value):
-        """
-        Set the owner of the square
-        :param owner_value: the id of the owner agent
-        """
-        self.owner_value = owner_value
+        self.buildings.clear()
 
     def get_owner(self):
         return self.owner_value
@@ -115,7 +112,7 @@ class Map_Square:
         """
         if land_value != self.land_type:
             self.land_type = land_value
-            self.fill_color = LAND[self.land_type][2]
+            self.land_type_color = LAND[self.land_type][2]
 
     def get_land_type(self):
         return self.land_type
@@ -130,7 +127,7 @@ class Map_Square:
         :return:
         """
         self.owner_value = agent.id
-        self.border_color = agent.color
+        self.owner_color = agent.color
 
     def draw(self, screen, new_x, new_y, new_square_size):
         """
@@ -179,8 +176,6 @@ class Map_Square:
     def get_observation_state(self):
         return self.get_full_info()
 
-    def add_building(self, building_id):
-        self.buildings.append(building_id)
 
     def calculate_land_money_value(self):
         """
