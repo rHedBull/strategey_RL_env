@@ -1,5 +1,5 @@
-import numpy as np
 import random as rd
+
 
 class Agent:
     def __init__(self, id, x_max, y_max):
@@ -13,7 +13,6 @@ class Agent:
         self.reward = 0
 
     def get_action(self, env_info, possible_actions):
-
         # action dictionary mask
         selected_action = {
             "move": {"direction": None, "new_position": None},

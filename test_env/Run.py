@@ -53,9 +53,7 @@ class Run:
                     action = agent.get_action(pygame, None)
                     print("Player chose action {}".format(action))
                 else:
-                    possible_actions = self.env.get_possible_actions(
-                        agent.id
-                    )
+                    possible_actions = self.env.get_possible_actions(agent.id)
                     action = agent.get_action(common_env_state, possible_actions)
 
                 agent_actions.append(action)

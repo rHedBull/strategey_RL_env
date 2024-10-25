@@ -1,5 +1,5 @@
 from random import random
-from typing import Any, Dict, Tuple
+from typing import Any, Tuple
 
 import numpy as np
 import pygame
@@ -58,7 +58,10 @@ class Agent:
         self.claimed_tiles.clear()
         self.claimable_tiles.clear()
 
-        self.position = (np.random.randint(0, self.max_x), np.random.randint(0, self.max_y))
+        self.position = (
+            np.random.randint(0, self.max_x),
+            np.random.randint(0, self.max_y),
+        )
         self.claimed_tiles.add(self.position)  # initial spawn is a claimed tile
 
         self.update_claimable_tiles(self.position)
@@ -162,7 +165,7 @@ class Agent:
             (x + 1, y),  # Right
         ]
 
-        #if allow_diagonal:
+        # if allow_diagonal:
         # diagonal_positions = [
         #         #     (x - 1, y - 1),
         #         #     (x + 1, y - 1),
@@ -176,9 +179,9 @@ class Agent:
         for pos in new_possible:
             # Check if the position is valid and not already listed as claimed or claimable
             if (
-                    self.check_position_on_map(pos) and
-                    pos not in claimed_copy and
-                    pos not in claimable_copy
+                self.check_position_on_map(pos)
+                and pos not in claimed_copy
+                and pos not in claimable_copy
             ):
                 new_claimable.append(pos)
 

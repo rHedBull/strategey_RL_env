@@ -6,8 +6,6 @@ import numpy as np
 from agents.Sim_Agent import Agent
 from map.map_settings import OWNER_DEFAULT_TILE
 
-buildings = [[], ["improvement-1", 100, 5]]
-
 
 def _calculate_new_position(
     current_position: Tuple[int, int], move_direction: int

@@ -46,8 +46,10 @@ class Player(Agent):
             action = 1
             selected_action["move"]["direction"] = 4  # 'Move Right'
         elif keys[pygame.K_c]:
-
-            position = [np.random.randint(0, self.x_max), np.random.randint(0, self.y_max)]
+            position = [
+                np.random.randint(0, self.x_max),
+                np.random.randint(0, self.y_max),
+            ]
             selected_action["claim"] = position
 
         elif keys[pygame.K_b]:
