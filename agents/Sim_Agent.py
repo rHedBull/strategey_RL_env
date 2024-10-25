@@ -20,6 +20,9 @@ class Agent:
     """
 
     def __init__(self, agent_id: int):
+        self.max_x = None
+        self.max_y = None
+
         self.id = agent_id
         self.position = (0, 0)
 
@@ -49,10 +52,14 @@ class Agent:
         Args:
             env_settings (Dict[str, Any]): Environment settings.
         """
-        max_x = env_settings.get_setting("map_width")
-        max_y = env_settings.get_setting("map_height")
+        self.max_x = env_settings.get_setting("map_width")
+        self.max_y = env_settings.get_setting("map_height")
 
-        self.position = (np.random.randint(0, max_x), np.random.randint(0, max_y))
+        self.position = (np.random.randint(0, self.max_x), np.random.randint(0, self.max_y))
+        self.claimed_tiles.append(self.position)  # initial spawn is a claimed tile
+
+        self.update_claimable_tiles(self.position)
+
         self.state = "active"
         self.money = 100  # for now
 
@@ -78,9 +85,6 @@ class Agent:
         if self.money <= 0:  # TODO adapt different state transitions
             self.state = "Done"
 
-    def get_observation(self):
-        return self.state
-
     def draw(self, screen, square_size, zoom_level, pan_x, pan_y):
         radius = square_size / 2
         # get a color modulo the number of colors
@@ -103,9 +107,11 @@ class Agent:
 
         return possible_actions
 
-    def get_state_for_env_info(self) -> Dict[str, Any]:
+    def get_observation(self) -> [float, float]:
         # define here what information of all agents is visible to all other agents
-        return {"position": self.position, "money": self.money}
+        return np.array(
+            [1.0, self.money], dtype=np.float32
+        )  # for now state is only active or done, but could be extended
 
     def _calculate_new_position(
         self, current_position: Tuple[int, int], move_direction: int
