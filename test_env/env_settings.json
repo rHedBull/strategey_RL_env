@@ -93,7 +93,7 @@
             "value": 4
         }
     ],
-    "agent_initial_budget": 1000,
+    "agent_initial_budget": 10000,
     "agent_initial_budget_distribution": "equal",
     "actions": {
         "move": {
@@ -104,7 +104,7 @@
             "cost":100,
             "reward": 10
         },
-        "build": {
+        "city": {
             "cost": 200,
             "reward": 20
         }

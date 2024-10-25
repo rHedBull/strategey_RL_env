@@ -16,6 +16,7 @@ class Player(Agent):
         selected_action = {
             "move": {"direction": None, "new_position": None},
             "claim": None,  # position goes here
+            "city": None
         }
 
         # wait for event

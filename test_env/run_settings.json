@@ -9,5 +9,5 @@
     "image_logging_round_interval": 1,
     "screen_size": 1000,
     "num_agents": 5,
-    "max_steps": 10
+    "max_steps": 100
 }

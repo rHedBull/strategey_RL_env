@@ -68,7 +68,10 @@ class Map_Square:
 
         # owner specific
         self.owner_value = OWNER_DEFAULT_TILE
-        # self.buildings = []
+
+        # building stuff
+        self.buildings = set()
+
 
         self.land_money_value = land_value
 
@@ -138,29 +141,43 @@ class Map_Square:
         :param new_square_size:
         :return:
         """
-        pygame.draw.rect(
-            screen,
-            self.fill_color,
-            (
-                self.x * self.square_size,
-                self.y * self.square_size,
-                self.square_size,
-                self.square_size,
-            ),
-        )
 
-        if self.border_color != COLOR_DEFAULT_BORDER:
+        if len(self.buildings) > 0:
+            # we have a city here.
             pygame.draw.rect(
                 screen,
-                self.border_color,
+                self.owner_color,
                 (
                     self.x * self.square_size,
                     self.y * self.square_size,
                     self.square_size,
                     self.square_size,
                 ),
-                1,
             )
+        else:
+            pygame.draw.rect(
+                screen,
+                self.land_type_color,
+                (
+                    self.x * self.square_size,
+                    self.y * self.square_size,
+                    self.square_size,
+                    self.square_size,
+                ),
+            )
+
+            if self.owner_color != COLOR_DEFAULT_BORDER:
+                pygame.draw.rect(
+                    screen,
+                    self.owner_color,
+                    (
+                        self.x * self.square_size,
+                        self.y * self.square_size,
+                        self.square_size,
+                        self.square_size,
+                    ),
+                    1,
+                )
 
     def get_full_info(self):
         state = [

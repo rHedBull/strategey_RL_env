@@ -5,6 +5,7 @@ import numpy as np
 
 from agents.Sim_Agent import Agent
 from map.map_settings import OWNER_DEFAULT_TILE
+from rl_env.city import City
 
 
 def _calculate_new_position(
@@ -79,6 +80,7 @@ class ActionManager:
         for agent, selected_action in zip(agents, actions):
             move_direction = selected_action["move"].get("direction", None)
             claim_happens = selected_action["claim"] is not None
+            create_city = selected_action["city"] is not None
 
             if move_direction is not None:
                 valid, new_position = self.check_move(agent, move_direction)
@@ -111,6 +113,12 @@ class ActionManager:
                     )
                 else:
                     proposed_actions[agent.id] = None
+
+            elif create_city:
+                position = selected_action["city"]
+                if self.check_city(agent, position):
+                    self.create_city(agent, position)
+                    # TODO: some conflict handling!!
 
             else:
                 # No valid action
@@ -310,3 +318,34 @@ class ActionManager:
                 new_claimable.append(pos)
 
         agent.claimable_tiles.update(new_claimable)
+
+    ## city ##
+
+    def check_city(self, agent: Agent, position: Tuple[int, int]):
+        base_claim_cost = self.env_settings.get_setting("actions")["city"]["cost"]
+
+        #  check if enough money to claim tile
+        if agent.money < base_claim_cost:
+            return False
+
+        if not self.check_position_on_map(position):
+            return False
+
+        # change this later!!
+        # TODO: introduce notion of visible land
+        if not is_claimable(agent, position):
+            return False
+
+        # all checks passed
+        return True
+
+    def create_city(self, agent: Agent, position: Tuple[int, int]):
+        city = City(agent.id, position)
+
+        # add city to map
+        square = self.env.map.get_tile(position)
+        square.buildings.add(city)
+        self.claim_tile(agent, position)
+
+        # add city to agent ?
+
