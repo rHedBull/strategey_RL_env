@@ -50,12 +50,12 @@ class Run:
                     continue
                 # if agent is a player, get action from keyboard
                 if isinstance(agent, Player):
-                    action = agent.get_action(pygame, self.env)
+                    action = agent.get_action(pygame, None)
                     print("Player chose action {}".format(action))
                 else:
                     possible_actions = self.env.get_possible_actions(
                         agent.id
-                    )  # TODO is this important? should this be done?
+                    )
                     action = agent.get_action(common_env_state, possible_actions)
 
                 agent_actions.append(action)
@@ -106,8 +106,8 @@ class Run:
 
     def setup_agents(self):
         if self.env.player:
-            self.agents = [Player()]
-            for i in range(self.num_agents - 1):
+            self.agents = [Player(0, self.env.map.width, self.env.map.height)]
+            for i in range(1, self.num_agents):
                 agent = Agent(i, self.env.map.width, self.env.map.height)
                 self.agents.append(agent)
         else:

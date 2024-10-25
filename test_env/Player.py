@@ -2,16 +2,13 @@ import numpy as np
 import pygame
 
 from map.map_settings import PLAYER_COLOR
+from test_env.Agent import Agent
 
 
-class Player:
-    def __init__(
-        self,
-    ):
-        self.env = None
-        self.action = None
-        self.state = "Running"
-        self.reward = 0
+class Player(Agent):
+    def __init__(self, id, x_max, y_max):
+        super().__init__(id, x_max, y_max)
+
         self.color = PLAYER_COLOR
 
     def get_action(self, game, env):
@@ -49,18 +46,16 @@ class Player:
             action = 1
             selected_action["move"]["direction"] = 4  # 'Move Right'
         elif keys[pygame.K_c]:
-            x_max = env.map.width
-            y_max = env.map.height
-            position = [np.random.randint(0, x_max), np.random.randint(0, y_max)]
+
+            position = [np.random.randint(0, self.x_max), np.random.randint(0, self.y_max)]
             selected_action["claim"] = position
 
         elif keys[pygame.K_b]:
             action = 3  # build sthb
-            x_max = env.map.width
-            y_max = env.map.height
+
             action_properties = [
-                np.random.randint(0, x_max),
-                np.random.randint(0, y_max),
+                np.random.randint(0, self.x_max),
+                np.random.randint(0, self.y_max),
                 1,
             ]  # TODO to make this editable
 
