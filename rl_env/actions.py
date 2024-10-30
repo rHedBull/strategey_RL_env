@@ -118,6 +118,8 @@ class ActionManager:
                 position = selected_action["city"]
                 if self.check_city(agent, position):
                     self.create_city(agent, position)
+                else:
+                    proposed_actions[agent.id] = None
                     # TODO: some conflict handling!!
 
             else:
@@ -134,6 +136,7 @@ class ActionManager:
             if determined_action:
                 move_direction = determined_action["move"].get("direction", None)
                 claim_happens = determined_action["claim"] is not None
+                city_build = determined_action["city"] is not None
 
                 reward = 0
                 if move_direction:
@@ -141,7 +144,11 @@ class ActionManager:
                         agent, determined_action["move"]["new_position"]
                     )
                 if claim_happens:
+                    pos = determined_action["claim"]
                     reward = self.claim_tile(agent, determined_action["claim"])
+                if city_build:
+                    pos = determined_action["city"]
+                    reward = self.create_city(agent, pos)
 
                 rewards[agent.id] = reward
                 dones[agent.id] = False
@@ -169,6 +176,11 @@ class ActionManager:
                     for action in actions_at_position
                     if "claim" in action["action"]
                 ]
+                create_city = [
+                    action
+                    for action in actions_at_position
+                    if "city" in action["action"]
+                ]
 
                 # Resolve move conflicts
                 if len(moves) > 1:
@@ -186,6 +198,21 @@ class ActionManager:
                 if len(claims) > 1:
                     # Randomly select one agent to win the claim
                     winner = random.choice(claims)
+                    print(
+                        f"Agent {winner['agent_id']} wins the claim conflict at {position}."
+                    )
+                    for claim in claims:
+                        agent_id = claim["agent_id"]
+                        if claim != winner:
+                            print(
+                                f"Invalidating claim for agent {agent_id} at {position}."
+                            )
+                            proposed_actions[agent_id] = None
+
+                # Resolve city conflicts
+                if len(create_city) > 1:
+                    # Randomly select one agent to win the claim
+                    winner = random.choice(create_city)
                     print(
                         f"Agent {winner['agent_id']} wins the claim conflict at {position}."
                     )
@@ -221,7 +248,6 @@ class ActionManager:
         return reward
 
     # claim a tile
-
     def check_claim(self, agent: Agent, position: Tuple[int, int]) -> bool:
         # check if move generally possible, ignoring checks for moves of other agents at this stage
 
@@ -320,7 +346,6 @@ class ActionManager:
         agent.claimable_tiles.update(new_claimable)
 
     ## city ##
-
     def check_city(self, agent: Agent, position: Tuple[int, int]):
         base_claim_cost = self.env_settings.get_setting("actions")["city"]["cost"]
 
@@ -346,6 +371,10 @@ class ActionManager:
         square = self.env.map.get_tile(position)
         square.buildings.add(city)
         self.claim_tile(agent, position)
+
+        agent.money -= self.env_settings.get_setting("actions")["city"]["cost"]
+        reward = self.env_settings.get_setting("actions")["city"]["reward"]
+        return reward
 
         # add city to agent ?
 
