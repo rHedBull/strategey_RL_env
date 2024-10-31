@@ -4,6 +4,8 @@ from typing import Any, Dict, List, Tuple
 import numpy as np
 
 from agents.Sim_Agent import Agent
+from rl_env.actions.BuildFarmAction import BuildFarmAction
+from rl_env.actions.BuildRoadAction import BuildRoadAction
 from rl_env.actions.CityAction import CityAction
 from rl_env.actions.ClaimAction import ClaimAction
 from rl_env.actions.MoveAction import MoveAction
@@ -21,6 +23,13 @@ def create_action(agent, action_data):
     elif action_type == "build_city":
         position = action_props.get("position")
         return CityAction(agent, position)
+    elif action_type == "build_road":
+        position = action_props.get("position")
+        road_type = action_props.get("road_type")
+        return BuildRoadAction(agent, position, road_type)
+    elif action_type == "build_farm":
+        position = action_props.get("position")
+        return BuildFarmAction(agent, position)
     else:
         # Handle unknown action type
         pass
@@ -69,8 +78,7 @@ class ActionManager:
                     continue
 
                 action = create_action(agent, action)
-                if not action:
-                    print(f"None action")
+
                 if action.validate(self.env):
                     proposed_turn_actions.append(action)
                     position_key = action.position

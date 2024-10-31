@@ -1,7 +1,11 @@
+from typing import Tuple
+
 import pygame
 
 from map.map_settings import (COLOR_DEFAULT_BORDER, COLOR_DEFAULT_LAND, LAND,
                               OWNER_DEFAULT_TILE, VALUE_DEFAULT_LAND)
+from rl_env.objects.Building import Building
+
 
 # TODO: zooming, moving?
 
@@ -44,47 +48,54 @@ class Map_Square:
         self.tile_id = id
         self.x = x
         self.y = y
-        self.square_size = square_size
+
+
+
+        # land properties
         self.land_type = VALUE_DEFAULT_LAND
+        self.height = 0  # height as indicator for water, or ocean tiles
+        self.precepitation = 0  # for biomes
+        self.temperature = 0  # for biomes
+        self.biome = 0  # for biomes
+        self.resources = []
+        #self.land_type = self.calculate_land_money_value()
+
+        if land_value is not None:
+            self.set_land_type(land_value)
+
+        # owner specific
+        self.owner_id = OWNER_DEFAULT_TILE
+
+        # building stuff
+        self.buildings = set()
+
+        self.land_money_value = land_value
 
         # ui stuff
+        self.square_size = square_size
         self.default_border_color = COLOR_DEFAULT_BORDER
         self.default_color = COLOR_DEFAULT_LAND
 
         self.land_type_color = COLOR_DEFAULT_LAND
         self.owner_color = COLOR_DEFAULT_BORDER
 
-
-        if land_value is not None:
-            self.set_land_type(land_value)
-
-        # land properties
-        self.height = 0  # height as indicator for water, or ocean tiles
-        self.precepitation = 0  # for biomes
-        self.temperature = 0  # for biomes
-        self.biome = 0  # for biomes
-        self.resources = []
-        self.land_type = self.calculate_land_money_value()
-
-        # owner specific
-        self.owner_value = OWNER_DEFAULT_TILE
-
-        # building stuff
-        self.buildings = set()
-
-
-        self.land_money_value = land_value
-
     def reset(self):
-        self.owner_value = OWNER_DEFAULT_TILE
+        self.owner_id = OWNER_DEFAULT_TILE
         self.land_type = VALUE_DEFAULT_LAND
         self.land_type_color = COLOR_DEFAULT_LAND
         self.owner_color = COLOR_DEFAULT_BORDER
 
         self.buildings.clear()
 
+    def set_owner(self, agent_id: int, agent_color: Tuple[int, int, int]):
+        """
+        Claim the square for an agent.
+        """
+        self.owner_id = agent_id
+        self.owner_color = agent_color
+
     def get_owner(self):
-        return self.owner_value
+        return self.owner_id
 
     def set_height(self, height_value):
         self.height = height_value
@@ -123,15 +134,31 @@ class Map_Square:
     def get_round_value(self):
         return self.land_money_value
 
+    # claim stuff #
     def claim(self, agent):
         """
         Claim the square for an agent
         :param agent:
         :return:
         """
-        self.owner_value = agent.id
+        self.owner_id = agent.id
         self.owner_color = agent.color
 
+    # building stuff #
+    def add_building(self, building: Building):
+        """
+        Add a building to the square.
+        """
+        self.buildings.add(building)
+
+    def remove_building(self, building: Building):
+        """
+        Remove a building from the square.
+        """
+        if building in self.buildings:
+            self.buildings.remove(building)
+
+    # drawing stuff #
     def draw(self, screen, new_x, new_y, new_square_size):
         """
         Draw the square on the screen
@@ -176,7 +203,7 @@ class Map_Square:
             self.biome,
             # self.resources,
             self.land_type,
-            self.owner_value,
+            self.owner_id,
             self.land_money_value,
         ]
         return state

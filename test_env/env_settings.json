@@ -107,6 +107,14 @@
         "city": {
             "cost": 200,
             "reward": 20
+        },
+        "road": {
+            "cost": 5,
+            "reward": 3
+        },
+        "farm": {
+            "cost": 10,
+            "reward": 5
         }
     },
     "buildings": [

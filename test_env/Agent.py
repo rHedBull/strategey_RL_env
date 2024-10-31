@@ -1,6 +1,8 @@
 import random
 from typing import Tuple
 
+from rl_env.objects.Road import RoadType
+
 
 class Agent:
     def __init__(self, id, x_max, y_max):
@@ -15,10 +17,10 @@ class Agent:
 
         self.action_probabilities = {
             'move': 0,
-            'claim': 0.7,
-            'build_city': 0.3,
-            'build_road': 0.0,
-            'build_farm': 0.0,
+            'claim': 0.6,
+            'build_city': 0.1,
+            'build_road': 0.2,
+            'build_farm': 0.2,
             'none': 0.0
         }
 
@@ -42,11 +44,20 @@ class Agent:
         elif action_type == 'build_city':
             position = random.choice(list(claimable_tiles))
             props = {"position": position}
-        # elif action_type == 'build_road':
-        #     position = self.decide_build_position()
-        #
-        # elif action_type == 'build_farm':
-        #     position = self.decide_build_position()
+        elif action_type == 'build_road':
+            position = random.choice(list(claimable_tiles))
+
+            type = random.choice(['horizontal', 'vertical'])
+            if type == 'horizontal':
+                road_type = RoadType.HORIZONTAL
+            else:
+                road_type = RoadType.VERTICAL
+
+            props = {"position": position, "road_type": road_type}
+
+        elif action_type == 'build_farm':
+            position = random.choice(list(claimable_tiles))
+            props = {"position": position}
 
         else:
             # No action

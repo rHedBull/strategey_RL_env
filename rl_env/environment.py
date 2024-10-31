@@ -7,7 +7,7 @@ from gymnasium.vector.utils import spaces
 
 from agents.Sim_Agent import Agent
 from map.sim_map import Map
-from rl_env.actions import ActionManager
+from rl_env.ActionManager import ActionManager
 
 
 def check_done(agent):
