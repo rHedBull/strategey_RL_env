@@ -4,10 +4,9 @@ from typing import Any, Dict, List, Tuple
 import numpy as np
 
 from agents.Sim_Agent import Agent
-from map.map_settings import OWNER_DEFAULT_TILE
-from rl_env.CityAction import CityAction
-from rl_env.ClaimAction import ClaimAction
-from rl_env.MoveAction import MoveAction
+from rl_env.actions.CityAction import CityAction
+from rl_env.actions.ClaimAction import ClaimAction
+from rl_env.actions.MoveAction import MoveAction
 
 def create_action(agent, action_data):
 

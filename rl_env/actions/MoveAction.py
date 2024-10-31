@@ -1,7 +1,7 @@
 from typing import Tuple
 
 from agents.Sim_Agent import Agent
-from rl_env.Action import Action
+from rl_env.actions.Action import Action
 
 def calculate_new_position(
     current_position: Tuple[int, int], move_direction: int

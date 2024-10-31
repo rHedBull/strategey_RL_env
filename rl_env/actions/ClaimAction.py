@@ -1,9 +1,7 @@
 from typing import Tuple
 
-from numpy.f2py.auxfuncs import throw_error
-
 from agents.Sim_Agent import Agent
-from rl_env.Action import Action
+from rl_env.actions.Action import Action
 
 
 class ClaimAction(Action):
@@ -29,7 +27,7 @@ class ClaimAction(Action):
         if env.map.get_tile(self.claim_position).get_owner() == self.agent:
             print(f"Agent {self.agent.id}: Already owns tile at {self.claim_position}.")
             return False
-        if not is_claimable(self.agent, self.claim_position):
+        if not is_claimable(self.agent, self.claim_position): # TODO: what to do if already claimed by other agent?
             print(f"Agent {self.agent.id}: Tile at {self.claim_position} is not claimable.")
             return False
         return True
