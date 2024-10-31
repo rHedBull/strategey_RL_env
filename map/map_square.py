@@ -142,8 +142,18 @@ class Map_Square:
         :return:
         """
 
-        if len(self.buildings) > 0:
-            # we have a city here.
+        pygame.draw.rect(
+            screen,
+            self.land_type_color,
+            (
+                self.x * self.square_size,
+                self.y * self.square_size,
+                self.square_size,
+                self.square_size,
+            ),
+        )
+
+        if self.owner_color != COLOR_DEFAULT_BORDER:
             pygame.draw.rect(
                 screen,
                 self.owner_color,
@@ -153,32 +163,13 @@ class Map_Square:
                     self.square_size,
                     self.square_size,
                 ),
-            )
-        else:
-            pygame.draw.rect(
-                screen,
-                self.land_type_color,
-                (
-                    self.x * self.square_size,
-                    self.y * self.square_size,
-                    self.square_size,
-                    self.square_size,
-                ),
+                1,
             )
 
-            if self.owner_color != COLOR_DEFAULT_BORDER:
-                pygame.draw.rect(
-                    screen,
-                    self.owner_color,
-                    (
-                        self.x * self.square_size,
-                        self.y * self.square_size,
-                        self.square_size,
-                        self.square_size,
-                    ),
-                    1,
-                )
+        for building in self.buildings:
+            building.draw(screen, self.square_size, self.owner_color)
 
+    # observation stuff #
     def get_full_info(self):
         state = [
             self.height,
