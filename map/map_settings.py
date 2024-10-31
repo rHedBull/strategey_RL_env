@@ -1,6 +1,8 @@
 # land specific colors
 from enum import Enum, auto
 
+from rl_env.objects.Building import BuildingType
+
 COLOR_DEFAULT_LAND = (34, 139, 34)
 COLOR_DEFAULT_RIVER = (0, 255, 255)
 COLOR_DEFAULT_OCEAN = (76, 49, 252)
@@ -51,3 +53,10 @@ def land_type_color(land_type: LandType):
         return COLOR_DEFAULT_DESERT
     else:
         return COLOR_DEFAULT_LAND
+
+ALLOWED_BUILDING_PLACEMENTS = {
+    BuildingType.CITY: {LandType.LAND, LandType.MOUNTAIN, LandType.DESERT, LandType.MARSH},
+    BuildingType.ROAD: {LandType.LAND, LandType.MOUNTAIN, LandType.DESERT, LandType.MARSH},
+    BuildingType.FARM: {LandType.LAND, LandType.MARSH},
+    # Add mappings for other building types
+}

@@ -2,6 +2,7 @@ from typing import Tuple
 
 from agents.Sim_Agent import Agent
 from rl_env.actions.BuildAction import BuildAction
+from rl_env.objects.Building import BuildingType
 from rl_env.objects.Farm import Farm
 
 
@@ -24,5 +25,5 @@ class BuildFarmAction(BuildAction):
         self.agent.claimed_tiles.add(self.build_position)
         env.action_manager.update_claimable_tiles(self.agent, self.build_position)
 
-    def build_type(self) -> str:
-        return "city"
+    def build_type(self) -> BuildingType:
+        return BuildingType.FARM
