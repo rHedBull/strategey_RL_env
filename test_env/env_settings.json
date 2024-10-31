@@ -1,7 +1,7 @@
 {
     "map_width": 100,
     "map_height": 100,
-    "water_budget_per_agent": 0.1,
+    "water_budget_per_agent": 0.4,
     "mountain_budget_per_agent": 0.1,
     "dessert_budget_per_agent": 0.1,
     "numb_rivers": 0,
@@ -109,6 +109,10 @@
             "reward": 20
         },
         "road": {
+            "cost": 5,
+            "reward": 3
+        },
+        "bridge": {
             "cost": 5,
             "reward": 3
         },

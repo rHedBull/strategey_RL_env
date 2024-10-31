@@ -10,6 +10,7 @@ class BuildingType(Enum):
     CITY = "city"
     ROAD = "road"
     FARM = "farm"
+    BRIDGE = "bridge"
 
 
 class Building(ABC):

@@ -57,6 +57,7 @@ def land_type_color(land_type: LandType):
 ALLOWED_BUILDING_PLACEMENTS = {
     BuildingType.CITY: {LandType.LAND, LandType.MOUNTAIN, LandType.DESERT, LandType.MARSH},
     BuildingType.ROAD: {LandType.LAND, LandType.MOUNTAIN, LandType.DESERT, LandType.MARSH},
+    BuildingType.BRIDGE: {LandType.RIVER, LandType.OCEAN},
     BuildingType.FARM: {LandType.LAND, LandType.MARSH},
     # Add mappings for other building types
 }

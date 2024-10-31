@@ -3,7 +3,7 @@ from typing import Tuple
 from agents.Sim_Agent import Agent
 from rl_env.actions.BuildAction import BuildAction
 from rl_env.objects.Building import BuildingType
-from rl_env.objects.Road import Road
+from rl_env.objects.Road import Road, RoadType
 
 
 class BuildRoadAction(BuildAction):
@@ -12,9 +12,13 @@ class BuildRoadAction(BuildAction):
         self.road_type = road_type
 
     def get_cost(self, env) -> float:
+        if self.road_type == RoadType.BRIDGE:
+            return env.env_settings.get_setting("actions")["bridge"]["cost"]
         return env.env_settings.get_setting("actions")["road"]["cost"]
 
     def get_reward(self, env) -> float:
+        if self.road_type == RoadType.BRIDGE:
+            return env.env_settings.get_setting("actions")["bridge"]["reward"]
         return env.env_settings.get_setting("actions")["road"]["reward"]
 
     def perform_build(self, env):
@@ -29,4 +33,6 @@ class BuildRoadAction(BuildAction):
         env.action_manager.update_claimable_tiles(self.agent, self.build_position)
 
     def build_type(self) -> BuildingType:
+        if self.road_type == RoadType.BRIDGE:
+            return BuildingType.BRIDGE
         return BuildingType.ROAD

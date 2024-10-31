@@ -23,7 +23,7 @@ def create_action(agent, action_data):
     elif action_type == "build_city":
         position = action_props.get("position")
         return BuildCityAction(agent, position)
-    elif action_type == "build_road":
+    elif action_type == "build_road" or action_type == "build_bridge":
         position = action_props.get("position")
         road_type = action_props.get("road_type")
         return BuildRoadAction(agent, position, road_type)

@@ -16,9 +16,10 @@ class Agent:
 
         self.action_probabilities = {
             "move": 0,
-            "claim": 0.6,
+            "claim": 0.5,
             "build_city": 0.1,
             "build_road": 0.2,
+            "build_bridge": 0.1,
             "build_farm": 0.2,
             "none": 0.0,
         }
@@ -53,6 +54,9 @@ class Agent:
                 road_type = RoadType.VERTICAL
 
             props = {"position": position, "road_type": road_type}
+        elif action_type == "build_bridge":
+            position = random.choice(list(claimable_tiles))
+            props = {"position": position, "road_type": RoadType.BRIDGE}
 
         elif action_type == "build_farm":
             position = random.choice(list(claimable_tiles))

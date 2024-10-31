@@ -9,6 +9,7 @@ from rl_env.objects.Building import Building, BuildingType
 class RoadType(Enum):
     HORIZONTAL = "horizontal"
     VERTICAL = "vertical"
+    BRIDGE = "bridge"
 
 
 class Road(Building):
@@ -19,7 +20,11 @@ class Road(Building):
         # self.image = pygame.transform.scale(image, (image.get_width(), image.get_height()))
         self.road_type = road_type
         self.max_level = 3
-        self.building_type = BuildingType.ROAD
+
+        if self.road_type == RoadType.BRIDGE:
+            self.building_type = BuildingType.BRIDGE
+        else:
+            self.building_type = BuildingType.ROAD
 
     def draw(
         self,
@@ -32,6 +37,7 @@ class Road(Building):
         :param screen: Pygame display surface
         """
 
+        # TODO: more advanced road drawing
         # Draw the road image centered on the tile
         if self.road_type == RoadType.HORIZONTAL:
             width = square_size * 2  # Adjust as needed
@@ -40,6 +46,9 @@ class Road(Building):
         elif self.road_type == RoadType.VERTICAL:
             width = square_size // 4
             height = square_size * 2  # Adjust as needed
+        elif self.road_type == RoadType.BRIDGE:
+            width = square_size * 2  # Adjust as needed
+            height = square_size // 4  # Adjust road thickness
         else:
             raise ValueError("Direction must be 'horizontal' or 'vertical'")
 
@@ -51,11 +60,19 @@ class Road(Building):
         )
 
         road_color = (128, 128, 128)
-        # Draw the rectangle on the screen
-        pygame.draw.rect(screen, road_color, rect)
 
-    def get_building_type(self) -> str:
-        return "Road"
+        # brown bridge
+        bridge_color = (139, 69, 19)
+        if self.road_type == RoadType.BRIDGE:
+            color = bridge_color
+        else:
+            color = road_color
+
+        # Draw the rectangle on the screen
+        pygame.draw.rect(screen, color, rect)
+
+    def get_building_type(self) -> BuildingType:
+        return self.building_type
 
     def get_road_type(self) -> RoadType:
         return self.road_type
