@@ -13,11 +13,7 @@ class Player(Agent):
 
     def get_action(self, game, env):
         # action dictionary mask
-        selected_action = {
-            "move": {"direction": None, "new_position": None},
-            "claim": None,  # position goes here
-            "city": None
-        }
+        selected_action = []
 
         # wait for event
         keys = None
@@ -31,36 +27,34 @@ class Player(Agent):
                     waiting_for_event = False
                     keys = game.key.get_pressed()
 
-        action = -1
-        action_properties = -1
+        if keys[pygame.K_w] or keys[pygame.K_UP] or keys[pygame.K_s] or keys[pygame.K_DOWN] or keys[pygame.K_a] or keys[
+            pygame.K_LEFT] or keys[pygame.K_d] or keys[pygame.K_RIGHT]:
 
-        if keys[pygame.K_w] or keys[pygame.K_UP]:
-            action = 1
-            selected_action["move"]["direction"] = 1  # 'Move Up'
-        elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
-            action = 1
-            selected_action["move"]["direction"] = 2  # 'Move down'
-        elif keys[pygame.K_a] or keys[pygame.K_LEFT]:
-            action = 1
-            selected_action["move"]["direction"] = 3  # 'Move Left'
-        elif keys[pygame.K_d] or keys[pygame.K_RIGHT]:
-            action = 1
-            selected_action["move"]["direction"] = 4  # 'Move Right'
-        elif keys[pygame.K_c]:
-            position = [
-                np.random.randint(0, self.x_max),
-                np.random.randint(0, self.y_max),
-            ]
-            selected_action["claim"] = position
+            # map the key to the direction
+            if keys[pygame.K_w] or keys[pygame.K_UP]:
+                dir = 1
+            elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
+                dir = 2
+            elif keys[pygame.K_a] or keys[pygame.K_LEFT]:
+                dir = 3
+            else:
+                dir = 4
 
-        elif keys[pygame.K_b]:
-            action = 3  # build sthb
-
-            action_properties = [
-                np.random.randint(0, self.x_max),
-                np.random.randint(0, self.y_max),
-                1,
-            ]  # TODO to make this editable
+            move_action = {
+                "type": "move",
+                "props": {"direction": dir}
+            }
+            selected_action.append(move_action)
+        # elif keys[pygame.K_c]:
+        #     position = [
+        #         np.random.randint(0, self.x_max),
+        #         np.random.randint(0, self.y_max),
+        #     ]
+        #     claim_action = {
+        #         "type":"claim",
+        #         "props": {"position": position}
+        #     }
+        #     selected_action.append(claim_action)
 
         return selected_action
 

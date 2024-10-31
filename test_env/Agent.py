@@ -14,11 +14,8 @@ class Agent:
 
     def get_action(self, env_info, possible_actions):
         # action dictionary mask
-        selected_action = {
-            "move": {"direction": None, "new_position": None},
-            "claim": None,  # position goes here
-            "city": None,  # position goes here
-        }
+        selected_action = []
+
         # expand default action dictionary mask
         self.action = 2
 
@@ -27,9 +24,25 @@ class Agent:
         # select a random tile from set
         pos = rd.choice(list(claimable_tiles))
 
-        #selected_action["claim"] = pos
+        claim_action = {
+                "type":"claim",
+                "props": {"position": pos}
+        }
+
+        selected_action.append(claim_action)
         # TODO add more advanced action selection here
-        selected_action["city"] = pos
+
+        city_action = {
+                "type":"city",
+                "props": {"position": pos}
+        }
+        #cselected_action.append(city_action)
+
+        move_action = {
+            "type": "move",
+            "props": {"direction": 4}
+        }
+        selected_action.append(move_action)
 
         # TODO: vectorize and normalize the env_info here!!
         # TODO connect to Q-table or other RL algorithm

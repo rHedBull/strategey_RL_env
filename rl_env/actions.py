@@ -10,18 +10,17 @@ from rl_env.ClaimAction import ClaimAction
 from rl_env.MoveAction import MoveAction
 
 def create_action(agent, action_data):
-    move_direction = action_data["move"].get("direction", None)
-    claim_happens = action_data["claim"] is not None
-    city_build = action_data["city"] is not None
 
-    if move_direction:
-        direction = action_data['move'].get("direction")
+    action_type = action_data.get("type")
+    action_props = action_data.get("props")
+    if action_type == "move":
+        direction = action_props.get("direction")
         return MoveAction(agent, direction)
-    elif claim_happens:
-        position = action_data['claim']
+    elif action_type == "claim":
+        position = action_props.get("position")
         return ClaimAction(agent, position)
-    elif city_build:
-        position = action_data['city']
+    elif action_type == "city":
+        position = action_props.get("position")
         return CityAction(agent, position)
     else:
         # Handle unknown action type
@@ -59,30 +58,33 @@ class ActionManager:
         """
 
         proposed_actions = {}
-        rewards = np.zeros(len(agents), dtype=float)
+        rewards = np.zeros(len(agents), dtype=float) # TODO: init with invalid action penalty
         dones = np.zeros(len(agents), dtype=bool)
 
-        for agent, action in zip(agents, actions):
+        for agent, agent_actions in zip(agents, actions):
 
-            action = create_action(agent, action)
-            if action.validate(self.env):
-                proposed_actions[agent.id] = action
-                position_key = action.position
-                self.conflict_map.setdefault(position_key, []).append(action)
-            else:
-                proposed_actions[agent.id] = None
-                rewards[agent.id] = -1  # Penalty for invalid action
-                dones[agent.id] = False
+            proposed_turn_actions = []
+            for action in agent_actions:
+
+
+                action = create_action(agent, action)
+                if action.validate(self.env):
+                    proposed_turn_actions.append(action)
+                    position_key = action.position
+                    self.conflict_map.setdefault(position_key, []).append(action)
+
+            proposed_actions[agent.id] = proposed_turn_actions
+
 
         self.resolve_conflict(proposed_actions)
 
         # Execute actions
-        for agent_id, action in proposed_actions.items():
-            if action:
+        for id, determined_actions in proposed_actions.items():
+            for action in determined_actions:
 
                 reward = action.execute(self.env)
-                rewards[agent_id] = reward
-                dones[agent_id] = False  # Set to True if the action leads to a terminal state
+                rewards[id] = reward
+                dones[id] = False
 
         # Clear the conflict map for the next turn
         self.conflict_map = {}
@@ -97,6 +99,9 @@ class ActionManager:
                 print(f"Conflict detected at position {position} among agents {[action.agent.id for action in actions_at_position]}.")
 
                 # Implement your conflict resolution strategy here.
+                # What when multiple actions of same agent on same position?
+                # what how do the different actions interact with each other? of different agents
+
                 # For fairness, we can randomly select a winner.
                 winner = random.choice(actions_at_position)
                 print(f"Agent {winner.agent.id} wins the conflict at position {position}.")
@@ -104,7 +109,7 @@ class ActionManager:
                 # Invalidate other actions at this position
                 for action in actions_at_position:
                     if action != winner:
-                        proposed_actions[action.agent.id] = None
+                        proposed_actions[action.agent.id].remove(action)
                         print(f"Agent {action.agent.id}'s action at position {position} has been invalidated due to conflict.")
 
 
