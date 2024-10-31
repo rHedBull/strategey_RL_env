@@ -6,7 +6,7 @@ from rl_env.objects.Building import BuildingType
 from rl_env.objects.city import City
 
 
-class CityAction(BuildAction):
+class BuildCityAction(BuildAction):
     def __init__(self, agent: Agent, position: Tuple[int, int]):
         super().__init__(agent, position)
 
