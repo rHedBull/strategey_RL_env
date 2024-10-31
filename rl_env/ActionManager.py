@@ -18,7 +18,7 @@ def create_action(agent, action_data):
     elif action_type == "claim":
         position = action_props.get("position")
         return ClaimAction(agent, position)
-    elif action_type == "city":
+    elif action_type == "build_city":
         position = action_props.get("position")
         return CityAction(agent, position)
     else:
@@ -65,8 +65,12 @@ class ActionManager:
             proposed_turn_actions = []
             for action in agent_actions:
 
+                if not action:
+                    continue
 
                 action = create_action(agent, action)
+                if not action:
+                    print(f"None action")
                 if action.validate(self.env):
                     proposed_turn_actions.append(action)
                     position_key = action.position

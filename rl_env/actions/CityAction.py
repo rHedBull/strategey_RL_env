@@ -26,4 +26,4 @@ class CityAction(BuildAction):
 
 
     def build_type(self) -> str:
-        return "City"
+        return "city"
