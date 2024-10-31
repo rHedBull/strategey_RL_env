@@ -5,42 +5,27 @@ import numpy as np
 
 from agents.Sim_Agent import Agent
 from map.map_settings import OWNER_DEFAULT_TILE
-from rl_env.city import City
+from rl_env.CityAction import CityAction
+from rl_env.ClaimAction import ClaimAction
+from rl_env.MoveAction import MoveAction
 
+def create_action(agent, action_data):
+    move_direction = action_data["move"].get("direction", None)
+    claim_happens = action_data["claim"] is not None
+    city_build = action_data["city"] is not None
 
-def _calculate_new_position(
-    current_position: Tuple[int, int], move_direction: int
-) -> Tuple[int, int]:
-    """
-    Calculates the new position based on the current position and move direction.
-
-    Args:
-        current_position (Tuple[int, int]): The agent's current position.
-        move_direction (int): Direction to move (0: No move, 1: Up, 2: Down, 3: Left, 4: Right).
-
-    Returns:
-        Tuple[int, int]: The new position after the move.
-    """
-    x, y = current_position
-    if move_direction == 1:  # Up
-        y -= 1
-    elif move_direction == 2:  # Down
-        y += 1
-    elif move_direction == 3:  # Left
-        x -= 1
-    elif move_direction == 4:  # Right
-        x += 1
-    # No move if move_direction is 0 or unrecognized
-    return x, y
-
-
-def is_claimable(agent: Agent, position: Tuple[int, int]) -> bool:
-    # check if position is in agent's claimable_tiles list
-
-    if position in agent.claimable_tiles:
-        return True
+    if move_direction:
+        direction = action_data['move'].get("direction")
+        return MoveAction(agent, direction)
+    elif claim_happens:
+        position = action_data['claim']
+        return ClaimAction(agent, position)
+    elif city_build:
+        position = action_data['city']
+        return CityAction(agent, position)
     else:
-        return False
+        # Handle unknown action type
+        pass
 
 
 class ActionManager:
@@ -73,222 +58,56 @@ class ActionManager:
             Dict[int, Dict[str, Any]]: A dictionary mapping agent IDs to their action outcomes.
         """
 
-        proposed_actions = np.zeros(len(agents), dtype=object)
+        proposed_actions = {}
         rewards = np.zeros(len(agents), dtype=float)
         dones = np.zeros(len(agents), dtype=bool)
 
-        for agent, selected_action in zip(agents, actions):
-            move_direction = selected_action["move"].get("direction", None)
-            claim_happens = selected_action["claim"] is not None
-            create_city = selected_action["city"] is not None
+        for agent, action in zip(agents, actions):
 
-            if move_direction is not None:
-                valid, new_position = self.check_move(agent, move_direction)
-                if valid:
-                    selected_action["move"]["new_position"] = new_position
-                    proposed_actions[
-                        agent.id
-                    ] = selected_action  # simplify position passing here
-                    # add to map conflict map
-                    position_key = tuple(new_position)
-                    if position_key not in self.conflict_map:
-                        self.conflict_map[position_key] = []
-                    self.conflict_map[position_key].append(
-                        {"agent_id": agent.id, "action": selected_action}
-                    )
-
-                else:
-                    # Invalid move (out of bounds), action denied
-                    proposed_actions[agent.id] = None
-
-            elif claim_happens:
-                if self.check_claim(agent, selected_action["claim"]):
-                    proposed_actions[agent.id] = selected_action
-                    claim_pos = selected_action["claim"]
-                    position_key = tuple(claim_pos)
-                    if position_key not in self.conflict_map:
-                        self.conflict_map[position_key] = []
-                    self.conflict_map[position_key].append(
-                        {"agent_id": agent.id, "action": selected_action}
-                    )
-                else:
-                    proposed_actions[agent.id] = None
-
-            elif create_city:
-                position = selected_action["city"]
-                if self.check_city(agent, position):
-                    self.create_city(agent, position)
-                else:
-                    proposed_actions[agent.id] = None
-                    # TODO: some conflict handling!!
-
+            action = create_action(agent, action)
+            if action.validate(self.env):
+                proposed_actions[agent.id] = action
+                position_key = action.position
+                self.conflict_map.setdefault(position_key, []).append(action)
             else:
-                # No valid action
-                # Invalid move (out of bounds), action denied
                 proposed_actions[agent.id] = None
-                rewards[agent.id] = -1
-
-        # TODO testing if conflicts handled correctly?
-        proposed_actions = self.resolve_conflict(proposed_actions)
-
-        # apply the actions
-        for determined_action, agent in zip(proposed_actions, agents):
-            if determined_action:
-                move_direction = determined_action["move"].get("direction", None)
-                claim_happens = determined_action["claim"] is not None
-                city_build = determined_action["city"] is not None
-
-                reward = 0
-                if move_direction:
-                    reward = self.move_agent(
-                        agent, determined_action["move"]["new_position"]
-                    )
-                if claim_happens:
-                    pos = determined_action["claim"]
-                    reward = self.claim_tile(agent, determined_action["claim"])
-                if city_build:
-                    pos = determined_action["city"]
-                    reward = self.create_city(agent, pos)
-
-                rewards[agent.id] = reward
+                rewards[agent.id] = -1  # Penalty for invalid action
                 dones[agent.id] = False
 
-        # TODO : check dones and rewards again after all actions are applied
-        # clear conflict map
+        self.resolve_conflict(proposed_actions)
+
+        # Execute actions
+        for agent_id, action in proposed_actions.items():
+            if action:
+
+                reward = action.execute(self.env)
+                rewards[agent_id] = reward
+                dones[agent_id] = False  # Set to True if the action leads to a terminal state
+
+        # Clear the conflict map for the next turn
         self.conflict_map = {}
 
         return rewards, dones
 
-    def resolve_conflict(self, proposed_actions) -> Dict[str, Any]:
-        # iterate over conflict map and resolve conflicts
+
+
+    def resolve_conflict(self, proposed_actions):
         for position, actions_at_position in self.conflict_map.items():
             if len(actions_at_position) > 1:
-                print(f"Potential Conflict at position {position}")
+                print(f"Conflict detected at position {position} among agents {[action.agent.id for action in actions_at_position]}.")
 
-                # Split actions into movements and claims for separate handling
-                moves = [
-                    action
-                    for action in actions_at_position
-                    if "move" in action["action"]
-                ]
-                claims = [
-                    action
-                    for action in actions_at_position
-                    if "claim" in action["action"]
-                ]
-                create_city = [
-                    action
-                    for action in actions_at_position
-                    if "city" in action["action"]
-                ]
+                # Implement your conflict resolution strategy here.
+                # For fairness, we can randomly select a winner.
+                winner = random.choice(actions_at_position)
+                print(f"Agent {winner.agent.id} wins the conflict at position {position}.")
 
-                # Resolve move conflicts
-                if len(moves) > 1:
-                    # First mover wins, so we keep the first action and invalidate the rest
-                    first_mover = moves[0]
-                    print(
-                        f"Agent {first_mover['agent_id']} wins the move conflict at {position}."
-                    )
-                    for move in moves[1:]:
-                        agent_id = move["agent_id"]
-                        print(f"Invalidating move for agent {agent_id} at {position}.")
-                        proposed_actions[agent_id] = None
+                # Invalidate other actions at this position
+                for action in actions_at_position:
+                    if action != winner:
+                        proposed_actions[action.agent.id] = None
+                        print(f"Agent {action.agent.id}'s action at position {position} has been invalidated due to conflict.")
 
-                # Resolve claim conflicts
-                if len(claims) > 1:
-                    # Randomly select one agent to win the claim
-                    winner = random.choice(claims)
-                    print(
-                        f"Agent {winner['agent_id']} wins the claim conflict at {position}."
-                    )
-                    for claim in claims:
-                        agent_id = claim["agent_id"]
-                        if claim != winner:
-                            print(
-                                f"Invalidating claim for agent {agent_id} at {position}."
-                            )
-                            proposed_actions[agent_id] = None
 
-                # Resolve city conflicts
-                if len(create_city) > 1:
-                    # Randomly select one agent to win the claim
-                    winner = random.choice(create_city)
-                    print(
-                        f"Agent {winner['agent_id']} wins the claim conflict at {position}."
-                    )
-                    for claim in claims:
-                        agent_id = claim["agent_id"]
-                        if claim != winner:
-                            print(
-                                f"Invalidating claim for agent {agent_id} at {position}."
-                            )
-                            proposed_actions[agent_id] = None
-
-        return proposed_actions
-
-    # move
-    def check_move(self, agent: Agent, direction: int) -> Tuple[bool, Tuple[int, int]]:
-        basic_move_cost = self.env_settings.get_setting("actions")["move"]["cost"]
-        if agent.money < basic_move_cost:
-            return False, (-1, -1)
-
-        new_position = _calculate_new_position(agent.position, direction)
-        if not self.check_position_on_map(new_position):
-            return False, (-1, -1)
-
-        # all checks passed
-        return True, new_position
-
-    def move_agent(self, agent: Agent, new_position: Tuple[int, int]) -> int:
-        # Update position
-        agent.position = new_position
-        agent.money -= self.env_settings.get_setting("actions")["move"]["cost"]
-        # print(f"Agent {agent.id}: Move successful to position {agent.position}.")
-        reward = self.env_settings.get_setting("actions")["move"]["reward"]
-        return reward
-
-    # claim a tile
-    def check_claim(self, agent: Agent, position: Tuple[int, int]) -> bool:
-        # check if move generally possible, ignoring checks for moves of other agents at this stage
-
-        base_claim_cost = self.env_settings.get_setting("actions")["claim"]["cost"]
-
-        #  check if enough money to claim tile
-        if agent.money < base_claim_cost:
-            return False
-
-        if not self.check_position_on_map(position):
-            return False
-
-        # check if agent already owns the tile
-        if not self.agent_does_not_own_tile_already(agent, position):
-            return False
-
-        # check if tile is next to another claimed tile
-        if not is_claimable(agent, position):
-            return False
-
-        # all checks passed
-        return True
-
-    def agent_does_not_own_tile_already(
-        self, agent: Agent, position: Tuple[int, int]
-    ) -> bool:
-        x, y = position
-        if self.env.map.get_tile((x, y)).get_owner() == agent:
-            return False
-        return True
-
-    def claim_tile(self, agent: Agent, pos: [int, int]) -> int:
-        self.env.map.claim_tile(agent, pos)
-        agent.claimed_tiles.add(pos)
-        self.update_claimable_tiles(agent, pos)
-
-        agent.money -= self.env_settings.get_setting("actions")["claim"]["cost"]
-        reward = self.env_settings.get_setting("actions")["claim"]["reward"]
-        return reward
-
-        # self.env.map.add_building(building_id, x, y)
 
     def check_position_on_map(self, position: Tuple[int, int]) -> bool:
         """
@@ -344,37 +163,4 @@ class ActionManager:
                 new_claimable.append(pos)
 
         agent.claimable_tiles.update(new_claimable)
-
-    ## city ##
-    def check_city(self, agent: Agent, position: Tuple[int, int]):
-        base_claim_cost = self.env_settings.get_setting("actions")["city"]["cost"]
-
-        #  check if enough money to claim tile
-        if agent.money < base_claim_cost:
-            return False
-
-        if not self.check_position_on_map(position):
-            return False
-
-        # change this later!!
-        # TODO: introduce notion of visible land
-        if not is_claimable(agent, position):
-            return False
-
-        # all checks passed
-        return True
-
-    def create_city(self, agent: Agent, position: Tuple[int, int]):
-        city = City(agent.id, position)
-
-        # add city to map
-        square = self.env.map.get_tile(position)
-        square.buildings.add(city)
-        self.claim_tile(agent, position)
-
-        agent.money -= self.env_settings.get_setting("actions")["city"]["cost"]
-        reward = self.env_settings.get_setting("actions")["city"]["reward"]
-        return reward
-
-        # add city to agent ?
 
