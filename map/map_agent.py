@@ -1,7 +1,7 @@
 import math
 import random
 
-from map.map_settings import VALUE_DEFAULT_OCEAN
+from map.map_settings import LandType
 
 
 class Map_Agent:
@@ -12,7 +12,7 @@ class Map_Agent:
         self.y = y
         self.tile_budget = tile_budget  # Total amount of tiles to create
 
-    def random_walk(self, world_map, tiles_in_map, LAND_TYPE_VALUE):
+    def random_walk(self, world_map, tiles_in_map, land_type: LandType):
         # Random walk step
         step_x = random.choice([-1, 0, 1])
         step_y = random.choice([-1, 0, 1])
@@ -30,12 +30,12 @@ class Map_Agent:
         # Create water if the agent has any water budget left
         if self.tile_budget > 0:
             current_square = world_map.squares[self.y][self.x]
-            if current_square.get_land_type() != LAND_TYPE_VALUE:
-                current_square.set_land_type(LAND_TYPE_VALUE)
+            if current_square.get_land_type() != land_type:
+                current_square.set_land_type(land_type)
                 # current_square.draw(world_map.screen)
                 self.tile_budget -= 1
 
-    def river_walk(self, world_map, tiles_in_map, LAND_TYPE_VALUE):
+    def river_walk(self, world_map, tiles_in_map, land_type: LandType):
         # Initialize with a random direction to start
         self.last_move_x = random.choice([-1, 1])
         self.last_move_y = (
@@ -83,7 +83,7 @@ class Map_Agent:
             current_square = world_map.squares[self.y][self.x]
 
             if (
-                current_square.get_land_type() == VALUE_DEFAULT_OCEAN
+                current_square.get_land_type() == LandType.OCEAN
                 or self.x == 0
                 or self.x == int(math.sqrt(tiles_in_map)) - 1
                 or self.y == 0
@@ -91,6 +91,6 @@ class Map_Agent:
             ):
                 return  # Stop the river if it reaches the ocean
 
-            elif current_square.get_land_type() != LAND_TYPE_VALUE:
-                current_square.set_land_type(LAND_TYPE_VALUE)
+            elif current_square.get_land_type() != land_type:
+                current_square.set_land_type(land_type)
                 self.tile_budget -= 1

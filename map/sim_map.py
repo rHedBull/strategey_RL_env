@@ -5,9 +5,7 @@ import random
 import numpy as np
 
 from map.map_agent import Map_Agent
-from map.map_settings import (VALUE_DEFAULT_DESSERT, VALUE_DEFAULT_MARSH,
-                              VALUE_DEFAULT_MOUNTAIN, VALUE_DEFAULT_OCEAN,
-                              VALUE_DEFAULT_RIVER)
+from map.map_settings import LandType
 from map.map_square import Map_Square
 from test_env.Agent import Agent
 
@@ -86,7 +84,7 @@ class Map:
         i = np.random.randint(0, 10) / 10
 
         if i < self.resource_density:
-            if square.get_land_type() != VALUE_DEFAULT_OCEAN:
+            if square.get_land_type() != LandType.OCEAN:
                 resource = np.random.randint(0, 6)
                 square.add_resource(resource)
             else:
@@ -100,16 +98,16 @@ class Map:
 
         # mountain agents
         self.let_map_agent_run(
-            self.mountain_percentage, self.tiles, VALUE_DEFAULT_MOUNTAIN
+            self.mountain_percentage, self.tiles, LandType.MOUNTAIN
         )
 
         # dessert agents
         self.let_map_agent_run(
-            self.dessert_percentage, self.tiles, VALUE_DEFAULT_DESSERT
+            self.dessert_percentage, self.tiles, LandType.DESERT
         )
 
         # water agents
-        self.let_map_agent_run(self.water_percentage, self.tiles, VALUE_DEFAULT_OCEAN)
+        self.let_map_agent_run(self.water_percentage, self.tiles, LandType.OCEAN)
 
         # river agents
         self.river_agents(self.tiles, self.rivers)
@@ -120,22 +118,22 @@ class Map:
                 self.distribute_resources(square)
 
                 # check if water arround
-                if square.get_land_type() != VALUE_DEFAULT_OCEAN:
+                if square.get_land_type() != LandType.OCEAN:
                     if (
                         square.x > 0
                         and self.squares[square.y][square.x - 1].get_land_type()
-                        == VALUE_DEFAULT_OCEAN
+                        == LandType.OCEAN
                         or square.x < self.width - 1  # check water left
                         and self.squares[square.y][square.x + 1].get_land_type()
-                        == VALUE_DEFAULT_OCEAN
+                        == LandType.OCEAN
                         or square.y > 0  # check water right
                         and self.squares[square.y - 1][square.x].get_land_type()
-                        == VALUE_DEFAULT_OCEAN
+                        == LandType.OCEAN
                         or square.y < self.height - 1  # check water up
                         and self.squares[square.y + 1][square.x].get_land_type()
-                        == VALUE_DEFAULT_OCEAN
+                        == LandType.OCEAN
                     ):  # check water down
-                        square.set_land_type(VALUE_DEFAULT_MARSH)
+                        square.set_land_type(LandType.MARSH)
 
     def get_observation(self):
         """define here what infor is visible to all agents
@@ -211,7 +209,7 @@ class Map:
             for i in range(numb_agents)
         ]
         for agent in agents:
-            agent.river_walk(self, tiles, VALUE_DEFAULT_RIVER)
+            agent.river_walk(self, tiles, LandType.RIVER)
 
     def let_map_agent_run(self, land_type_percentage, tiles, LAND_TYPE_VALUE):
         if land_type_percentage < 0:

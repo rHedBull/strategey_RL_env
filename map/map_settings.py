@@ -1,4 +1,6 @@
 # land specific colors
+from enum import Enum, auto
+
 COLOR_DEFAULT_LAND = (34, 139, 34)
 COLOR_DEFAULT_RIVER = (0, 255, 255)
 COLOR_DEFAULT_OCEAN = (76, 49, 252)
@@ -8,7 +10,7 @@ COLOR_DEFAULT_MOUNTAIN = (
     10,
     10,
 )
-COLOR_DEFAULT_DESSERT = (249, 233, 76)
+COLOR_DEFAULT_DESERT = (249, 233, 76)
 
 # agent interaction colors
 COLOR_DEFAULT_BORDER = (255, 255, 255)
@@ -24,23 +26,28 @@ AGENT_COLORS = [
     (0, 255, 0),
 ]
 
-
-VALUE_DEFAULT_LAND = 0
-VALUE_DEFAULT_OCEAN = 1
-VALUE_DEFAULT_RIVER = 5
-VALUE_DEFAULT_MARSH = 2
-VALUE_DEFAULT_MOUNTAIN = 3
-VALUE_DEFAULT_DESSERT = 4
-LAND = [
-    ["land", 10, COLOR_DEFAULT_LAND],
-    ["water", 1, COLOR_DEFAULT_OCEAN],
-    ["water-adjacent", 1, COLOR_DEFAULT_MARSH],
-    ["mountain", 1, COLOR_DEFAULT_MOUNTAIN],
-    ["dessert", 1, COLOR_DEFAULT_DESSERT],
-    ["river", 1, COLOR_DEFAULT_RIVER],
-]
-
-# TODO make this in json format
-# [ [land_type_name, land_base_value, land_color], ...]
-
 OWNER_DEFAULT_TILE = -1
+
+class LandType(Enum):
+    LAND = auto()
+    OCEAN = auto()
+    RIVER = auto()
+    MARSH = auto()
+    MOUNTAIN = auto()
+    DESERT = auto()
+
+def land_type_color(land_type: LandType):
+    if land_type == LandType.LAND:
+        return COLOR_DEFAULT_LAND
+    elif land_type == LandType.OCEAN:
+        return COLOR_DEFAULT_OCEAN
+    elif land_type == LandType.RIVER:
+        return COLOR_DEFAULT_RIVER
+    elif land_type == LandType.MARSH:
+        return COLOR_DEFAULT_MARSH
+    elif land_type == LandType.MOUNTAIN:
+        return COLOR_DEFAULT_MOUNTAIN
+    elif land_type == LandType.DESERT:
+        return COLOR_DEFAULT_DESERT
+    else:
+        return COLOR_DEFAULT_LAND

@@ -129,6 +129,8 @@ Then there is some kind of conflict resolution, which decides what happens where
 - [ ] add more actions
 - [ ] !! adjust action space
 - [ ] account for continuous maps in action checks
+- [ ] Bridge
+- [ ] restricitions where stuff can be build
 
 ## UI
 - [ ] zooming, moving?

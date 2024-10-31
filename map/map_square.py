@@ -2,8 +2,7 @@ from typing import Tuple
 
 import pygame
 
-from map.map_settings import (COLOR_DEFAULT_BORDER, COLOR_DEFAULT_LAND, LAND,
-                              OWNER_DEFAULT_TILE, VALUE_DEFAULT_LAND)
+from map.map_settings import (COLOR_DEFAULT_BORDER, OWNER_DEFAULT_TILE, LandType, land_type_color)
 from rl_env.objects.Building import Building
 
 # TODO: zooming, moving?
@@ -42,14 +41,14 @@ class Map_Square:
     Class for a single square/ tile on the map
     """
 
-    def __init__(self, id, x, y, square_size, land_value=VALUE_DEFAULT_LAND):
+    def __init__(self, id, x, y, square_size, land_value=LandType.LAND):
         # coordinates and ids
         self.tile_id = id
         self.x = x
         self.y = y
 
         # land properties
-        self.land_type = VALUE_DEFAULT_LAND
+        self.land_type = LandType.LAND
         self.height = 0  # height as indicator for water, or ocean tiles
         self.precepitation = 0  # for biomes
         self.temperature = 0  # for biomes
@@ -66,20 +65,20 @@ class Map_Square:
         # building stuff
         self.buildings = set()
 
-        self.land_money_value = land_value
+        self.land_money_value = 1
 
         # ui stuff
         self.square_size = square_size
         self.default_border_color = COLOR_DEFAULT_BORDER
-        self.default_color = COLOR_DEFAULT_LAND
+        self.default_color = land_type_color(LandType.LAND)
 
-        self.land_type_color = COLOR_DEFAULT_LAND
+        self.land_type_color = land_type_color(LandType.LAND)
         self.owner_color = COLOR_DEFAULT_BORDER
 
     def reset(self):
         self.owner_id = OWNER_DEFAULT_TILE
-        self.land_type = VALUE_DEFAULT_LAND
-        self.land_type_color = COLOR_DEFAULT_LAND
+        self.land_type = LandType.LAND
+        self.land_type_color = land_type_color(LandType.LAND)
         self.owner_color = COLOR_DEFAULT_BORDER
 
         self.buildings.clear()
@@ -115,7 +114,7 @@ class Map_Square:
     def remove_resource(self, resource_value):
         self.resources.remove(resource_value)
 
-    def set_land_type(self, land_value):
+    def set_land_type(self, land_value: LandType):
         """
         Set the land type of the square
         :param land_value:
@@ -123,9 +122,9 @@ class Map_Square:
         """
         if land_value != self.land_type:
             self.land_type = land_value
-            self.land_type_color = LAND[self.land_type][2]
+            self.land_type_color = land_type_color(land_value)
 
-    def get_land_type(self):
+    def get_land_type(self)->LandType:
         return self.land_type
 
     def get_round_value(self):
@@ -199,7 +198,7 @@ class Map_Square:
             self.height,
             self.biome,
             # self.resources,
-            self.land_type,
+            self.land_type.value,
             self.owner_id,
             self.land_money_value,
         ]
