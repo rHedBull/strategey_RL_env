@@ -6,7 +6,6 @@ from map.map_settings import (COLOR_DEFAULT_BORDER, COLOR_DEFAULT_LAND, LAND,
                               OWNER_DEFAULT_TILE, VALUE_DEFAULT_LAND)
 from rl_env.objects.Building import Building
 
-
 # TODO: zooming, moving?
 
 
@@ -49,8 +48,6 @@ class Map_Square:
         self.x = x
         self.y = y
 
-
-
         # land properties
         self.land_type = VALUE_DEFAULT_LAND
         self.height = 0  # height as indicator for water, or ocean tiles
@@ -58,7 +55,7 @@ class Map_Square:
         self.temperature = 0  # for biomes
         self.biome = 0  # for biomes
         self.resources = []
-        #self.land_type = self.calculate_land_money_value()
+        # self.land_type = self.calculate_land_money_value()
 
         if land_value is not None:
             self.set_land_type(land_value)
@@ -210,7 +207,6 @@ class Map_Square:
 
     def get_observation_state(self):
         return self.get_full_info()
-
 
     def calculate_land_money_value(self):
         """

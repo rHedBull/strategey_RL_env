@@ -3,6 +3,7 @@ from typing import Tuple
 from agents.Sim_Agent import Agent
 from rl_env.actions.Action import Action
 
+
 def calculate_new_position(
     current_position: Tuple[int, int], move_direction: int
 ) -> Tuple[int, int]:
@@ -28,6 +29,7 @@ def calculate_new_position(
     # No move if move_direction is 0 or unrecognized
     return x, y
 
+
 class MoveAction(Action):
     def __init__(self, agent: Agent, direction: int):
         super().__init__(agent)
@@ -46,7 +48,9 @@ class MoveAction(Action):
 
         self.new_position = calculate_new_position(self.agent.position, self.direction)
         if not env.action_manager.check_position_on_map(self.new_position):
-            print(f"Agent {self.agent.id}: New position {self.new_position} is out of bounds.")
+            print(
+                f"Agent {self.agent.id}: New position {self.new_position} is out of bounds."
+            )
             return False
 
         return True
@@ -55,7 +59,9 @@ class MoveAction(Action):
         self.agent.position = self.new_position
         self.agent.money -= env.action_manager.actions_definition["move"]["cost"]
         reward = env.action_manager.actions_definition["move"]["reward"]
-        print(f"Agent {self.agent.id}: Moved to {self.agent.position}. Reward: {reward}")
+        print(
+            f"Agent {self.agent.id}: Moved to {self.agent.position}. Reward: {reward}"
+        )
         return reward
 
     @property

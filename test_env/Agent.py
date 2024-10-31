@@ -1,5 +1,4 @@
 import random
-from typing import Tuple
 
 from rl_env.objects.Road import RoadType
 
@@ -16,12 +15,12 @@ class Agent:
         self.reward = 0
 
         self.action_probabilities = {
-            'move': 0,
-            'claim': 0.6,
-            'build_city': 0.1,
-            'build_road': 0.2,
-            'build_farm': 0.2,
-            'none': 0.0
+            "move": 0,
+            "claim": 0.6,
+            "build_city": 0.1,
+            "build_road": 0.2,
+            "build_farm": 0.2,
+            "none": 0.0,
         }
 
     def get_action(self, env_info, possible_actions):
@@ -35,27 +34,27 @@ class Agent:
         claimable_tiles = possible_actions[0]
 
         # Instantiate the corresponding Action class
-        if action_type == 'move':
+        if action_type == "move":
             direction = random.randint(1, 4)  # 1: Up, 2: Down, 3: Left, 4: Right
             props = {"direction": direction}
-        elif action_type == 'claim':
+        elif action_type == "claim":
             position = random.choice(list(claimable_tiles))
             props = {"position": position}
-        elif action_type == 'build_city':
+        elif action_type == "build_city":
             position = random.choice(list(claimable_tiles))
             props = {"position": position}
-        elif action_type == 'build_road':
+        elif action_type == "build_road":
             position = random.choice(list(claimable_tiles))
 
-            type = random.choice(['horizontal', 'vertical'])
-            if type == 'horizontal':
+            type = random.choice(["horizontal", "vertical"])
+            if type == "horizontal":
                 road_type = RoadType.HORIZONTAL
             else:
                 road_type = RoadType.VERTICAL
 
             props = {"position": position, "road_type": road_type}
 
-        elif action_type == 'build_farm':
+        elif action_type == "build_farm":
             position = random.choice(list(claimable_tiles))
             props = {"position": position}
 
@@ -64,10 +63,7 @@ class Agent:
             action_type = None
             props = None
 
-        action = {
-            "type": action_type,
-            "props": props
-        }
+        action = {"type": action_type, "props": props}
         selected_action.append(action)
         # TODO add more advanced action selection here
         # TODO: vectorize and normalize the env_info here!!

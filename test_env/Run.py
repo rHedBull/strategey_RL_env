@@ -51,7 +51,7 @@ class Run:
                 # if agent is a player, get action from keyboard
                 if isinstance(agent, Player):
                     action = agent.get_action(pygame, None)
-                    print("Player chose action {}".format(action))
+
                 else:
                     possible_actions = self.env.get_possible_actions(agent.id)
                     action = agent.get_action(common_env_state, possible_actions)

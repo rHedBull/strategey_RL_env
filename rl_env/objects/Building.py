@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
 from enum import Enum
-from uuid import uuid1
-
 from typing import Tuple
+from uuid import uuid1
 
 import pygame
 
@@ -12,19 +11,23 @@ class BuildingType(Enum):
     ROAD = "road"
     FARM = "farm"
 
+
 class Building(ABC):
-
     def __init__(self, position: Tuple[int, int]):
-
         self.id = uuid1()
 
-        self.x, self.y  = position
+        self.x, self.y = position
 
         self.level = 0
         self.max_level = None
 
     @abstractmethod
-    def draw(self, screen: pygame.Surface, square_size: int, owner_color: Tuple[int, int, int]):
+    def draw(
+        self,
+        screen: pygame.Surface,
+        square_size: int,
+        owner_color: Tuple[int, int, int],
+    ):
         """
         Draw the building on the given screen.
         """
@@ -42,5 +45,5 @@ class Building(ABC):
         self.level = min(new_level, self.max_level)
 
     def downgrade(self):
-        new_level = self.level -1
+        new_level = self.level - 1
         self.level = max(new_level, 0)

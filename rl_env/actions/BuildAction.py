@@ -13,17 +13,24 @@ class BuildAction(Action, ABC):
             raise ValueError("Build position is None")
         self.build_position = position
 
-
     def validate(self, env) -> bool:
         build_cost = self.get_cost(env)
         if self.agent.money < build_cost:
-            print(f"Agent {self.agent.id}: Not enough money to build {self.build_type()}.")
+            print(
+                f"Agent {self.agent.id}: Not enough money to build {self.build_type()}."
+            )
             return False
         if not env.action_manager.check_position_on_map(self.build_position):
-            print(f"Agent {self.agent.id}: Build position {self.build_position} is out of bounds.")
+            print(
+                f"Agent {self.agent.id}: Build position {self.build_position} is out of bounds."
+            )
             return False
-        if not is_claimable(self.agent, self.build_position): # TODO: might have to adjust this, for road!!
-            print(f"Agent {self.agent.id}: Tile at {self.build_position} is not claimable for building.")
+        if not is_claimable(
+            self.agent, self.build_position
+        ):  # TODO: might have to adjust this, for road!!
+            print(
+                f"Agent {self.agent.id}: Tile at {self.build_position} is not claimable for building."
+            )
             return False
 
         return True
@@ -32,7 +39,9 @@ class BuildAction(Action, ABC):
         self.perform_build(env)
         self.agent.money -= self.get_cost(env)
         reward = self.get_reward(env)
-        print(f"Agent {self.agent.id}: Built {self.build_type()} at {self.build_position}. Reward: {reward}")
+        print(
+            f"Agent {self.agent.id}: Built {self.build_type()} at {self.build_position}. Reward: {reward}"
+        )
         return reward
 
     @abstractmethod

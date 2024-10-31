@@ -27,9 +27,16 @@ class Player(Agent):
                     waiting_for_event = False
                     keys = game.key.get_pressed()
 
-        if keys[pygame.K_w] or keys[pygame.K_UP] or keys[pygame.K_s] or keys[pygame.K_DOWN] or keys[pygame.K_a] or keys[
-            pygame.K_LEFT] or keys[pygame.K_d] or keys[pygame.K_RIGHT]:
-
+        if (
+            keys[pygame.K_w]
+            or keys[pygame.K_UP]
+            or keys[pygame.K_s]
+            or keys[pygame.K_DOWN]
+            or keys[pygame.K_a]
+            or keys[pygame.K_LEFT]
+            or keys[pygame.K_d]
+            or keys[pygame.K_RIGHT]
+        ):
             # map the key to the direction
             if keys[pygame.K_w] or keys[pygame.K_UP]:
                 dir = 1
@@ -40,10 +47,7 @@ class Player(Agent):
             else:
                 dir = 4
 
-            move_action = {
-                "type": "move",
-                "props": {"direction": dir}
-            }
+            move_action = {"type": "move", "props": {"direction": dir}}
             selected_action.append(move_action)
         # elif keys[pygame.K_c]:
         #     position = [

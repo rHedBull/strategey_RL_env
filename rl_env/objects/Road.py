@@ -1,6 +1,7 @@
-from typing import Tuple
-import pygame
 from enum import Enum
+from typing import Tuple
+
+import pygame
 
 from rl_env.objects.Building import Building, BuildingType
 
@@ -11,15 +12,21 @@ class RoadType(Enum):
 
 
 class Road(Building):
-
-    def __init__(self, position: Tuple[int, int], road_type: RoadType, image: pygame.Surface):
+    def __init__(
+        self, position: Tuple[int, int], road_type: RoadType, image: pygame.Surface
+    ):
         super().__init__(position)  # Example color: Gray
-        #self.image = pygame.transform.scale(image, (image.get_width(), image.get_height()))
+        # self.image = pygame.transform.scale(image, (image.get_width(), image.get_height()))
         self.road_type = road_type
         self.max_level = 3
         self.building_type = BuildingType.ROAD
 
-    def draw(self, screen: pygame.Surface, square_size: int, owner_color: Tuple[int, int, int]):
+    def draw(
+        self,
+        screen: pygame.Surface,
+        square_size: int,
+        owner_color: Tuple[int, int, int],
+    ):
         """
         Draw the road on the screen.
         :param screen: Pygame display surface

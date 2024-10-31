@@ -133,6 +133,10 @@ Then there is some kind of conflict resolution, which decides what happens where
 ## UI
 - [ ] zooming, moving?
 - [ ] implement graphical building visualization
+- [ ] Better Game termination log, why did it terminate?, which round?
+- [ ] round counter in ui
+- [ ] better logging for other agents, what actions they choose
+- [ ] City ID connected to city owner?
 
 ## Far fetched
 - [ ] tech tree, some actions only possible if reached a level

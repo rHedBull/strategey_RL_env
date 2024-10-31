@@ -1,4 +1,3 @@
-
 class Ownable:
     """
     Mixin class to add ownership capabilities to buildings.

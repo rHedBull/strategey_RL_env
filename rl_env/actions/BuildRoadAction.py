@@ -4,6 +4,7 @@ from agents.Sim_Agent import Agent
 from rl_env.actions.BuildAction import BuildAction
 from rl_env.objects.Road import Road
 
+
 class BuildRoadAction(BuildAction):
     def __init__(self, agent: Agent, position: Tuple[int, int], road_type):
         super().__init__(agent, position)

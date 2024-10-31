@@ -9,7 +9,6 @@ class CityAction(BuildAction):
     def __init__(self, agent: Agent, position: Tuple[int, int]):
         super().__init__(agent, position)
 
-
     def get_cost(self, env) -> float:
         return env.env_settings.get_setting("actions")["city"]["cost"]
 

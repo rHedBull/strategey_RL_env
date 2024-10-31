@@ -10,7 +10,7 @@ class Farm(Building, Ownable):
     def __init__(self, agent_id: int, position: Tuple[int, int], image: pygame.Surface):
         Ownable.__init__(self, agent_id)
         Building.__init__(self, position)  # Example color: Green
-        #self.image = pygame.transform.scale(image, (image.get_width(), image.get_height()))
+        # self.image = pygame.transform.scale(image, (image.get_width(), image.get_height()))
         self.building_type = BuildingType.FARM
 
     def draw(self, screen: pygame.Surface, square_size: int, colors: dict):
@@ -27,7 +27,7 @@ class Farm(Building, Ownable):
         top_left_y = self.y * square_size
 
         # Define the color for the lines
-        line_color =  (0, 0, 0)  # Default to black if not specified
+        line_color = (0, 0, 0)  # Default to black if not specified
 
         num_lines = 2
 
@@ -45,7 +45,9 @@ class Farm(Building, Ownable):
             end_pos = (top_left_x + square_size, top_left_y + square_size - offset)
 
             # Draw the diagonal line
-            pygame.draw.line(screen, line_color, start_pos, end_pos, 2)  # Width=2 for better visibility
+            pygame.draw.line(
+                screen, line_color, start_pos, end_pos, 2
+            )  # Width=2 for better visibility
 
     def get_building_type(self) -> str:
-            return "Farm"
+        return "Farm"

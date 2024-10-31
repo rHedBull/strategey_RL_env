@@ -1,5 +1,5 @@
 import random
-from typing import Any, Dict, List, Tuple
+from typing import Any, List, Tuple
 
 import numpy as np
 
@@ -10,8 +10,8 @@ from rl_env.actions.CityAction import CityAction
 from rl_env.actions.ClaimAction import ClaimAction
 from rl_env.actions.MoveAction import MoveAction
 
-def create_action(agent, action_data):
 
+def create_action(agent, action_data):
     action_type = action_data.get("type")
     action_props = action_data.get("props")
     if action_type == "move":
@@ -66,14 +66,14 @@ class ActionManager:
         """
 
         proposed_actions = {}
-        rewards = np.zeros(len(agents), dtype=float) # TODO: init with invalid action penalty
+        rewards = np.zeros(
+            len(agents), dtype=float
+        )  # TODO: init with invalid action penalty
         dones = np.zeros(len(agents), dtype=bool)
 
         for agent, agent_actions in zip(agents, actions):
-
             proposed_turn_actions = []
             for action in agent_actions:
-
                 if not action:
                     continue
 
@@ -86,13 +86,11 @@ class ActionManager:
 
             proposed_actions[agent.id] = proposed_turn_actions
 
-
         self.resolve_conflict(proposed_actions)
 
         # Execute actions
         for id, determined_actions in proposed_actions.items():
             for action in determined_actions:
-
                 reward = action.execute(self.env)
                 rewards[id] = reward
                 dones[id] = False
@@ -102,12 +100,12 @@ class ActionManager:
 
         return rewards, dones
 
-
-
     def resolve_conflict(self, proposed_actions):
         for position, actions_at_position in self.conflict_map.items():
             if len(actions_at_position) > 1:
-                print(f"Conflict detected at position {position} among agents {[action.agent.id for action in actions_at_position]}.")
+                print(
+                    f"Conflict detected at position {position} among agents {[action.agent.id for action in actions_at_position]}."
+                )
 
                 # Implement your conflict resolution strategy here.
                 # What when multiple actions of same agent on same position?
@@ -115,15 +113,17 @@ class ActionManager:
 
                 # For fairness, we can randomly select a winner.
                 winner = random.choice(actions_at_position)
-                print(f"Agent {winner.agent.id} wins the conflict at position {position}.")
+                print(
+                    f"Agent {winner.agent.id} wins the conflict at position {position}."
+                )
 
                 # Invalidate other actions at this position
                 for action in actions_at_position:
                     if action != winner:
                         proposed_actions[action.agent.id].remove(action)
-                        print(f"Agent {action.agent.id}'s action at position {position} has been invalidated due to conflict.")
-
-
+                        print(
+                            f"Agent {action.agent.id}'s action at position {position} has been invalidated due to conflict."
+                        )
 
     def check_position_on_map(self, position: Tuple[int, int]) -> bool:
         """
@@ -179,4 +179,3 @@ class ActionManager:
                 new_claimable.append(pos)
 
         agent.claimable_tiles.update(new_claimable)
-
