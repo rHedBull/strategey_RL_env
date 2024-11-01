@@ -22,7 +22,7 @@ class BuildAction(Action, ABC):
                 f"Agent {self.agent.id}: Not enough money to build {self.build_type()}."
             )
             return False
-        if not env.action_manager.check_position_on_map(self.build_position):
+        if not env.map.check_position_on_map(self.build_position):
             print(
                 f"Agent {self.agent.id}: Build position {self.build_position} is out of bounds."
             )

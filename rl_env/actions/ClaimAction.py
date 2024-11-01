@@ -18,7 +18,7 @@ class ClaimAction(Action):
         if self.agent.money < claim_cost:
             print(f"Agent {self.agent.id}: Not enough money to claim tile.")
             return False
-        if not env.action_manager.check_position_on_map(self.claim_position):
+        if not env.map.check_position_on_map(self.claim_position):
             print(
                 f"Agent {self.agent.id}: Claim position {self.claim_position} is out of bounds."
             )

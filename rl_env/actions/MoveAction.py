@@ -47,7 +47,7 @@ class MoveAction(Action):
             return False
 
         self.new_position = calculate_new_position(self.agent.position, self.direction)
-        if not env.action_manager.check_position_on_map(self.new_position):
+        if not env.map.check_position_on_map(self.new_position):
             print(
                 f"Agent {self.agent.id}: New position {self.new_position} is out of bounds."
             )

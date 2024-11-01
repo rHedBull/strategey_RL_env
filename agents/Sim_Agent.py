@@ -18,7 +18,7 @@ class Agent:
         done (bool): Whether the agent has completed its task.
     """
 
-    def __init__(self, agent_id: int):
+    def __init__(self, agent_id: int, env):
         self.max_x = None
         self.max_y = None
 
@@ -44,6 +44,8 @@ class Agent:
         self.all_visible = False
         self.visibility_range = 3
 
+        self.env = env
+
         self.reward = 0.0
         self.done = False
         # TODO probably call self.reset() here
@@ -51,7 +53,6 @@ class Agent:
     def reset(self, env_settings: Any):
         """
         Resets the agent to the initial state.
-
         Args:
             env_settings (Dict[str, Any]): Environment settings.
         """
@@ -188,27 +189,17 @@ class Agent:
         for pos in new_possible:
             # Check if the position is valid and not already listed as claimed or claimable
             if (
-                self.check_position_on_map(pos)
+                self.env.map.check_position_on_map(pos)
                 and pos not in claimed_copy
                 and pos not in claimable_copy
             ):
                 new_claimable.append(pos)
 
         self.claimable_tiles.update(new_claimable)
-
-    def check_position_on_map(self, position: Tuple[int, int]) -> bool:
-        """
-        :param position:
-        :return:
-        """
-        x, y = position
-
-        if 0 <= x < self.max_x and 0 <= y < self.max_y:
-            return True
-        return False
+        self.update_local_visibility(new_claimed_tile)
 
     # visibility stuff #
-    def update_local_visibility(self, position: Tuple[int, int], map):
+    def update_local_visibility(self, position: Tuple[int, int]):
         """
         Update the local visibility of the agent based on the map visibility.
 
@@ -219,5 +210,5 @@ class Agent:
 
         for i in range(-self.visibility_range, self.visibility_range + 1):
             for j in range(-self.visibility_range, self.visibility_range + 1):
-                if self.check_position_on_map((x + i, y + j)):
-                    map.get_tile(position).set_visible(self.id)
+                if self.env.map.check_position_on_map((x + i, y + j)):
+                    self.env.map.get_tile(position).set_visible(self.id)

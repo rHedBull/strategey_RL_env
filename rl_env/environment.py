@@ -75,7 +75,7 @@ class MapEnvironment(gym.Env):
             self.map.load_topography_resources(map_file, self.env_settings)
 
         # Initialize agents
-        self.agents: List[Agent] = [Agent(i) for i in range(self.num_agents)]
+        self.agents: List[Agent] = [Agent(i, self) for i in range(self.num_agents)]
 
         # Initialize action manager
         self.action_manager = ActionManager(self, self.env_settings)

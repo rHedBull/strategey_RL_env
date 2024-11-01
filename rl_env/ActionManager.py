@@ -125,18 +125,6 @@ class ActionManager:
                             f"Agent {action.agent.id}'s action at position {position} has been invalidated due to conflict."
                         )
 
-    def check_position_on_map(self, position: Tuple[int, int]) -> bool:
-        """
-        :param self:
-        :param position:
-        :return:
-        """
-        x, y = position
-        max_x = self.env.map.width
-        max_y = self.env.map.height  # assuming a square map
-        if 0 <= x < max_x and 0 <= y < max_y:
-            return True
-        return False
 
     def update_claimable_tiles(self, agent: Agent, new_claimed_tile: Tuple[int, int]):
         """
@@ -172,7 +160,7 @@ class ActionManager:
         for pos in new_possible:
             # Check if the position is valid and not already listed as claimed or claimable
             if (
-                self.check_position_on_map(pos)
+                self.env.map.check_position_on_map(pos)
                 and pos not in claimed_copy
                 and pos not in claimable_copy
             ):
