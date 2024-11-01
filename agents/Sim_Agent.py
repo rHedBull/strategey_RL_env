@@ -41,6 +41,9 @@ class Agent:
                 c = 1
             self.color = AGENT_COLORS[c % len(AGENT_COLORS)]
 
+        self.all_visible = False
+        self.visibility_range = 3
+
         self.reward = 0.0
         self.done = False
         # TODO probably call self.reset() here
@@ -81,6 +84,12 @@ class Agent:
         else:
             # randomly distributed money
             self.money = random.randint(0, 1000)
+
+        self.all_visible = False
+        self.visibility_range = 3
+
+        self.reward = 0.0
+        self.done = False
 
     def update(self):
         # Update the agent's state
@@ -197,3 +206,18 @@ class Agent:
         if 0 <= x < self.max_x and 0 <= y < self.max_y:
             return True
         return False
+
+    # visibility stuff #
+    def update_local_visibility(self, position: Tuple[int, int], map):
+        """
+        Update the local visibility of the agent based on the map visibility.
+
+        :param map:
+        :param position: The position of the agent.
+        """
+        x, y = position
+
+        for i in range(-self.visibility_range, self.visibility_range + 1):
+            for j in range(-self.visibility_range, self.visibility_range + 1):
+                if self.check_position_on_map((x + i, y + j)):
+                    map.get_tile(position).set_visible(self.id)

@@ -62,6 +62,8 @@ class Map_Square:
         # owner specific
         self.owner_id = OWNER_DEFAULT_TILE
 
+        self.visibility_bitmask = 0 # init to zero, no agent can see this tile
+
         # building stuff
         self.buildings = set()
 
@@ -77,9 +79,14 @@ class Map_Square:
 
     def reset(self):
         self.owner_id = OWNER_DEFAULT_TILE
+
+        self.visibility_bitmask = 0
+
         self.land_type = LandType.LAND
         self.land_type_color = land_type_color(LandType.LAND)
         self.owner_color = COLOR_DEFAULT_BORDER
+
+        self.land_money_value = 1
 
         self.buildings.clear()
 
@@ -217,3 +224,13 @@ class Map_Square:
         # for (building) in self.buildings:
         #    base_value += self.buildings[building][2]
         #    # TODO test this
+
+    # visibility stuff #
+    def set_visible(self, agent_id: int):
+        self.visibility_bitmask |= 1 << agent_id
+
+    def clear_visible(self, agent_id: int):
+        self.visibility_bitmask &= ~(1 << agent_id)
+
+    def is_visible(self, agent_id: int) -> bool:
+        return (self.visibility_bitmask & (1 << agent_id)) != 0
