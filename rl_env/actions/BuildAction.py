@@ -3,41 +3,24 @@ from typing import Tuple
 
 from agents.Sim_Agent import Agent
 from map.map_settings import ALLOWED_BUILDING_PLACEMENTS
-from rl_env.actions.Action import Action
-from rl_env.actions.ClaimAction import is_claimable
+from rl_env.actions.Action import Action, ActionType
+
 from rl_env.objects.Building import BuildingType
 
 
 class BuildAction(Action, ABC):
-    def __init__(self, agent: Agent, position: Tuple[int, int]):
-        super().__init__(agent)
-        if position is None:
-            raise ValueError("Build position is None")
-        self.build_position = position
+    def __init__(self, agent: Agent, position: Tuple[int, int], building_type: BuildingType):
+        super().__init__(agent, position, ActionType.BUILD)
+        self.building_type = building_type
 
     def validate(self, env) -> bool:
-        build_cost = self.get_cost(env)
-        if self.agent.money < build_cost:
-            print(
-                f"Agent {self.agent.id}: Not enough money to build {self.build_type()}."
-            )
-            return False
-        if not env.map.check_position_on_map(self.build_position):
-            print(
-                f"Agent {self.agent.id}: Build position {self.build_position} is out of bounds."
-            )
+
+        if not super().validate(env):
             return False
 
-        if not fit_building_to_land_type(env, self.build_position, self.build_type()):
+        if not fit_building_to_land_type(env, self.position, self.building_type):
             print(
-                f"Agent {self.agent.id}: Tile at {self.build_position} is not buildable"
-            )
-            return False
-        if not is_claimable(
-            self.agent, self.build_position
-        ):  # TODO: might have to adjust this, for road!!
-            print(
-                f"Agent {self.agent.id}: Tile at {self.build_position} is not claimable for building."
+                f"Agent {self.agent.id}: Tile at {self.position} is not buildable"
             )
             return False
 
@@ -48,7 +31,7 @@ class BuildAction(Action, ABC):
         self.agent.money -= self.get_cost(env)
         reward = self.get_reward(env)
         print(
-            f"Agent {self.agent.id}: Built {self.build_type()} at {self.build_position}. Reward: {reward}"
+            f"Agent {self.agent.id}: Built {self.building_type.value} at {self.position}. Reward: {reward}"
         )
         return reward
 
@@ -57,24 +40,14 @@ class BuildAction(Action, ABC):
         """Execute the build on the map."""
         pass
 
-    @property
-    def position(self) -> Tuple[int, int]:
-        return self.build_position
-
-    @abstractmethod
-    def build_type(self) -> BuildingType:
-        """Return the type of build (e.g., 'City', 'Road', 'Farm')."""
-        pass
-
-    @abstractmethod
     def get_cost(self, env) -> float:
-        """Return the cost of the build action."""
-        pass
+        """Return the cost of the action."""
+        return env.env_settings.get_setting("actions")[self.building_type.value]["cost"]
 
-    @abstractmethod
     def get_reward(self, env) -> float:
-        """Return the reward for the build action."""
-        pass
+        """Return the reward for the action."""
+        return env.env_settings.get_setting("actions")[self.building_type.value]["reward"]
+
 
 def fit_building_to_land_type(env, position: Tuple[int, int], build_type: BuildingType) -> bool:
     """Check if the land type at the given position is suitable for the building type."""

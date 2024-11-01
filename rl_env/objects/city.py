@@ -7,13 +7,11 @@ from rl_env.objects.Ownable import Ownable
 
 
 class City(Building, Ownable):
-    def __init__(self, agent_id: int, position: Tuple[int, int], image: pygame.Surface):
+    def __init__(self, agent_id: int, position: Tuple[int, int]):
         Ownable.__init__(self, agent_id)
-        Building.__init__(self, position)
-        # self.image = pygame.transform.scale(image, (image.get_width(), image.get_height()))
+        Building.__init__(self, position, BuildingType.CITY)
 
         self.max_level = 3
-        self.building_type = BuildingType.CITY
 
     def draw(
         self,
@@ -32,6 +30,3 @@ class City(Building, Ownable):
                 square_size,
             ),
         )
-
-    def get_building_type(self) -> str:
-        return "City"

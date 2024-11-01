@@ -14,13 +14,14 @@ class BuildingType(Enum):
 
 
 class Building(ABC):
-    def __init__(self, position: Tuple[int, int]):
+    def __init__(self, position: Tuple[int, int], building_type: BuildingType):
         self.id = uuid1()
 
         self.x, self.y = position
 
         self.level = 0
         self.max_level = None
+        self.building_type = building_type
 
     @abstractmethod
     def draw(
@@ -34,12 +35,12 @@ class Building(ABC):
         """
         pass
 
-    @abstractmethod
-    def get_building_type(self) -> str:
+
+    def get_building_type(self) -> BuildingType:
         """
         Return the type of the building (e.g., 'City', 'Road', 'Farm').
         """
-        pass
+        return  self.building_type
 
     def upgrade(self):
         new_level = self.level + 1

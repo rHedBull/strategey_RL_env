@@ -5,26 +5,17 @@ import pygame
 
 from rl_env.objects.Building import Building, BuildingType
 
+road_color = (128, 128, 128)
 
-class RoadType(Enum):
-    HORIZONTAL = "horizontal"
-    VERTICAL = "vertical"
-    BRIDGE = "bridge"
-
+# brown bridge
+bridge_color = (139, 69, 19)
 
 class Road(Building):
     def __init__(
-        self, position: Tuple[int, int], road_type: RoadType, image: pygame.Surface
-    ):
-        super().__init__(position)  # Example color: Gray
-        # self.image = pygame.transform.scale(image, (image.get_width(), image.get_height()))
-        self.road_type = road_type
-        self.max_level = 3
+        self, position: Tuple[int, int]):
+        super().__init__(position, BuildingType.ROAD)
 
-        if self.road_type == RoadType.BRIDGE:
-            self.building_type = BuildingType.BRIDGE
-        else:
-            self.building_type = BuildingType.ROAD
+        self.max_level = 3
 
     def draw(
         self,
@@ -34,45 +25,53 @@ class Road(Building):
     ):
         """
         Draw the road on the screen.
+        :param owner_color:
+        :param square_size:
         :param screen: Pygame display surface
         """
 
         # TODO: more advanced road drawing
-        # Draw the road image centered on the tile
-        if self.road_type == RoadType.HORIZONTAL:
-            width = square_size * 2  # Adjust as needed
-            height = square_size // 4  # Adjust road thickness
 
-        elif self.road_type == RoadType.VERTICAL:
-            width = square_size // 4
-            height = square_size * 2  # Adjust as needed
-        elif self.road_type == RoadType.BRIDGE:
-            width = square_size * 2  # Adjust as needed
-            height = square_size // 4  # Adjust road thickness
-        else:
-            raise ValueError("Direction must be 'horizontal' or 'vertical'")
+        width = square_size * 2  # Adjust as needed
+        height = square_size // 4  # Adjust road thickness
 
-        # Create the rectangle
         rect = pygame.Rect(0, 0, width, height)
         rect.center = (
             self.x * square_size + square_size // 2,
             self.y * square_size + square_size // 2,
         )
 
-        road_color = (128, 128, 128)
+        pygame.draw.rect(screen, road_color, rect)
 
-        # brown bridge
-        bridge_color = (139, 69, 19)
-        if self.road_type == RoadType.BRIDGE:
-            color = bridge_color
-        else:
-            color = road_color
+class Bridge(Building):
+    def __init__(
+        self, position: Tuple[int, int]):
+        super().__init__(position, BuildingType.BRIDGE)
 
-        # Draw the rectangle on the screen
-        pygame.draw.rect(screen, color, rect)
+        self.max_level = 3
 
-    def get_building_type(self) -> BuildingType:
-        return self.building_type
+    def draw(
+        self,
+        screen: pygame.Surface,
+        square_size: int,
+        owner_color: Tuple[int, int, int],
+    ):
+        """
+        Draw the road on the screen.
+        :param square_size:
+        :param owner_color:
+        :param screen: Pygame display surface
+        """
 
-    def get_road_type(self) -> RoadType:
-        return self.road_type
+        # TODO: more advanced road drawing
+
+        width = square_size * 2  # Adjust as needed
+        height = square_size // 4  # Adjust road thickness
+
+        rect = pygame.Rect(0, 0, width, height)
+        rect.center = (
+            self.x * square_size + square_size // 2,
+            self.y * square_size + square_size // 2,
+        )
+
+        pygame.draw.rect(screen, bridge_color, rect)

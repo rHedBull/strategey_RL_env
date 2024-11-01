@@ -5,7 +5,7 @@ import numpy as np
 
 from agents.Sim_Agent import Agent
 from rl_env.actions.BuildFarmAction import BuildFarmAction
-from rl_env.actions.BuildRoadAction import BuildRoadAction
+from rl_env.actions.BuildRoadAction import BuildRoadAction, BuildBridgeAction
 from rl_env.actions.BuildCityAction import BuildCityAction
 from rl_env.actions.ClaimAction import ClaimAction
 from rl_env.actions.MoveAction import MoveAction
@@ -23,10 +23,12 @@ def create_action(agent, action_data):
     elif action_type == "build_city":
         position = action_props.get("position")
         return BuildCityAction(agent, position)
-    elif action_type == "build_road" or action_type == "build_bridge":
+    elif action_type == "build_road":
         position = action_props.get("position")
-        road_type = action_props.get("road_type")
-        return BuildRoadAction(agent, position, road_type)
+        return BuildRoadAction(agent, position)
+    elif action_type == "build_bridge":
+        position = action_props.get("position")
+        return BuildBridgeAction(agent, position)
     elif action_type == "build_farm":
         position = action_props.get("position")
         return BuildFarmAction(agent, position)

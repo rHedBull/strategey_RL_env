@@ -7,11 +7,9 @@ from rl_env.objects.Ownable import Ownable
 
 
 class Farm(Building, Ownable):
-    def __init__(self, agent_id: int, position: Tuple[int, int], image: pygame.Surface):
+    def __init__(self, agent_id: int, position: Tuple[int, int]):
         Ownable.__init__(self, agent_id)
-        Building.__init__(self, position)  # Example color: Green
-        # self.image = pygame.transform.scale(image, (image.get_width(), image.get_height()))
-        self.building_type = BuildingType.FARM
+        Building.__init__(self, position, BuildingType.FARM)  # Example color: Green
 
     def draw(self, screen: pygame.Surface, square_size: int, colors: dict):
         """
@@ -48,6 +46,3 @@ class Farm(Building, Ownable):
             pygame.draw.line(
                 screen, line_color, start_pos, end_pos, 2
             )  # Width=2 for better visibility
-
-    def get_building_type(self) -> str:
-        return "Farm"

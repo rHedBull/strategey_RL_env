@@ -303,3 +303,15 @@ class Map:
                 for square_data in row_data
             ]
             self.squares.append(row)
+
+
+    def check_position_on_map(self, position: Tuple[int, int]) -> bool:
+        """
+        :param position:
+        :return:
+        """
+        x, y = position
+
+        if 0 <= x < self.width and 0 <= y < self.height:
+            return True
+        return False

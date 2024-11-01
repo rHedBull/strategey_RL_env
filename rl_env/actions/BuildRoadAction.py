@@ -3,36 +3,65 @@ from typing import Tuple
 from agents.Sim_Agent import Agent
 from rl_env.actions.BuildAction import BuildAction
 from rl_env.objects.Building import BuildingType
-from rl_env.objects.Road import Road, RoadType
+from rl_env.objects.Road import Road, Bridge
 
 
 class BuildRoadAction(BuildAction):
-    def __init__(self, agent: Agent, position: Tuple[int, int], road_type):
-        super().__init__(agent, position)
-        self.road_type = road_type
+    def __init__(self, agent: Agent, position: Tuple[int, int]):
 
-    def get_cost(self, env) -> float:
-        if self.road_type == RoadType.BRIDGE:
-            return env.env_settings.get_setting("actions")["bridge"]["cost"]
-        return env.env_settings.get_setting("actions")["road"]["cost"]
+        super().__init__(agent, position, BuildingType.ROAD)
 
-    def get_reward(self, env) -> float:
-        if self.road_type == RoadType.BRIDGE:
-            return env.env_settings.get_setting("actions")["bridge"]["reward"]
-        return env.env_settings.get_setting("actions")["road"]["reward"]
+
+    def validate(self, env) -> bool:
+        if not super().validate(env):
+            return False
+
+        return True
+        # if self.agent.id == env.map.get_tile(self.position).get_owner():
+        #     # tile is onwed by agent
+        #     return True
+        #
+        # # tile_is_visible = env.map.get_tile(self.build_position).is_visible(self.build_position)
+        # # tile_is_next_to_road = env.map.get_tile().is_next_to_road(self.build_position)
+        # #
+        # # # check if on visible tile
+        # # if tile_is_visible and tile_is_next_to_road:
+        # #     return True
+        #
+        # return False
 
     def perform_build(self, env):
-        road = Road(self.build_position, self.road_type, None)
-        tile = env.map.get_tile(self.build_position)
+        road = Road(self.position)
+        tile = env.map.get_tile(self.position)
         tile.buildings.add(road)
 
-        # TODO: only until notion of visible tiles is introduced
-        # TODO: draw road on the map
-        env.map.claim_tile(self.agent, self.build_position)
-        self.agent.claimed_tiles.add(self.build_position)
-        env.action_manager.update_claimable_tiles(self.agent, self.build_position)
+        self.agent.update_local_visibility(self.position)
 
-    def build_type(self) -> BuildingType:
-        if self.road_type == RoadType.BRIDGE:
-            return BuildingType.BRIDGE
-        return BuildingType.ROAD
+class BuildBridgeAction(BuildAction):
+    def __init__(self, agent: Agent, position: Tuple[int, int]):
+        super().__init__(agent, position, BuildingType.BRIDGE)
+
+    def validate(self, env) -> bool:
+        if not super().validate(env):
+            return False
+
+        return True
+        # if self.agent.id == env.map.get_tile(self.position).get_owner():
+        #     # tile is onwed by agent
+        #     return True
+        #
+        # # tile_is_visible = env.map.get_tile(self.build_position).is_visible(self.build_position)
+        # # tile_is_next_to_road = env.map.get_tile().is_next_to_road(self.build_position)
+        # #
+        # # # check if on visible tile
+        # # if tile_is_visible and tile_is_next_to_road:
+        # #     return True
+        #
+        # return False
+
+    def perform_build(self, env):
+        bridge = Bridge(self.position)
+        tile = env.map.get_tile(self.position)
+        tile.buildings.add(bridge)
+
+        self.agent.update_local_visibility(self.position)
