@@ -3,7 +3,7 @@ from typing import Tuple
 from agents.Sim_Agent import Agent
 from rl_env.actions.BuildAction import BuildAction
 from rl_env.objects.Building import BuildingType
-from rl_env.objects.Road import Road, Bridge
+from rl_env.objects.Road import Road, Bridge, update_road_bridge_shape
 
 
 class BuildRoadAction(BuildAction):
@@ -34,6 +34,7 @@ class BuildRoadAction(BuildAction):
         road = Road(self.position)
         tile = env.map.get_tile(self.position)
         tile.buildings.add(road)
+        update_road_bridge_shape(road, env.map)
 
         self.agent.update_local_visibility(self.position)
 
@@ -63,5 +64,6 @@ class BuildBridgeAction(BuildAction):
         bridge = Bridge(self.position)
         tile = env.map.get_tile(self.position)
         tile.buildings.add(bridge)
+        update_road_bridge_shape(bridge, env.map)
 
         self.agent.update_local_visibility(self.position)

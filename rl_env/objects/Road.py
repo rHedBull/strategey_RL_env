@@ -69,6 +69,55 @@ class Bridge(Building):
         draw_bridge_road(screen, self.x, self.y, square_size, self.shape, bridge_color)
 
 
+def update_road_bridge_shape(road_or_bridge, map):
+    """
+    Update the road shape of the tile at the given position based on surrounding roads and bridges.
+
+    :param map: Map object
+    :param position: Tuple of x, y position
+    """
+    x = road_or_bridge.x
+    y = road_or_bridge.y
+    old_shape = road_or_bridge.shape
+
+    # Check surrounding tiles for roads and bridges
+
+    up = map.get_tile((x, y - 1))
+    down = map.get_tile((x, y + 1))
+    left = map.get_tile((x - 1, y))
+    right = map.get_tile((x + 1, y))
+
+    # Update road shape based on surrounding roads and bridges
+    shape = RoadShape()
+    if up:
+        shape.up = up.has_road() or up.has_bridge()
+    if down:
+        shape.down = down.has_road() or down.has_bridge()
+    if left:
+        shape.left = left.has_road() or left.has_bridge()
+    if right:
+        shape.right = right.has_road() or right.has_bridge()
+
+    # if all directions are false, set left to true
+    if not shape.up and not shape.down and not shape.left and not shape.right:
+        shape.left = True
+
+    else:
+            # update surrounding tiles
+            if up and shape.up:
+                up.get_road_or_bridge().shape.down = True
+            if down and shape.down:
+                down.get_road_or_bridge().shape.up = True
+            if left and shape.left:
+                left.get_road_or_bridge().shape.right=True
+            if right and shape.right:
+                right.get_road_or_bridge().shape.left = True
+
+    road_or_bridge.shape = shape
+
+
+
+
 def draw_bridge_road(screen: pygame.Surface, x, y, square_size: int, shape: RoadShape, color: Tuple[int, int, int]):
     """
     Draw the road on the screen based on the RoadShape.

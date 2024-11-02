@@ -235,3 +235,32 @@ class Map_Square:
 
     def is_visible(self, agent_id: int) -> bool:
         return (self.visibility_bitmask & (1 << agent_id)) != 0
+
+    def get_road_or_bridge(self):
+        for building in self.buildings:
+            if building.building_type == BuildingType.ROAD or building.building_type == BuildingType.BRIDGE:
+                return building
+
+    def has_road(self):
+        for building in self.buildings:
+            if building.building_type == BuildingType.ROAD:
+                return True
+        return False
+
+    def has_bridge(self):
+        for building in self.buildings:
+            if building.building_type == BuildingType.BRIDGE:
+                return True
+        return False
+
+    def has_farm(self):
+        for building in self.buildings:
+            if building.building_type == BuildingType.FARM:
+                return True
+        return False
+
+    def has_city(self):
+        for building in self.buildings:
+            if building.building_type == BuildingType.CITY:
+                return True
+        return False
