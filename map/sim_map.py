@@ -188,15 +188,16 @@ class Map:
                 new_size = square.square_size * zoom_level
                 square.draw(screen, new_x, new_y, new_size)
 
-    def get_tile(self, position: [int, int]) -> Map_Square:
+    def get_tile(self, position: [int, int]) -> Map_Square|None:
         """
         Get the tile at position x, y
-        :param x:
-        :param y:
-        :return:
+        :param position:
+        :return: Map_Square object or None if position is not on the map
         """
-        x, y = position
-        return self.squares[y][x]
+        if self.check_position_on_map(position):
+            x, y = position
+            return self.squares[y][x]
+        return None
 
     def river_agents(self, tiles, rivers):
         numb_agents = rivers
