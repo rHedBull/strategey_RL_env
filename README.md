@@ -78,6 +78,21 @@ python -m memory_profiler your_script.py
 | 10^6   | 23.6    | 9.08    |
 | 10^9   | 0.000   | 0.000   |
 
+# Game Rules
+
+## Buildings
+### Roads
+- can on be started on a claimed tile
+- if tile not claimed it must be next to another road
+
+### Bridge
+- can on be started on a claimed tile
+- if tile not claimed it must be next to another road
+
+### City
+- can only be placed on a visible tile
+- placing a city claims the tile
+
 # Docs
 
 ## ActionManager
@@ -98,6 +113,8 @@ Then there is some kind of conflict resolution, which decides what happens where
 - [ ] extend map generator script to create maps of different settings
 - [ ] create some maps with different sizes and different land type and resource distributions
   - [ ] add some resources
+
+- graph representation of roads
 
 - make importance editable water over mountain over dessert
 -   make distribution percentage wise locked to tile count
@@ -126,11 +143,8 @@ Then there is some kind of conflict resolution, which decides what happens where
 - [ ] some kind of feature extractor out of observation
 
 ### Actions
-- [ ] add more actions
 - [ ] !! adjust action space
 - [ ] account for continuous maps in action checks
-- [ ] Bridge
-- [ ] restricitions where stuff can be build
 
 ## UI
 - [ ] zooming, moving?
@@ -142,3 +156,34 @@ Then there is some kind of conflict resolution, which decides what happens where
 
 ## Far fetched
 - [ ] tech tree, some actions only possible if reached a level
+
+# Mind Map
+
+```mermaid
+graph LR
+    
+    m[main] --> R[Run]
+    R --> A[Agent]
+    A --> E[Environment]
+    
+```
+
+```mermaid
+graph LR
+    
+    subgraph Agent
+        P[Policy]
+    end
+    
+    subgraph Environment
+
+        E1[ActionManager]
+        E2[SimulationAgents]
+        E2[Map]
+
+    end
+    
+    P-- Action --> Environment
+    Environment -- Reward --> Agent
+    Environment -- Observation --> Agent
+```
