@@ -62,9 +62,14 @@ class BuildBridgeAction(BuildAction):
         # return False
 
     def perform_build(self, env):
-        bridge = Bridge(self.position)
-        tile = env.map.get_tile(self.position)
-        tile.buildings.add(bridge)
+        building_type_id = self.get_building_type_id(env)
+        bridge = Bridge(self.position, building_type_id)
+        env.map.add_building(bridge, self.position)
+
         update_road_bridge_shape(bridge, env.map)
+
+        env.map.claim_tile(self.agent, self.position)
+        self.agent.claimed_tiles.add(self.position)
+        env.action_manager.update_claimable_tiles(self.agent, self.position)
 
         self.agent.update_local_visibility(self.position)
