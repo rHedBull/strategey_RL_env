@@ -211,4 +211,10 @@ class Agent:
         for i in range(-self.visibility_range, self.visibility_range + 1):
             for j in range(-self.visibility_range, self.visibility_range + 1):
                 if self.env.map.check_position_on_map((x + i, y + j)):
-                    self.env.map.get_tile(position).set_visible(self.id)
+                    self.env.map.set_visible((x + i, y + j), self.id)
+
+def get_visible_mask(agent_id, map):
+    bitmask = (1 << agent_id)
+    visible = (map.visibility_map & bitmask) > 0
+    return visible
+

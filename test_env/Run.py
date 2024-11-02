@@ -1,5 +1,8 @@
 import uuid
 from datetime import datetime
+from typing import Any
+
+import numpy as np
 
 import pygame
 import tensorflow as tf
@@ -35,9 +38,8 @@ class Run:
         running_agents = [i for i in range(self.num_agents)]
         all_done = False
 
-        common_env_state = (
-            self.env.get_observation()
-        )  # TODO different types of observability for different agents
+        observation = self.env.get_observation()
+
         while not all_done and step < self.max_steps:
             self.env.render()  # checks already if rendering is on
 
@@ -53,12 +55,13 @@ class Run:
                     action = agent.get_action(pygame, None)
 
                 else:
-                    possible_actions = self.env.get_possible_actions(agent.id)
-                    action = agent.get_action(common_env_state, possible_actions)
+
+                    agent_observation = mask_map_for_agent(observation, agent.id)
+                    action = agent.get_action(agent_observation)
 
                 agent_actions.append(action)
 
-            common_env_state, agent_rewards, dones, all_done = self.env.step(
+            observation, agent_rewards, dones, all_done = self.env.step(
                 agent_actions
             )
 
@@ -140,3 +143,37 @@ class Run:
             pygame.quit()
         else:
             pygame.quit()
+
+def mask_map_for_agent(observation: dict, agent_id: int, mask_value: int = -1) -> list[tuple[Any, Any]] | Any:
+    """
+    Masks the map for a specific agent by setting all unseen tiles to mask_value.
+
+    Args:
+        observation (dict): The observation containing 'map' and 'visibility_masks'.
+        agent_id (int): The ID of the agent.
+        mask_value (int, optional): The value to set for unseen tiles. Defaults to -1.
+
+    Returns:
+        np.ndarray: The masked map observation for the agent.
+    """
+    # Retrieve the visibility mask for the agent
+    agent_visibility_mask = observation["visibility_masks"][agent_id]  # shape: (width, height)
+
+    # Ensure the mask is boolean
+    agent_visibility_mask = agent_visibility_mask.astype(bool)
+
+    # Retrieve the full map
+    full_map = observation["map"]  # shape: (width, height, features_per_tile)
+
+    # Expand the mask to match the map's shape for broadcasting
+    mask_expanded = agent_visibility_mask[:, :, np.newaxis]  # shape: (width, height, 1)
+
+    # Apply the mask: set unseen tiles to mask_value
+    # This will broadcast the mask across the features_per_tile dimension
+    masked_map = np.where(mask_expanded, full_map, mask_value)
+
+
+    y_coords, x_coords = np.where(agent_visibility_mask)
+    return list(zip(x_coords, y_coords))
+
+    #return masked_map

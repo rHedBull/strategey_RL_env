@@ -21,7 +21,7 @@ class Agent:
             "none": 0.0,
         }
 
-    def get_action(self, env_info, possible_actions):
+    def get_action(self, observation):
         # action dictionary mask
         selected_action = []
 
@@ -29,7 +29,7 @@ class Agent:
         probabilities = list(self.action_probabilities.values())
 
         action_type = random.choices(action_types, weights=probabilities, k=1)[0]
-        claimable_tiles = possible_actions[0]
+        claimable_tiles = observation
 
         # Instantiate the corresponding Action class
         if action_type == "move":
@@ -41,19 +41,11 @@ class Agent:
         elif action_type == "build_city":
             position = random.choice(list(claimable_tiles))
             props = {"position": position}
-        elif action_type == "build_road":
-            position = random.choice(list(claimable_tiles))
+        elif action_type == "build_road" or action_type == "build_bridge":
 
-            type = random.choice(["horizontal", "vertical"])
-            if type == "horizontal":
-                road_type = RoadType.HORIZONTAL
-            else:
-                road_type = RoadType.VERTICAL
-
-            props = {"position": position, "road_type": road_type}
-        elif action_type == "build_bridge":
             position = random.choice(list(claimable_tiles))
-            props = {"position": position, "road_type": RoadType.BRIDGE}
+            props = {"position": position}
+
 
         elif action_type == "build_farm":
             position = random.choice(list(claimable_tiles))

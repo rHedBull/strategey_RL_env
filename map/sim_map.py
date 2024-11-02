@@ -10,6 +10,11 @@ from map.map_settings import LandType
 from map.map_square import Map_Square
 from test_env.Agent import Agent
 
+features_per_tile = 3
+max_agent_id = 63 # based on current setup of visibility map, would have to use other datatype or multiple maps for more agents
+def check_valid_agent_id(agent_id: int) -> bool:
+    return 0 <= agent_id < max_agent_id
+
 
 class Map:
     def __init__(self, screen_size):
@@ -33,6 +38,9 @@ class Map:
         self.resource_density = None
         self.biomes_definition = None
         self.resource_definition = None
+
+        # 2D numpy array to store the visibility of each tile
+        self.visibility_map = None
 
     def load_settings(
         self,
@@ -136,11 +144,14 @@ class Map:
                     ):  # check water down
                         square.set_land_type(LandType.MARSH)
 
+        # set the visibility map to all zeros
+        self.visibility_map = np.zeros((self.width, self.height), dtype=int)
+
     def get_observation(self):
         """define here what infor is visible to all agents
         Assuming full observability of map for now
         """
-        map_info = np.zeros((self.width, self.height, 5))  # number of features per tile
+        map_info = np.zeros((self.width, self.height, features_per_tile))  # number of features per tile
         for row in self.squares:
             for square in row:
                 map_info[square.x][square.y] = square.get_observation_state()
@@ -316,3 +327,17 @@ class Map:
         if 0 <= x < self.width and 0 <= y < self.height:
             return True
         return False
+
+    # visibility stuff #
+    def set_visible(self, position: Tuple[int, int], agent_id: int):
+        if check_valid_agent_id(agent_id):
+            self.visibility_map[position] |= 1 << agent_id
+
+    def clear_visible(self, position: Tuple[int, int], agent_id: int):
+        if check_valid_agent_id(agent_id):
+            self.visibility_map[position] &= ~(1 << agent_id)
+
+    def is_visible(self, position: Tuple[int, int], agent_id: int) -> bool:
+        if check_valid_agent_id(agent_id):
+            return (self.visibility_map[position] & (1 << agent_id)) != 0
+    # TODO: maybe enable bulk operations here later, to make exploration in general more efficient

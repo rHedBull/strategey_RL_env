@@ -5,7 +5,7 @@ import numpy as np
 import pygame
 from gymnasium.vector.utils import spaces
 
-from agents.Sim_Agent import Agent
+from agents.Sim_Agent import Agent, get_visible_mask
 from map.sim_map import Map
 from rl_env.ActionManager import ActionManager
 
@@ -259,16 +259,9 @@ class MapEnvironment(gym.Env):
         else:
             raise NotImplementedError("Unknown ender mode !!")
 
-    def get_possible_actions(self, agent_id):
-        possible_actions = []
-        agent = self.agents[agent_id]
-        possible_actions.append(agent.get_possible_actions())
-
-        return possible_actions
-
     def _update_environment_state(self):
         """
-        Updates the environment state after actions have been applied.
+        Updates the environment state after actions have been applied.A
         """
         # Update map dynamics if any
         # self.map.update()
@@ -283,12 +276,17 @@ class MapEnvironment(gym.Env):
         Returns:
             observation (Dict[str, Any]): The current observation.
         """
+
+        all_visible_masks = []
+        for agent in self.agents:
+            all_visible_masks.append(get_visible_mask(agent.id, self.map))
+
         map_observation = self.map.get_observation()
-        agent_observations = np.array(
-            [agent.get_observation() for agent in self.agents],
-            dtype=np.float32,
-        )
-        observation = {"map": map_observation, "agents": agent_observations}
+        # agent_observations = np.array(
+        #     [agent.get_observation() for agent in self.agents],
+        #     dtype=np.float32,
+        # )
+        observation = {"map": map_observation, "agents": None, "visibility_masks": all_visible_masks}
         return observation
 
     def capture_game_state_as_image(self):

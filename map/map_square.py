@@ -227,13 +227,15 @@ class Map_Square:
 
     # observation stuff #
     def get_full_info(self):
+        # these are the features the agent can observe
         state = [
-            self.height,
-            self.biome,
+            #self.height,
+            #self.biome,
             # self.resources,
             self.land_type.value,
             self.owner_id,
-            self.land_money_value,
+            self.building_int
+            #self.land_money_value,
         ]
         return state
 
