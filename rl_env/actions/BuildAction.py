@@ -48,6 +48,10 @@ class BuildAction(Action, ABC):
         """Return the reward for the action."""
         return env.env_settings.get_setting("actions")[self.building_type.value]["reward"]
 
+    def get_building_type_id(self, env) -> int:
+        """Return the building type id."""
+        return env.env_settings.get_setting("actions")[self.building_type.value]["id"]
+
 
 def fit_building_to_land_type(env, position: Tuple[int, int], build_type: BuildingType) -> bool:
     """Check if the land type at the given position is suitable for the building type."""

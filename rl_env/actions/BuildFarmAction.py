@@ -25,9 +25,9 @@ class BuildFarmAction(BuildAction):
         return True
 
     def perform_build(self, env):
-        farm = Farm(self.agent.id, self.position)
-        tile = env.map.get_tile(self.position)
-        tile.add_building(farm)
+        building_type_id = self.get_building_type_id(env)
+        farm = Farm(self.agent.id, self.position, building_type_id)
+        env.map.add_building(farm, self.position)
         # TODO: add farm to agent's list of buildings
         env.map.claim_tile(self.agent, self.position)
         self.agent.claimed_tiles.add(self.position)

@@ -9,12 +9,12 @@ import pygame
 class BuildingType(Enum):
     CITY = "city"
     ROAD = "road"
-    FARM = "farm"
     BRIDGE = "bridge"
+    FARM = "farm"
 
 
 class Building(ABC):
-    def __init__(self, position: Tuple[int, int], building_type: BuildingType):
+    def __init__(self, position: Tuple[int, int], building_type: BuildingType, building_type_id: int):
         self.id = uuid1()
 
         self.x, self.y = position
@@ -22,6 +22,7 @@ class Building(ABC):
         self.level = 0
         self.max_level = None
         self.building_type = building_type
+        self.building_type_id = building_type_id
 
     @abstractmethod
     def draw(
@@ -41,6 +42,9 @@ class Building(ABC):
         Return the type of the building (e.g., 'City', 'Road', 'Farm').
         """
         return  self.building_type
+
+    def get_building_type_id(self):
+        return self.building_type_id
 
     def upgrade(self):
         new_level = self.level + 1

@@ -7,9 +7,9 @@ from rl_env.objects.Ownable import Ownable
 
 
 class City(Building, Ownable):
-    def __init__(self, agent_id: int, position: Tuple[int, int]):
+    def __init__(self, agent_id: int, position: Tuple[int, int], building_type_id):
         Ownable.__init__(self, agent_id)
-        Building.__init__(self, position, BuildingType.CITY)
+        Building.__init__(self, position, BuildingType.CITY, building_type_id)
 
         self.max_level = 3
 

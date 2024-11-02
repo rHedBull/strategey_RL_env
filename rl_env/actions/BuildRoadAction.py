@@ -31,9 +31,10 @@ class BuildRoadAction(BuildAction):
         # return False
 
     def perform_build(self, env):
-        road = Road(self.position)
-        tile = env.map.get_tile(self.position)
-        tile.buildings.add(road)
+        building_type_id = self.get_building_type_id(env)
+        road = Road(self.position, building_type_id)
+        env.map.add_building(road, self.position)
+
         update_road_bridge_shape(road, env.map)
 
         self.agent.update_local_visibility(self.position)

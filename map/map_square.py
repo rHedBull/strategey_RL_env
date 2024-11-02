@@ -67,6 +67,7 @@ class Map_Square:
 
         # building stuff
         self.buildings = set()
+        self.building_int = 0 # a bit mask to easily check for buildings present here
 
         self.land_money_value = 1
 
@@ -90,6 +91,7 @@ class Map_Square:
         self.land_money_value = 1
 
         self.buildings.clear()
+        self.building_int = 0
 
     def set_owner(self, agent_id: int, agent_color: Tuple[int, int, int]):
         """
@@ -154,6 +156,28 @@ class Map_Square:
         Add a building to the square.
         """
         self.buildings.add(building)
+        self.building_int |= building.get_building_type_id()
+
+    def has_building(self, building_type: BuildingType):
+        if building_type == BuildingType.CITY:
+            building_id = 1  # 2^0
+        elif building_type == BuildingType.ROAD:
+            building_id = 2  # 2^1
+        elif building_type == BuildingType.BRIDGE:
+            building_id = 4  # 2^2
+        elif building_type == BuildingType.FARM:
+            building_id = 8  # 2^3
+        else:
+            building_id = 0  # Undefined building type
+
+            # Perform bitwise AND to check if the building is present
+        return (self.building_int & building_id) != 0
+
+    def has_any_building(self):
+
+        if self.building_int > 0:
+            return True
+        return False
 
     def remove_building(self, building: Building):
         """
@@ -161,6 +185,7 @@ class Map_Square:
         """
         if building in self.buildings:
             self.buildings.remove(building)
+            self.building_int &= ~building.get_building_type_id()
 
     # drawing stuff #
     def draw(self, screen, new_x, new_y, new_square_size):
@@ -226,41 +251,17 @@ class Map_Square:
         #    base_value += self.buildings[building][2]
         #    # TODO test this
 
-    # visibility stuff #
-    def set_visible(self, agent_id: int):
-        self.visibility_bitmask |= 1 << agent_id
-
-    def clear_visible(self, agent_id: int):
-        self.visibility_bitmask &= ~(1 << agent_id)
-
-    def is_visible(self, agent_id: int) -> bool:
-        return (self.visibility_bitmask & (1 << agent_id)) != 0
-
     def get_road_or_bridge(self):
         for building in self.buildings:
             if building.building_type == BuildingType.ROAD or building.building_type == BuildingType.BRIDGE:
                 return building
 
     def has_road(self):
-        for building in self.buildings:
-            if building.building_type == BuildingType.ROAD:
-                return True
+        if self.has_building(BuildingType.ROAD):
+            return True
         return False
 
     def has_bridge(self):
-        for building in self.buildings:
-            if building.building_type == BuildingType.BRIDGE:
-                return True
-        return False
-
-    def has_farm(self):
-        for building in self.buildings:
-            if building.building_type == BuildingType.FARM:
-                return True
-        return False
-
-    def has_city(self):
-        for building in self.buildings:
-            if building.building_type == BuildingType.CITY:
-                return True
+        if self.has_building(BuildingType.BRIDGE):
+            return True
         return False

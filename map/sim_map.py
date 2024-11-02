@@ -169,8 +169,8 @@ class Map:
         x, y = position
         self.squares[y][x].claim(agent)
 
-    def add_building(self, building_id, x, y):
-        self.squares[y][x].add_building(building_id, x, y)
+    def add_building(self, building_object, position: [int, int]) -> None:
+        self.get_tile(position).add_building(building_object)
 
     def draw(self, screen, zoom_level, pan_x, pan_y):
         """

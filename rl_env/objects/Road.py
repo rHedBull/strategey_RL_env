@@ -18,8 +18,8 @@ class RoadShape:
 
 class Road(Building):
     def __init__(
-        self, position: Tuple[int, int], shape=None):
-        super().__init__(position, BuildingType.ROAD)
+        self, position: Tuple[int, int], building_type_id, shape=None):
+        super().__init__(position, BuildingType.ROAD, building_type_id)
 
         self.max_level = 3
         self.shape = shape if shape else RoadShape()
@@ -38,12 +38,12 @@ class Road(Building):
         :param screen: Pygame display surface
         """
 
-        draw_bridge_road(screen, self.x, self.y, square_size, self.shape, bridge_color)
+        draw_bridge_road(screen, self.x, self.y, square_size, self.shape, road_color)
 
 class Bridge(Building):
     def __init__(
-        self, position: Tuple[int, int], shape=None):
-        super().__init__(position, BuildingType.BRIDGE)
+        self, position: Tuple[int, int], building_type_id:int , shape=None):
+        super().__init__(position, BuildingType.BRIDGE, building_type_id)
 
         self.max_level = 3
         self.shape = shape if shape else RoadShape()
@@ -74,7 +74,6 @@ def update_road_bridge_shape(road_or_bridge, map):
     """
     x = road_or_bridge.x
     y = road_or_bridge.y
-    old_shape = road_or_bridge.shape
 
     # Check surrounding tiles for roads and bridges
 
@@ -86,33 +85,47 @@ def update_road_bridge_shape(road_or_bridge, map):
     # Update road shape based on surrounding roads and bridges
     shape = RoadShape()
     if up:
-        shape.up = up.has_road() or up.has_bridge()
+        shape.up = up.has_any_building()
+    else:
+        shape.up = False
+
     if down:
-        shape.down = down.has_road() or down.has_bridge()
+        shape.down = down.has_any_building()
+    else:
+        shape.down = False
+
     if left:
-        shape.left = left.has_road() or left.has_bridge()
+        shape.left = left.has_any_building()
+    else:
+        shape.left = False
+
     if right:
-        shape.right = right.has_road() or right.has_bridge()
+        shape.right = right.has_any_building()
+    else:
+        shape.right = False
+
 
     # if all directions are false, set left to true
-    if not shape.up and not shape.down and not shape.left and not shape.right:
+    if not any([shape.up, shape.down, shape.left, shape.right]):
         shape.left = True
 
     else:
             # update surrounding tiles
-            if up and shape.up:
-                up.get_road_or_bridge().shape.down = True
-            if down and shape.down:
-                down.get_road_or_bridge().shape.up = True
-            if left and shape.left:
-                left.get_road_or_bridge().shape.right=True
-            if right and shape.right:
-                right.get_road_or_bridge().shape.left = True
+            if shape.up:
+                if up.has_road() or up.has_bridge():
+                    up.get_road_or_bridge().shape.down = True
+            if shape.down:
+                if down.has_road() or down.has_bridge():
+                    down.get_road_or_bridge().shape.up = True
+            if shape.left:
+                if left.has_road() or left.has_bridge():
+                    left.get_road_or_bridge().shape.right = True
+            if shape.right:
+                if right.has_road() or right.has_bridge():
+                    right.get_road_or_bridge().shape.left = True
+
 
     road_or_bridge.shape = shape
-
-
-
 
 def draw_bridge_road(screen: pygame.Surface, x, y, square_size: int, shape: RoadShape, color: Tuple[int, int, int]):
     """
