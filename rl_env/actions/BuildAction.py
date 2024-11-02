@@ -24,6 +24,12 @@ class BuildAction(Action, ABC):
             )
             return False
 
+        if env.map.get_tile(self.position).has_any_building():
+            print(
+                f"Agent {self.agent.id}: Tile at {self.position} already has a building"
+            )
+            return False
+
         return True
 
     def execute(self, env) -> float:
