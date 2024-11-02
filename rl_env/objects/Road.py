@@ -47,10 +47,6 @@ class Bridge(Building):
 
         self.max_level = 3
         self.shape = shape if shape else RoadShape()
-        self.shape.left = True
-        self.shape.right = True
-        # TODO: function to check surrounding tiles for road or bridge
-
 
     def draw(
         self,

@@ -1,8 +1,5 @@
 import random
 
-from rl_env.objects.Road import RoadType
-
-
 class Agent:
     def __init__(self, id, x_max, y_max):
         self.id = id
