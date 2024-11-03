@@ -106,19 +106,23 @@
         },
         "city": {
             "cost": 200,
-            "reward": 20
+            "reward": 20,
+            "id": 1
         },
         "road": {
             "cost": 5,
-            "reward": 3
+            "reward": 3,
+            "id": 2
         },
         "bridge": {
             "cost": 5,
-            "reward": 3
+            "reward": 3,
+            "id": 4
         },
         "farm": {
             "cost": 10,
-            "reward": 5
+            "reward": 5,
+            "id": 8
         }
     },
     "buildings": [

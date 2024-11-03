@@ -23,7 +23,7 @@ class Agent:
         self.max_y = None
 
         self.id = agent_id
-        self.position = (0, 0)
+        self.position = (-1, -1)
 
         self.state = "active"
 
@@ -42,7 +42,7 @@ class Agent:
             self.color = AGENT_COLORS[c % len(AGENT_COLORS)]
 
         self.all_visible = False
-        self.visibility_range = 3
+        self.visibility_range = 1
 
         self.env = env
 
@@ -206,12 +206,12 @@ class Agent:
         :param map:
         :param position: The position of the agent.
         """
-        x, y = position
+        x, y = position # is x, y assigend correct here? it somehow works like this
 
         for i in range(-self.visibility_range, self.visibility_range + 1):
             for j in range(-self.visibility_range, self.visibility_range + 1):
-                if self.env.map.check_position_on_map((x + i, y + j)):
-                    self.env.map.set_visible((x + i, y + j), self.id)
+                if self.env.map.check_position_on_map((y + j, x + i)):
+                    self.env.map.set_visible((y + j, x + i), self.id)
 
 def get_visible_mask(agent_id, map):
     bitmask = (1 << agent_id)
