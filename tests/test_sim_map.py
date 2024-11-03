@@ -148,22 +148,40 @@ def test_get_tile(map_instance):
 def test_visibility_methods(map_instance):
     position = (3, 9)
     agent_id = 10  # Valid agent ID
+    agent_id2 = 3
+
 
     # Initially not visible
     assert not map_instance.is_visible(position, agent_id)
+    assert not map_instance.is_visible(position, agent_id2)
 
     # Set visible
     map_instance.set_visible(position, agent_id)
     assert map_instance.is_visible(position, agent_id)
+    assert not map_instance.is_visible(position, agent_id2)
+
+    # Set visible for another agent
+    map_instance.set_visible(position, agent_id2)
+    assert map_instance.is_visible(position, agent_id)
+    assert map_instance.is_visible(position, agent_id2)
 
     # Clear visible
     map_instance.clear_visible(position, agent_id)
     assert not map_instance.is_visible(position, agent_id)
+    assert map_instance.is_visible(position, agent_id2)
 
     # Test with invalid agent ID
     invalid_agent_id = max_agent_id
     map_instance.set_visible(position, invalid_agent_id)  # Should have no effect
+    assert map_instance.is_visible(position, agent_id2)
     assert not map_instance.is_visible(position, invalid_agent_id)
+
+    map_instance.clear_visible(position, invalid_agent_id)  # Should have no effect
+    assert map_instance.is_visible(position, agent_id2)
+    assert not map_instance.is_visible(position, invalid_agent_id)
+
+    map_instance.clear_visible(position, agent_id2)
+    assert not map_instance.is_visible(position, agent_id2)
 
 
 def test_claim_tile(map_instance):
