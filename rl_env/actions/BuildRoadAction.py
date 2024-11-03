@@ -16,19 +16,14 @@ class BuildRoadAction(BuildAction):
         if not super().validate(env):
             return False
 
-        return True
-        # if self.agent.id == env.map.get_tile(self.position).get_owner():
-        #     # tile is onwed by agent
-        #     return True
-        #
-        # # tile_is_visible = env.map.get_tile(self.build_position).is_visible(self.build_position)
-        # # tile_is_next_to_road = env.map.get_tile().is_next_to_road(self.build_position)
-        # #
-        # # # check if on visible tile
-        # # if tile_is_visible and tile_is_next_to_road:
-        # #     return True
-        #
-        # return False
+        if self.agent.id == env.map.get_tile(self.position).get_owner():
+            # tile is onwed by agent
+            return True
+
+        if env.map.tile_is_next_to_building(self.position):
+            return True
+
+        return False
 
     def perform_build(self, env):
         building_type_id = self.get_building_type_id(env)
@@ -47,19 +42,12 @@ class BuildBridgeAction(BuildAction):
         if not super().validate(env):
             return False
 
-        return True
-        # if self.agent.id == env.map.get_tile(self.position).get_owner():
-        #     # tile is onwed by agent
-        #     return True
-        #
-        # # tile_is_visible = env.map.get_tile(self.build_position).is_visible(self.build_position)
-        # # tile_is_next_to_road = env.map.get_tile().is_next_to_road(self.build_position)
-        # #
-        # # # check if on visible tile
-        # # if tile_is_visible and tile_is_next_to_road:
-        # #     return True
-        #
-        # return False
+        if self.agent.id == env.map.get_tile(self.position).get_owner():
+            # tile is onwed by agent
+            return True
+
+        if env.map.tile_is_next_to_building(self.position):
+            return True
 
     def perform_build(self, env):
         building_type_id = self.get_building_type_id(env)
@@ -67,9 +55,4 @@ class BuildBridgeAction(BuildAction):
         env.map.add_building(bridge, self.position)
 
         update_road_bridge_shape(bridge, env.map)
-
-        env.map.claim_tile(self.agent, self.position)
-        self.agent.claimed_tiles.add(self.position)
-        env.action_manager.update_claimable_tiles(self.agent, self.position)
-
         self.agent.update_local_visibility(self.position)

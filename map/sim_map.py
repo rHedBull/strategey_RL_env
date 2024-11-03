@@ -316,6 +316,16 @@ class Map:
             ]
             self.squares.append(row)
 
+    def tile_is_next_to_building(self, position) -> bool:
+
+        # check if any of the neighbouring tiles has a road
+        x, y = position
+        for i in range(-1, 2):
+            for j in range(-1, 2):
+                tile = self.get_tile((y + j, x + i))
+                if tile and tile.has_any_building():
+                    return True
+        return False
 
     def check_position_on_map(self, position: Tuple[int, int]) -> bool:
         """
