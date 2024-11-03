@@ -1,13 +1,15 @@
-
-import pytest
 from unittest.mock import Mock
 
-from map.map_settings import LandType, OWNER_DEFAULT_TILE, COLOR_DEFAULT_BORDER, land_type_color
+import pytest
+
+from map.map_settings import (COLOR_DEFAULT_BORDER, OWNER_DEFAULT_TILE,
+                              LandType, land_type_color)
 from map.map_square import Map_Square
 from rl_env.objects.Building import BuildingType
-from rl_env.objects.Farm import Farm
-from rl_env.objects.Road import Road, Bridge
 from rl_env.objects.city import City
+from rl_env.objects.Farm import Farm
+from rl_env.objects.Road import Bridge, Road
+
 
 @pytest.fixture
 def map_square():
@@ -15,6 +17,7 @@ def map_square():
     Fixture to create a Map_Square instance before each test.
     """
     return Map_Square(id=1, x=5, y=10, square_size=32, land_value=LandType.LAND)
+
 
 def test_initialization(map_square):
     """
@@ -39,6 +42,7 @@ def test_initialization(map_square):
     assert map_square.default_color == land_type_color(LandType.LAND)
     assert map_square.land_type_color == land_type_color(LandType.LAND)
     assert map_square.owner_color == COLOR_DEFAULT_BORDER
+
 
 def test_reset(map_square):
     """
@@ -71,6 +75,7 @@ def test_reset(map_square):
     assert map_square.buildings == set()
     assert map_square.building_int == 0
 
+
 def test_set_and_get_owner(map_square):
     """
     Test setting and getting the owner of the map square.
@@ -88,7 +93,6 @@ def test_set_and_get_owner(map_square):
     assert map_square.owner_color == agent_color
 
 
-
 def test_set_and_get_land_type(map_square):
     """
     Test setting and getting the land type of the map square.
@@ -102,6 +106,7 @@ def test_set_and_get_land_type(map_square):
     map_square.set_land_type(new_land_type)
     assert map_square.get_land_type() == new_land_type
     assert map_square.land_type_color == land_type_color(new_land_type)
+
 
 def test_claim(map_square):
     """
@@ -119,6 +124,7 @@ def test_claim(map_square):
     assert map_square.owner_id == agent.id
     assert map_square.owner_color == agent.color
 
+
 def test_add_building(map_square):
     """
     Test adding a building to the map square.
@@ -134,6 +140,7 @@ def test_add_building(map_square):
 
     assert city in map_square.buildings
     assert map_square.building_int == 1
+
 
 def test_has_building(map_square):
     """
@@ -159,6 +166,7 @@ def test_has_building(map_square):
     # Test undefined building type
     assert map_square.has_building("UNKNOWN_BUILDING") is False
 
+
 def test_has_any_building(map_square):
     """
     Test checking if any building exists on the map square.
@@ -172,13 +180,14 @@ def test_has_any_building(map_square):
     map_square.add_building(city)
     assert map_square.has_any_building() is True
 
+
 def test_remove_building(map_square):
     """
     Test removing a building from the map square.
     """
     test_position = (map_square.x, map_square.y)
     mock_agent_id = 7
-    city = City(mock_agent_id, test_position,  1)
+    city = City(mock_agent_id, test_position, 1)
     road = Road(test_position, 2)
 
     map_square.add_building(city)
@@ -208,6 +217,7 @@ def test_remove_building(map_square):
     map_square.remove_building(city)  # Already removed
     assert map_square.building_int == 0
 
+
 def test_get_full_info(map_square):
     """
     Test retrieving the full info of the map square.
@@ -216,17 +226,18 @@ def test_get_full_info(map_square):
     mock_owner_agent = 7
     map_square.set_land_type(LandType.MOUNTAIN)
     map_square.set_owner(mock_owner_agent, (255, 0, 0))  # Red
-    building = City(mock_owner_agent, (0,0), mock_building_id)
+    building = City(mock_owner_agent, (0, 0), mock_building_id)
     map_square.add_building(building)
 
     expected_state = [
         LandType.MOUNTAIN.value,
         mock_owner_agent,
-        building.get_building_type_id()
+        building.get_building_type_id(),
     ]
 
     state = map_square.get_full_info()
     assert state == expected_state
+
 
 def test_has_road_and_bridge(map_square):
     """
@@ -256,4 +267,3 @@ def test_has_road_and_bridge(map_square):
     map_square.add_building(farm)
     assert map_square.has_road() is False
     assert map_square.has_bridge() is False
-

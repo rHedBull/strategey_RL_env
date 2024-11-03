@@ -286,7 +286,11 @@ class MapEnvironment(gym.Env):
         #     [agent.get_observation() for agent in self.agents],
         #     dtype=np.float32,
         # )
-        observation = {"map": map_observation, "agents": None, "visibility_masks": all_visible_masks}
+        observation = {
+            "map": map_observation,
+            "agents": None,
+            "visibility_masks": all_visible_masks,
+        }
         return observation
 
     def capture_game_state_as_image(self):

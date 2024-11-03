@@ -4,9 +4,9 @@ from typing import Any, List, Tuple
 import numpy as np
 
 from agents.Sim_Agent import Agent
-from rl_env.actions.BuildFarmAction import BuildFarmAction
-from rl_env.actions.BuildRoadAction import BuildRoadAction, BuildBridgeAction
 from rl_env.actions.BuildCityAction import BuildCityAction
+from rl_env.actions.BuildFarmAction import BuildFarmAction
+from rl_env.actions.BuildRoadAction import BuildBridgeAction, BuildRoadAction
 from rl_env.actions.ClaimAction import ClaimAction
 from rl_env.actions.MoveAction import MoveAction
 
@@ -126,7 +126,6 @@ class ActionManager:
                         print(
                             f"Agent {action.agent.id}'s action at position {position} has been invalidated due to conflict."
                         )
-
 
     def update_claimable_tiles(self, agent: Agent, new_claimed_tile: Tuple[int, int]):
         """

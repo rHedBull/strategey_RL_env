@@ -2,9 +2,9 @@ from typing import Tuple
 
 import pygame
 
-from map.map_settings import (COLOR_DEFAULT_BORDER, OWNER_DEFAULT_TILE, LandType, land_type_color)
+from map.map_settings import (COLOR_DEFAULT_BORDER, OWNER_DEFAULT_TILE,
+                              LandType, land_type_color)
 from rl_env.objects.Building import Building, BuildingType
-
 
 # TODO: zooming, moving?
 
@@ -63,11 +63,11 @@ class Map_Square:
         # owner specific
         self.owner_id = OWNER_DEFAULT_TILE
 
-        self.visibility_bitmask = 0 # init to zero, no agent can see this tile
+        self.visibility_bitmask = 0  # init to zero, no agent can see this tile
 
         # building stuff
         self.buildings = set()
-        self.building_int = 0 # a bit mask to easily check for buildings present here
+        self.building_int = 0  # a bit mask to easily check for buildings present here
 
         self.land_money_value = 1
 
@@ -134,7 +134,7 @@ class Map_Square:
             self.land_type = land_value
             self.land_type_color = land_type_color(land_value)
 
-    def get_land_type(self)->LandType:
+    def get_land_type(self) -> LandType:
         return self.land_type
 
     def get_round_value(self):
@@ -174,7 +174,6 @@ class Map_Square:
         return (self.building_int & building_id) != 0
 
     def has_any_building(self):
-
         if self.building_int > 0:
             return True
         return False
@@ -229,13 +228,13 @@ class Map_Square:
     def get_full_info(self):
         # these are the features the agent can observe
         state = [
-            #self.height,
-            #self.biome,
+            # self.height,
+            # self.biome,
             # self.resources,
             self.land_type.value,
             self.owner_id,
             self.building_int
-            #self.land_money_value,
+            # self.land_money_value,
         ]
         return state
 
@@ -255,7 +254,10 @@ class Map_Square:
 
     def get_road_or_bridge(self):
         for building in self.buildings:
-            if building.building_type == BuildingType.ROAD or building.building_type == BuildingType.BRIDGE:
+            if (
+                building.building_type == BuildingType.ROAD
+                or building.building_type == BuildingType.BRIDGE
+            ):
                 return building
 
     def has_road(self):

@@ -3,7 +3,6 @@ from datetime import datetime
 from typing import Any
 
 import numpy as np
-
 import pygame
 import tensorflow as tf
 
@@ -55,15 +54,12 @@ class Run:
                     action = agent.get_action(pygame, None)
 
                 else:
-
                     agent_observation = mask_map_for_agent(observation, agent.id)
                     action = agent.get_action(agent_observation)
 
                 agent_actions.append(action)
 
-            observation, agent_rewards, dones, all_done = self.env.step(
-                agent_actions
-            )
+            observation, agent_rewards, dones, all_done = self.env.step(agent_actions)
 
             self.update_agents(all_done, running_agents, dones, agent_rewards)
             self.log_stats(agent_rewards, step, agent_actions)
@@ -144,7 +140,10 @@ class Run:
         else:
             pygame.quit()
 
-def mask_map_for_agent(observation: dict, agent_id: int, mask_value: int = -1) -> list[tuple[Any, Any]] | Any:
+
+def mask_map_for_agent(
+    observation: dict, agent_id: int, mask_value: int = -1
+) -> list[tuple[Any, Any]] | Any:
     """
     Masks the map for a specific agent by setting all unseen tiles to mask_value.
 
@@ -157,7 +156,9 @@ def mask_map_for_agent(observation: dict, agent_id: int, mask_value: int = -1) -
         np.ndarray: The masked map observation for the agent.
     """
     # Retrieve the visibility mask for the agent
-    agent_visibility_mask = observation["visibility_masks"][agent_id]  # shape: (width, height)
+    agent_visibility_mask = observation["visibility_masks"][
+        agent_id
+    ]  # shape: (width, height)
 
     # Ensure the mask is boolean
     agent_visibility_mask = agent_visibility_mask.astype(bool)
@@ -172,8 +173,7 @@ def mask_map_for_agent(observation: dict, agent_id: int, mask_value: int = -1) -
     # This will broadcast the mask across the features_per_tile dimension
     masked_map = np.where(mask_expanded, full_map, mask_value)
 
-
     y_coords, x_coords = np.where(agent_visibility_mask)
     return list(zip(x_coords, y_coords))
 
-    #return masked_map
+    # return masked_map

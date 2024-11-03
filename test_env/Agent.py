@@ -1,5 +1,6 @@
 import random
 
+
 class Agent:
     def __init__(self, id, x_max, y_max):
         self.id = id
@@ -42,10 +43,8 @@ class Agent:
             position = random.choice(list(claimable_tiles))
             props = {"position": position}
         elif action_type == "build_road" or action_type == "build_bridge":
-
             position = random.choice(list(claimable_tiles))
             props = {"position": position}
-
 
         elif action_type == "build_farm":
             position = random.choice(list(claimable_tiles))

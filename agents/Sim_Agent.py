@@ -70,7 +70,6 @@ class Agent:
 
         self.update_local_visibility(self.position)
 
-
         self.state = "active"
         self.money = 100  # for now
 
@@ -207,15 +206,15 @@ class Agent:
         :param map:
         :param position: The position of the agent.
         """
-        x, y = position # is x, y assigend correct here? it somehow works like this
+        x, y = position  # is x, y assigend correct here? it somehow works like this
 
         for i in range(-self.visibility_range, self.visibility_range + 1):
             for j in range(-self.visibility_range, self.visibility_range + 1):
                 if self.env.map.check_position_on_map((y + j, x + i)):
                     self.env.map.set_visible((y + j, x + i), self.id)
 
+
 def get_visible_mask(agent_id, map):
-    bitmask = (1 << agent_id)
+    bitmask = 1 << agent_id
     visible = (map.visibility_map & bitmask) > 0
     return visible
-

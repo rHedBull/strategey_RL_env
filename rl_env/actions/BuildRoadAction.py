@@ -3,14 +3,12 @@ from typing import Tuple
 from agents.Sim_Agent import Agent
 from rl_env.actions.BuildAction import BuildAction
 from rl_env.objects.Building import BuildingType
-from rl_env.objects.Road import Road, Bridge, update_road_bridge_shape
+from rl_env.objects.Road import Bridge, Road, update_road_bridge_shape
 
 
 class BuildRoadAction(BuildAction):
     def __init__(self, agent: Agent, position: Tuple[int, int]):
-
         super().__init__(agent, position, BuildingType.ROAD)
-
 
     def validate(self, env) -> bool:
         if not super().validate(env):
@@ -33,6 +31,7 @@ class BuildRoadAction(BuildAction):
         update_road_bridge_shape(road, env.map)
 
         self.agent.update_local_visibility(self.position)
+
 
 class BuildBridgeAction(BuildAction):
     def __init__(self, agent: Agent, position: Tuple[int, int]):

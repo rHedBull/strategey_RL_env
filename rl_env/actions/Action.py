@@ -4,6 +4,7 @@ from typing import Tuple
 
 from agents.Sim_Agent import Agent
 
+
 class ActionType(Enum):
     CLAIM = "claim"
     MOVE = "move"
@@ -11,7 +12,9 @@ class ActionType(Enum):
 
 
 class Action(ABC):
-    def __init__(self, agent: Agent, position: Tuple[int, int], action_type: ActionType):
+    def __init__(
+        self, agent: Agent, position: Tuple[int, int], action_type: ActionType
+    ):
         self.agent = agent
 
         if position is None:
@@ -19,16 +22,13 @@ class Action(ABC):
         self.position = position
         self.action_type = action_type
 
-
     def validate(self, env) -> bool:
         """
         Validate if the action is possible given the current state of the environment and the agent.
         """
         action_cost = self.get_cost(env)
         if self.agent.money < action_cost:
-            print(
-                f"Agent {self.agent.id}: Not enough money to do action."
-            )
+            print(f"Agent {self.agent.id}: Not enough money to do action.")
             return False
 
         # right now all actions have a position

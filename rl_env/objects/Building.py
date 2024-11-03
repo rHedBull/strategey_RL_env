@@ -14,7 +14,12 @@ class BuildingType(Enum):
 
 
 class Building(ABC):
-    def __init__(self, position: Tuple[int, int], building_type: BuildingType, building_type_id: int):
+    def __init__(
+        self,
+        position: Tuple[int, int],
+        building_type: BuildingType,
+        building_type_id: int,
+    ):
         self.id = uuid1()
 
         self.x, self.y = position
@@ -36,12 +41,11 @@ class Building(ABC):
         """
         pass
 
-
     def get_building_type(self) -> BuildingType:
         """
         Return the type of the building (e.g., 'City', 'Road', 'Farm').
         """
-        return  self.building_type
+        return self.building_type
 
     def get_building_type_id(self):
         return self.building_type_id

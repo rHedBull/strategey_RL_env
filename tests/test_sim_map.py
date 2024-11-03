@@ -1,10 +1,9 @@
 import pytest
-from unittest.mock import Mock, patch
 
 from agents.Sim_Agent import Agent
-from map.map_settings import LandType, OWNER_DEFAULT_TILE
-from map.sim_map import check_valid_agent_id, max_agent_id, Map
+from map.map_settings import OWNER_DEFAULT_TILE, LandType
 from map.map_square import Map_Square
+from map.sim_map import Map, check_valid_agent_id, max_agent_id
 from rl_env.objects.city import City
 
 
@@ -70,7 +69,9 @@ def test_map_initialization(map_instance):
     assert map_instance.resource_density == 0.5
     assert map_instance.biomes_definition == {}
     assert map_instance.land_resource_definition == {}
-    assert map_instance.sea_resource_definition == {}  # Note: It seems sea_resource_definition is set to "land_resources" in code
+    assert (
+        map_instance.sea_resource_definition == {}
+    )  # Note: It seems sea_resource_definition is set to "land_resources" in code
 
 
 def test_create_map(map_instance):
@@ -87,7 +88,7 @@ def test_create_map(map_instance):
                 LandType.MARSH,
                 LandType.LAND,
             ]
-            #assert square.resources == []
+            # assert square.resources == []
             assert square.buildings == set()
             # the rest should be tested in Map_Square tests
 
@@ -149,7 +150,6 @@ def test_visibility_methods(map_instance):
     position = (3, 9)
     agent_id = 10  # Valid agent ID
     agent_id2 = 3
-
 
     # Initially not visible
     assert not map_instance.is_visible(position, agent_id)
@@ -258,4 +258,4 @@ def test_save_and_load_topography_resources(map_instance, mock_settings, tmp_pat
             assert loaded_square.x == original_square.x
             assert loaded_square.y == original_square.y
             assert loaded_square.land_type == original_square.land_type
-            #assert loaded_square.resources == original_square.resources
+            # assert loaded_square.resources == original_square.resources

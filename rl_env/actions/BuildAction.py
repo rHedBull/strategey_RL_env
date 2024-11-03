@@ -4,30 +4,26 @@ from typing import Tuple
 from agents.Sim_Agent import Agent
 from map.map_settings import ALLOWED_BUILDING_PLACEMENTS
 from rl_env.actions.Action import Action, ActionType
-
 from rl_env.objects.Building import BuildingType
 
 
 class BuildAction(Action, ABC):
-    def __init__(self, agent: Agent, position: Tuple[int, int], building_type: BuildingType):
+    def __init__(
+        self, agent: Agent, position: Tuple[int, int], building_type: BuildingType
+    ):
         super().__init__(agent, position, ActionType.BUILD)
         self.building_type = building_type
 
     def validate(self, env) -> bool:
-
         if not super().validate(env):
             return False
 
         if not fit_building_to_land_type(env, self.position, self.building_type):
-            print(
-                f"Agent {self.agent.id}: Tile at {self.position} is not buildable"
-            )
+            print(f"Agent {self.agent.id}: Tile at {self.position} is not buildable")
             return False
 
         if not env.map.is_visible(self.position, self.agent.id):
-            print(
-                f"Agent {self.agent.id}: Tile at {self.position} is not visible"
-            )
+            print(f"Agent {self.agent.id}: Tile at {self.position} is not visible")
             return False
 
         if env.map.get_tile(self.position).has_any_building():
@@ -58,14 +54,18 @@ class BuildAction(Action, ABC):
 
     def get_reward(self, env) -> float:
         """Return the reward for the action."""
-        return env.env_settings.get_setting("actions")[self.building_type.value]["reward"]
+        return env.env_settings.get_setting("actions")[self.building_type.value][
+            "reward"
+        ]
 
     def get_building_type_id(self, env) -> int:
         """Return the building type id."""
         return env.env_settings.get_setting("actions")[self.building_type.value]["id"]
 
 
-def fit_building_to_land_type(env, position: Tuple[int, int], build_type: BuildingType) -> bool:
+def fit_building_to_land_type(
+    env, position: Tuple[int, int], build_type: BuildingType
+) -> bool:
     """Check if the land type at the given position is suitable for the building type."""
 
     land_type_at_position = env.map.get_tile(position).get_land_type()

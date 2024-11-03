@@ -30,6 +30,7 @@ AGENT_COLORS = [
 
 OWNER_DEFAULT_TILE = -1
 
+
 class LandType(Enum):
     LAND = auto()
     OCEAN = auto()
@@ -37,6 +38,7 @@ class LandType(Enum):
     MARSH = auto()
     MOUNTAIN = auto()
     DESERT = auto()
+
 
 def land_type_color(land_type: LandType):
     if land_type == LandType.LAND:
@@ -54,9 +56,20 @@ def land_type_color(land_type: LandType):
     else:
         return COLOR_DEFAULT_LAND
 
+
 ALLOWED_BUILDING_PLACEMENTS = {
-    BuildingType.CITY: {LandType.LAND, LandType.MOUNTAIN, LandType.DESERT, LandType.MARSH},
-    BuildingType.ROAD: {LandType.LAND, LandType.MOUNTAIN, LandType.DESERT, LandType.MARSH},
+    BuildingType.CITY: {
+        LandType.LAND,
+        LandType.MOUNTAIN,
+        LandType.DESERT,
+        LandType.MARSH,
+    },
+    BuildingType.ROAD: {
+        LandType.LAND,
+        LandType.MOUNTAIN,
+        LandType.DESERT,
+        LandType.MARSH,
+    },
     BuildingType.BRIDGE: {LandType.RIVER, LandType.OCEAN},
     BuildingType.FARM: {LandType.LAND, LandType.MARSH},
     # Add mappings for other building types

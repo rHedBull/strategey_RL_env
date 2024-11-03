@@ -1,4 +1,3 @@
-import numpy as np
 import pygame
 
 from map.map_settings import PLAYER_COLOR
@@ -11,7 +10,7 @@ class Player(Agent):
 
         self.color = PLAYER_COLOR
 
-    def get_action(self, game, env):
+    def get_action(self, game):
         # action dictionary mask
         selected_action = []
 

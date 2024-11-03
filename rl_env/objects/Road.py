@@ -1,4 +1,3 @@
-from enum import Enum, auto
 from typing import Tuple
 
 import pygame
@@ -10,15 +9,16 @@ road_color = (128, 128, 128)
 # brown bridge
 bridge_color = (139, 69, 19)
 
+
 class RoadShape:
     up: bool = False
     down: bool = False
     left: bool = False
     right: bool = False
 
+
 class Road(Building):
-    def __init__(
-        self, position: Tuple[int, int], building_type_id, shape=None):
+    def __init__(self, position: Tuple[int, int], building_type_id, shape=None):
         super().__init__(position, BuildingType.ROAD, building_type_id)
 
         self.max_level = 3
@@ -40,9 +40,9 @@ class Road(Building):
 
         draw_bridge_road(screen, self.x, self.y, square_size, self.shape, road_color)
 
+
 class Bridge(Building):
-    def __init__(
-        self, position: Tuple[int, int], building_type_id:int , shape=None):
+    def __init__(self, position: Tuple[int, int], building_type_id: int, shape=None):
         super().__init__(position, BuildingType.BRIDGE, building_type_id)
 
         self.max_level = 3
@@ -104,30 +104,36 @@ def update_road_bridge_shape(road_or_bridge, map):
     else:
         shape.right = False
 
-
     # if all directions are false, set left to true
     if not any([shape.up, shape.down, shape.left, shape.right]):
         shape.left = True
 
     else:
-            # update surrounding tiles
-            if shape.up:
-                if up.has_road() or up.has_bridge():
-                    up.get_road_or_bridge().shape.down = True
-            if shape.down:
-                if down.has_road() or down.has_bridge():
-                    down.get_road_or_bridge().shape.up = True
-            if shape.left:
-                if left.has_road() or left.has_bridge():
-                    left.get_road_or_bridge().shape.right = True
-            if shape.right:
-                if right.has_road() or right.has_bridge():
-                    right.get_road_or_bridge().shape.left = True
-
+        # update surrounding tiles
+        if shape.up:
+            if up.has_road() or up.has_bridge():
+                up.get_road_or_bridge().shape.down = True
+        if shape.down:
+            if down.has_road() or down.has_bridge():
+                down.get_road_or_bridge().shape.up = True
+        if shape.left:
+            if left.has_road() or left.has_bridge():
+                left.get_road_or_bridge().shape.right = True
+        if shape.right:
+            if right.has_road() or right.has_bridge():
+                right.get_road_or_bridge().shape.left = True
 
     road_or_bridge.shape = shape
 
-def draw_bridge_road(screen: pygame.Surface, x, y, square_size: int, shape: RoadShape, color: Tuple[int, int, int]):
+
+def draw_bridge_road(
+    screen: pygame.Surface,
+    x,
+    y,
+    square_size: int,
+    shape: RoadShape,
+    color: Tuple[int, int, int],
+):
     """
     Draw the road on the screen based on the RoadShape.
 
@@ -146,18 +152,26 @@ def draw_bridge_road(screen: pygame.Surface, x, y, square_size: int, shape: Road
 
     # Define end points for each direction
     directions = {
-        'up': (center_x, center_y - half_size),
-        'down': (center_x, center_y + half_size),
-        'left': (center_x - half_size, center_y),
-        'right': (center_x + half_size, center_y),
+        "up": (center_x, center_y - half_size),
+        "down": (center_x, center_y + half_size),
+        "left": (center_x - half_size, center_y),
+        "right": (center_x + half_size, center_y),
     }
 
     # Draw roads based on active connections
     if shape.up:
-        pygame.draw.line(screen, color, (center_x, center_y), directions['up'], road_width)
+        pygame.draw.line(
+            screen, color, (center_x, center_y), directions["up"], road_width
+        )
     if shape.down:
-        pygame.draw.line(screen, color, (center_x, center_y), directions['down'], road_width)
+        pygame.draw.line(
+            screen, color, (center_x, center_y), directions["down"], road_width
+        )
     if shape.left:
-        pygame.draw.line(screen, color, (center_x, center_y), directions['left'], road_width)
+        pygame.draw.line(
+            screen, color, (center_x, center_y), directions["left"], road_width
+        )
     if shape.right:
-        pygame.draw.line(screen, color, (center_x, center_y), directions['right'], road_width)
+        pygame.draw.line(
+            screen, color, (center_x, center_y), directions["right"], road_width
+        )

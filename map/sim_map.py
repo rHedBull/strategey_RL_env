@@ -11,7 +11,8 @@ from map.map_square import Map_Square
 from test_env.Agent import Agent
 
 features_per_tile = 3
-max_agent_id = 63 # based on current setup of visibility map, would have to use other datatype or multiple maps for more agents
+max_agent_id = 63  # based on current setup of visibility map, would have to use other datatype or multiple maps for more agents
+
 
 def check_valid_agent_id(agent_id: int) -> bool:
     return 0 <= agent_id < max_agent_id
@@ -107,14 +108,10 @@ class Map:
                 square.reset()
 
         # mountain agents
-        self.let_map_agent_run(
-            self.mountain_percentage, self.tiles, LandType.MOUNTAIN
-        )
+        self.let_map_agent_run(self.mountain_percentage, self.tiles, LandType.MOUNTAIN)
 
         # dessert agents
-        self.let_map_agent_run(
-            self.dessert_percentage, self.tiles, LandType.DESERT
-        )
+        self.let_map_agent_run(self.dessert_percentage, self.tiles, LandType.DESERT)
 
         # water agents
         self.let_map_agent_run(self.water_percentage, self.tiles, LandType.OCEAN)
@@ -152,7 +149,9 @@ class Map:
         """define here what infor is visible to all agents
         Assuming full observability of map for now
         """
-        map_info = np.zeros((self.width, self.height, features_per_tile))  # number of features per tile
+        map_info = np.zeros(
+            (self.width, self.height, features_per_tile)
+        )  # number of features per tile
         for row in self.squares:
             for square in row:
                 map_info[square.x][square.y] = square.get_observation_state()
@@ -200,7 +199,7 @@ class Map:
                 new_size = square.square_size * zoom_level
                 square.draw(screen, new_x, new_y, new_size)
 
-    def get_tile(self, position: [int, int]) -> Map_Square|None:
+    def get_tile(self, position: [int, int]) -> Map_Square | None:
         """
         Get the tile at position x, y
         :param position:
@@ -318,7 +317,6 @@ class Map:
             self.squares.append(row)
 
     def tile_is_next_to_building(self, position) -> bool:
-
         # check if any of the neighbouring tiles has a building
         # TODO: switch to just up, down, left, right
         x, y = position
@@ -359,4 +357,5 @@ class Map:
             return result != 0
         # TODO: sth messed up with coordinates of visibility map!!, works now, but not in the tests
         # TODO: switch to common use of either position as tuple or Class or self.x, self.y
+
     # TODO: maybe enable bulk operations here later, to make exploration in general more efficient

@@ -82,26 +82,19 @@ python -m memory_profiler your_script.py
 
 ## Buildings
 ### Roads
-- can on be started on a claimed tile
-- if tile not claimed it must be next to another road
+- must be placed on an already claimed tile
+- or next to another building including roads and bridges
 
 ### Bridge
-- can on be started on a claimed tile
-- if tile not claimed it must be next to another road
+- must be placed on an already claimed tile
+- or next to another building including roads and bridges
 
 ### City
 - can only be placed on a visible tile
 - placing a city claims the tile
 
-# Docs
-
-## ActionManager
-for every action there exists:
-- function to check if action is possible for the agent check_action()
-- function to execute the action apply_action()
-
-first the check_action() function is called, for each agent. After that conflicts within the actions the agents want to execute are detected.
-Then there is some kind of conflict resolution, which decides what happens where conflicts occur. In the end all actions with the conflict resolutions are then executed using apply_action().
+### Farm
+- can only be placed on an already claimed tile
 
 # TODOs
 
@@ -117,12 +110,12 @@ Then there is some kind of conflict resolution, which decides what happens where
 - graph representation of roads
 
 - make importance editable water over mountain over dessert
--   make distribution percentage wise locked to tile count
--  enable selection of land types
 -  enable distribution method
-- add random mountain distribution
+- add resources
 -  make the distribution density and type editable
-- add river water adjacent type
+- add river water adjacent type, based on perlin noise with meandering
+- enable actual biomes
+- make height relevant for water and mountain
 
 ## RL
 
@@ -145,14 +138,25 @@ Then there is some kind of conflict resolution, which decides what happens where
 ### Actions
 - [ ] !! adjust action space
 - [ ] account for continuous maps in action checks
+- [ ] add Mine with resource extraction
 
 ## UI
 - [ ] zooming, moving?
-- [ ] implement graphical building visualization
 - [ ] Better Game termination log, why did it terminate?, which round?
 - [ ] round counter in ui
 - [ ] better logging for other agents, what actions they choose
 - [ ] City ID connected to city owner?
+
+## Dev Ops
+- [ ] add more testc, increase coverage
+- [ ] add more logging
+- [ ] add larger integration tests, on predefined test map, small and large scale, by map size and agent count
+- [ ] add more documentation
+- [ ] try setup for docker
+- [ ] move stuff to cython
+- [ ] connect to pufferlib
+- [ ] optimize for GPU, cuda
+- [ ] test training in AWS
 
 ## Far fetched
 - [ ] tech tree, some actions only possible if reached a level
@@ -161,20 +165,20 @@ Then there is some kind of conflict resolution, which decides what happens where
 
 ```mermaid
 graph LR
-    
+
     m[main] --> R[Run]
     R --> A[Agent]
     A --> E[Environment]
-    
+
 ```
 
 ```mermaid
 graph LR
-    
+
     subgraph Agent
         P[Policy]
     end
-    
+
     subgraph Environment
 
         E1[ActionManager]
@@ -182,7 +186,7 @@ graph LR
         E2[Map]
 
     end
-    
+
     P-- Action --> Environment
     Environment -- Reward --> Agent
     Environment -- Observation --> Agent
