@@ -16,19 +16,15 @@ class ClaimAction(Action):
             print(f"Agent {self.agent.id}: Already owns tile at {self.position}.")
             return False
 
-        if not is_claimable(
-            self.agent, self.position
-        ):  # TODO: what to do if already claimed by other agent?
-            print(
-                f"Agent {self.agent.id}: Tile at {self.position} is not claimable."
-            )
-            return False
+        # TODO: what to do if already claimed by other agent?
+
         return True
 
     def execute(self, env) -> int:
         env.map.claim_tile(self.agent, self.position)
         self.agent.claimed_tiles.add(self.position)
-        env.action_manager.update_claimable_tiles(self.agent, self.position)
+        self.agent.update_local_visibility(self.position)
+
         self.agent.money -= env.action_manager.actions_definition["claim"]["cost"]
         reward = env.action_manager.actions_definition["claim"]["reward"]
         print(

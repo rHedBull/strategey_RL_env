@@ -24,6 +24,12 @@ class BuildAction(Action, ABC):
             )
             return False
 
+        if not env.map.is_visible(self.position, self.agent.id):
+            print(
+                f"Agent {self.agent.id}: Tile at {self.position} is not visible"
+            )
+            return False
+
         if env.map.get_tile(self.position).has_any_building():
             print(
                 f"Agent {self.agent.id}: Tile at {self.position} already has a building"

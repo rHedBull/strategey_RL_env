@@ -17,4 +17,5 @@ class BuildCityAction(BuildAction):
         # TODO: add city to agent's list of buildings
         env.map.claim_tile(self.agent, self.position)
         self.agent.claimed_tiles.add(self.position)
-        env.action_manager.update_claimable_tiles(self.agent, self.position)
+
+        self.agent.update_local_visibility(self.position)

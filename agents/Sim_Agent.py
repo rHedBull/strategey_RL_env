@@ -68,7 +68,8 @@ class Agent:
         )
         self.claimed_tiles.add(self.position)  # initial spawn is a claimed tile
 
-        self.update_claimable_tiles(self.position)
+        self.update_local_visibility(self.position)
+
 
         self.state = "active"
         self.money = 100  # for now
