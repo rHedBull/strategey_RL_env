@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import gymnasium as gym
 import numpy as np
 import pygame
-from gymnasium.vector.utils import spaces
+from gymnasium import spaces
 
 from agents.Sim_Agent import Agent, get_visible_mask
 from map.sim_map import Map

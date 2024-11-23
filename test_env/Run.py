@@ -51,7 +51,7 @@ class Run:
                     continue
                 # if agent is a player, get action from keyboard
                 if isinstance(agent, Player):
-                    action = agent.get_action(pygame, None)
+                    action = agent.get_action(pygame)
 
                 else:
                     agent_observation = mask_map_for_agent(observation, agent.id)

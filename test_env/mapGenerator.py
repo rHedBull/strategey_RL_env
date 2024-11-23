@@ -1,11 +1,14 @@
-import uuid
-import os
 import logging
+import os
+import uuid
+
 from map.sim_map import Map
 from settings.settings import Settings
 
 # Configure logging
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 
 def generate_map_name(settings):

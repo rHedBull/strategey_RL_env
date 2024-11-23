@@ -276,3 +276,5 @@ numpy~=1.23.3
 pygame~=2.5.2
 gymnasium~=0.29.1
 tensorflow~=2.11.0
+
+pytest~=8.3.3

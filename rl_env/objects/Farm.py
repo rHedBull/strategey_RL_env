@@ -9,9 +9,7 @@ from rl_env.objects.Ownable import Ownable
 class Farm(Building, Ownable):
     def __init__(self, agent_id: int, position: Tuple[int, int], building_type_id: int):
         Ownable.__init__(self, agent_id)
-        Building.__init__(
-            self, position, BuildingType.FARM, building_type_id
-        )
+        Building.__init__(self, position, BuildingType.FARM, building_type_id)
 
     def draw(self, screen: pygame.Surface, square_size: int, colors: dict):
         """

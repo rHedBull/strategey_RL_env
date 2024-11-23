@@ -14,7 +14,7 @@
 
 ### RL Setup
 - [ ] Integrartion with PufferLib
-- [ ] Optimized for RL, Cython?
+- [ ] Optimized for RL, Cython?, JAX?
 - [ ] restructure project setup
 
 
@@ -148,7 +148,7 @@ python -m memory_profiler your_script.py
 - [ ] City ID connected to city owner?
 
 ## Dev Ops
-- [ ] add more testc, increase coverage
+- [ ] add more tests, increase coverage
 - [ ] add more logging
 - [ ] add larger integration tests, on predefined test map, small and large scale, by map size and agent count
 - [ ] add more documentation
@@ -191,3 +191,24 @@ graph LR
     Environment -- Reward --> Agent
     Environment -- Observation --> Agent
 ```
+
+## map generation
+
+### interesting tools and repos
+
+* https://terrain.party/
+* https://godotengine.org/asset-library/asset/1913
+* https://github.com/Mindwerks/plate-tectonics
+* https://github.com/Mindwerks/worldengine
+* https://github.com/jessvb/3D_world_procedural_generation_GAN/blob/master/README.md
+* http://www-cs-students.stanford.edu/~amitp/game-programming/polygon-map-generation/
+* https://www.redblobgames.com/maps/mapgen4/
+* https://www.redblobgames.com/x/1929-voronoi-percolation/
+
+### intersting research
+* https://www.instructables.com/Converting-Map-Height-Data-Into-3D-Tiles/
+* https://www.mit.edu/~jessicav/6.S198/Blog_Post/ProceduralGeneration.html
+
+## coding tools
+
+* https://neptune.ai/blog/tensorboard-tutorial
