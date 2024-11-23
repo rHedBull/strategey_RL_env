@@ -1,24 +1,24 @@
 # Civ Sim
 
+## Game Rules
 
-## TODO
+### Buildings
+#### Roads
+- must be placed on an already claimed tile
+- or next to another building including roads and bridges
 
-### Game
-- [ ] Population
-- [ ] Tech tree
-- [ ] Buildings
-- [ ] Units
-- [ ] Diplomacy
-- [ ] Combat
-- [ ] continuous map?
+#### Bridge
+- must be placed on an already claimed tile
+- or next to another building including roads and bridges
 
-### RL Setup
-- [ ] Integrartion with PufferLib
-- [ ] Optimized for RL, Cython?, JAX?
-- [ ] restructure project setup
+#### City
+- can only be placed on a visible tile
+- placing a city claims the tile
 
+#### Farm
+- can only be placed on an already claimed tile
 
-## Code quality
+# Code quality
 
 ### pre-commit
 
@@ -78,25 +78,14 @@ python -m memory_profiler your_script.py
 | 10^6   | 23.6    | 9.08    |
 | 10^9   | 0.000   | 0.000   |
 
-# Game Rules
 
-## Buildings
-### Roads
-- must be placed on an already claimed tile
-- or next to another building including roads and bridges
+# TODO
 
-### Bridge
-- must be placed on an already claimed tile
-- or next to another building including roads and bridges
+## RL Setup
+- [ ] Integrartion with PufferLib
+- [ ] Optimized for RL, Cython?, JAX?
+- [ ] restructure project setup
 
-### City
-- can only be placed on a visible tile
-- placing a city claims the tile
-
-### Farm
-- can only be placed on an already claimed tile
-
-# TODOs
 
 ## Utils
 - [ ] write profiler script for memory and time for different map sizes and agent counts-> write to a file/ table, maybe markdown?
@@ -116,6 +105,7 @@ python -m memory_profiler your_script.py
 - add river water adjacent type, based on perlin noise with meandering
 - enable actual biomes
 - make height relevant for water and mountain
+- map seperated from env, first create env, then function to create map, enable generating maps, loading maps into env
 
 ## RL
 
@@ -131,9 +121,6 @@ python -m memory_profiler your_script.py
 ### Rewards
 - [ ] calculate rewards better, decide what rewards to give
 
-### AI
-- [ ] train simple claiming AI
-- [ ] some kind of feature extractor out of observation
 
 ### Actions
 - [ ] !! adjust action space
@@ -148,18 +135,21 @@ python -m memory_profiler your_script.py
 - [ ] City ID connected to city owner?
 
 ## Dev Ops
-- [ ] add more tests, increase coverage
-- [ ] add more logging
-- [ ] add larger integration tests, on predefined test map, small and large scale, by map size and agent count
-- [ ] add more documentation
-- [ ] try setup for docker
 - [ ] move stuff to cython
 - [ ] connect to pufferlib
 - [ ] optimize for GPU, cuda
-- [ ] test training in AWS
+- [ ] add more tests, increase coverage
+- [ ] add more scenario tests
+- [ ] scaling tests, on predefined test map, small and large scale, by map size and agent count
+
 
 ## Far fetched
 - [ ] tech tree, some actions only possible if reached a level
+- [ ] Population
+- [ ] Tech tree
+- [ ] Units
+- [ ] Diplomacy
+- [ ] Combat
 
 # Mind Map
 
@@ -192,9 +182,9 @@ graph LR
     Environment -- Observation --> Agent
 ```
 
-## map generation
+# Resources
 
-### interesting tools and repos
+## interesting tools and repos
 
 * https://terrain.party/
 * https://godotengine.org/asset-library/asset/1913
