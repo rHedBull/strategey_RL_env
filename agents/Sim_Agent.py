@@ -6,6 +6,36 @@ import pygame
 
 from map.map_settings import AGENT_COLORS, PLAYER_COLOR
 
+def get_visible_mask(agent_id: int, map_v):
+    bitmask = 1 << agent_id
+    visible = (map_v.visibility_map & bitmask) > 0
+    return visible
+
+def calculate_new_position(
+        current_position: Tuple[int, int], move_direction: int
+) -> Tuple[int, int]:
+    """
+    Calculates the new position based on the current position and move direction.
+
+    Args:
+        current_position (Tuple[int, int]): The agent's current position.
+        move_direction (int): Direction to move (0: No move, 1: Up, 2: Down, 3: Left, 4: Right).
+
+    Returns:
+        Tuple[int, int]: The new position after the move.
+    """
+    x, y = current_position
+    if move_direction == 1:  # Up
+        y -= 1
+    elif move_direction == 2:  # Down
+        y += 1
+    elif move_direction == 3:  # Left
+        x -= 1
+    elif move_direction == 4:  # Right
+        x += 1
+    # No move if move_direction is 0 or unrecognized
+    return (x, y)
+
 
 class Agent:
     """
@@ -19,10 +49,12 @@ class Agent:
     """
 
     def __init__(self, agent_id: int, env):
-        self.max_x = None
-        self.max_y = None
 
         self.id = agent_id
+        self.env = env
+
+        self.max_x = None
+        self.max_y = None
         self.position = (-1, -1)
 
         self.state = "active"
@@ -44,20 +76,18 @@ class Agent:
         self.all_visible = False
         self.visibility_range = 1
 
-        self.env = env
-
         self.reward = 0.0
         self.done = False
-        # TODO probably call self.reset() here
+        # TODO probably call self.reset() here ?
 
-    def reset(self, env_settings: Any):
+    def reset(self):
         """
         Resets the agent to the initial state.
         Args:
             env_settings (Dict[str, Any]): Environment settings.
         """
-        self.max_x = env_settings.get_setting("map_width")
-        self.max_y = env_settings.get_setting("map_height")
+        self.max_x = self.env.env_settings.get("map_width")
+        self.max_y = self.env.env_settings.get("map_height")
 
         self.claimed_tiles.clear()
         self.claimable_tiles.clear()
@@ -73,18 +103,18 @@ class Agent:
         self.state = "active"
         self.money = 100  # for now
 
-        initial_money = env_settings.get_setting("agent_initial_budget")
-        distribution_mode = env_settings.get_setting(
+        initial_money = self.env.env_settings.get("agent_initial_budget")
+        distribution_mode = self.env.env_settings.get(
             "agent_initial_budget_distribution"
         )
         if distribution_mode == "equal":
             self.money = initial_money
         elif distribution_mode == "gauss":
             # gauss distributed around initial
-            self.money = random.gauss(initial_money, 100)
+            self.money = self.env.np_random.gauss(initial_money, 100)
         else:
             # randomly distributed money
-            self.money = random.randint(0, 1000)
+            self.money = self.env.np_random.integers(0, 1000)
 
         self.all_visible = False
         self.visibility_range = 3
@@ -102,12 +132,12 @@ class Agent:
         if self.money <= 0:  # TODO adapt different state transitions
             self.state = "Done"
 
-    def draw(self, screen, square_size, zoom_level, pan_x, pan_y):
+    def draw(self, square_size, zoom_level, pan_x, pan_y):
         radius = square_size / 2
         # get a color modulo the number of colors
 
         pygame.draw.circle(
-            screen,
+            self.env.screen,
             self.color,
             (
                 (self.position[0] * square_size) + radius,
@@ -129,31 +159,6 @@ class Agent:
         return np.array(
             [1.0, self.money], dtype=np.float32
         )  # for now state is only active or done, but could be extended
-
-    def _calculate_new_position(
-        self, current_position: Tuple[int, int], move_direction: int
-    ) -> Tuple[int, int]:
-        """
-        Calculates the new position based on the current position and move direction.
-
-        Args:
-            current_position (Tuple[int, int]): The agent's current position.
-            move_direction (int): Direction to move (0: No move, 1: Up, 2: Down, 3: Left, 4: Right).
-
-        Returns:
-            Tuple[int, int]: The new position after the move.
-        """
-        x, y = current_position
-        if move_direction == 1:  # Up
-            y -= 1
-        elif move_direction == 2:  # Down
-            y += 1
-        elif move_direction == 3:  # Left
-            x -= 1
-        elif move_direction == 4:  # Right
-            x += 1
-        # No move if move_direction is 0 or unrecognized
-        return (x, y)
 
     def get_claimed_tiles(self):
         return self.claimed_tiles
@@ -212,9 +217,3 @@ class Agent:
             for j in range(-self.visibility_range, self.visibility_range + 1):
                 if self.env.map.check_position_on_map((y + j, x + i)):
                     self.env.map.set_visible((y + j, x + i), self.id)
-
-
-def get_visible_mask(agent_id, map):
-    bitmask = 1 << agent_id
-    visible = (map.visibility_map & bitmask) > 0
-    return visible

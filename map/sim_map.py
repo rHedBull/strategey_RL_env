@@ -19,15 +19,39 @@ def check_valid_agent_id(agent_id: int) -> bool:
 
 
 class Map:
-    def __init__(self, screen_size):
+    """
+    Represents the map of the environment.
+
+    Attributes:
+        env: The environment object.
+        tiles: The total number of tiles on the map.
+        tile_size: The size of each tile in pixels.
+        width: The width of the map.
+        height: The height of the map.
+        squares: A 2D list of Map_Square objects representing the map.
+        continuous_map: Whether the map is continuous or not.
+        water_percentage: The percentage of water tiles on the map.
+        mountain_percentage: The percentage of mountain tiles on the map.
+        dessert_percentage: The percentage of dessert tiles on the map.
+        rivers: The number of rivers on the map.
+        resource_density: The density of resources on the map.
+        biomes_definition: The definition of biomes on the map.
+        land_resource_definition: The definition of land resources on the map.
+        sea_resource_definition: The definition of sea resources on the map.
+        height_values: The height values of the map.
+        visibility_map: A 2D numpy array to store the visibility of each tile.
+    """
+    def __init__(self, env):
+
+        self.env = env
+
         self.tiles = None
         self.tile_size = None
         self.width = None
         self.height = None
 
-        self.screen_size = screen_size
-
         self.squares = []
+        self.continuous_map = None
 
         # land type percentages
         self.height_values = None
@@ -44,32 +68,37 @@ class Map:
         # 2D numpy array to store the visibility of each tile
         self.visibility_map = None
 
+        self.create_map(self.env.env_settings)
+
     def load_settings(
         self,
         settings,
     ):
-        self.width = settings.get_setting("map_width")
-        self.height = settings.get_setting("map_height")
+        self.width = settings.get("map_width")
+        self.height = settings.get("map_height")
 
         self.tiles = self.height * self.width
 
-        if self.height > self.width:
-            self.tile_size = int(self.screen_size / self.height)
+        if self.env.render_mode == "human":
+            if self.height > self.width:
+                self.tile_size = int(self.env.screen.get_height() / self.height)
+            else:
+                self.tile_size = int(self.env.screen.get_width() / self.width)
+            self.tile_size = max(1, self.tile_size)
         else:
-            self.tile_size = int(self.screen_size / self.width)
-        self.tile_size = max(1, self.tile_size)
+            self.tile_size = -1 # not needed if no rendering
 
-        self.continuous_map = settings.get_setting("continuous_map")
+        self.continuous_map = settings.get("continuous_map")
 
-        self.water_percentage = settings.get_setting("water_budget_per_agent")
-        self.mountain_percentage = settings.get_setting("mountain_budget_per_agent")
-        self.dessert_percentage = settings.get_setting("dessert_budget_per_agent")
-        self.rivers = settings.get_setting("numb_rivers")
-        self.resource_density = settings.get_setting("resource_density")
-        self.biomes_definition = settings.get_setting("biomes")
-        self.land_resource_definition = settings.get_setting("land_resources")
-        self.sea_resource_definition = settings.get_setting("land_resources")
-        self.height_values = settings.get_setting("height_values")
+        self.water_percentage = settings.get("water_budget_per_agent")
+        self.mountain_percentage = settings.get("mountain_budget_per_agent")
+        self.dessert_percentage = settings.get("dessert_budget_per_agent")
+        self.rivers = settings.get("numb_rivers")
+        self.resource_density = settings.get("resource_density")
+        self.biomes_definition = settings.get("biomes")
+        self.land_resource_definition = settings.get("land_resources")
+        self.sea_resource_definition = settings.get("land_resources")
+        self.height_values = settings.get("height_values")
 
     def create_map(self, settings):
         self.load_settings(settings)
@@ -80,8 +109,7 @@ class Map:
                 Map_Square(
                     (y_index * self.width + x_index),
                     x_index,
-                    y_index,
-                    self.tile_size,
+                    y_index
                 )
                 for x_index in range(self.width)
             ]
@@ -92,14 +120,14 @@ class Map:
 
     def distribute_resources(self, square):
         # resource distribution totally random so far
-        i = np.random.randint(0, 10) / 10
+        i = self.env.np_random.integers(0, 10) / 10
 
         if i < self.resource_density:
             if square.get_land_type() != LandType.OCEAN:
-                resource = np.random.randint(0, 6)
+                resource = self.env.np_random.integers(0, 6)
                 square.add_resource(resource)
             else:
-                resource = np.random.randint(0, 1)
+                resource = self.env.np_random.integers(0, 1)
                 square.add_resource(resource)
 
     def reset(self):
@@ -196,8 +224,8 @@ class Map:
             for square in row:
                 new_x = (square.x * zoom_level) + pan_x
                 new_y = (square.y * zoom_level) + pan_y
-                new_size = square.square_size * zoom_level
-                square.draw(screen, new_x, new_y, new_size)
+                new_size = self.tile_size * zoom_level
+                square.draw(screen, self.tile_size, new_x, new_y, new_size)
 
     def get_tile(self, position: [int, int]) -> Map_Square | None:
         """
@@ -215,8 +243,8 @@ class Map:
         tile_budget_per_agent = 0.1 * tiles
         agents = [
             Map_Agent(
-                random.randint(0, int(math.sqrt(tiles) - 1)),
-                random.randint(0, int(math.sqrt(tiles) - 1)),
+                self.env.np_random.integers(0, int(math.sqrt(tiles) - 1)),
+                self.env.np_random.integers(0, int(math.sqrt(tiles) - 1)),
                 tile_budget_per_agent,
             )
             for i in range(numb_agents)
@@ -235,8 +263,8 @@ class Map:
         if (numb_agents * tile_budget_per_agent) > 0:
             agents = [
                 Map_Agent(
-                    random.randint(0, int(math.sqrt(tiles) - 1)),
-                    random.randint(0, int(math.sqrt(tiles) - 1)),
+                    self.env.np_random.integers(0, int(math.sqrt(tiles) - 1)),
+                    self.env.np_random.integers(0, int(math.sqrt(tiles) - 1)),
                     tile_budget_per_agent,
                 )
                 for i in range(numb_agents)

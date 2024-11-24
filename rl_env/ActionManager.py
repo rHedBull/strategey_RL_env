@@ -44,10 +44,10 @@ class ActionManager:
     and randomly resolving those conflicts.
     """
 
-    def __init__(self, env, env_settings):
+    def __init__(self, env):
         self.env = env
-        self.env_settings = env_settings
-        self.actions_definition = self.env_settings.get_setting("actions")
+
+        self.actions_definition = self.env.env_settings.get("actions")
 
         # Define a structured array with the fields 'action' and 'agent_id'.
         self.conflict_map = {}
@@ -91,11 +91,11 @@ class ActionManager:
         self.resolve_conflict(proposed_actions)
 
         # Execute actions
-        for id, determined_actions in proposed_actions.items():
+        for action_id, determined_actions in proposed_actions.items():
             for action in determined_actions:
                 reward = action.execute(self.env)
-                rewards[id] = reward
-                dones[id] = False
+                rewards[action_id] = reward
+                dones[action_id] = False
 
         # Clear the conflict map for the next turn
         self.conflict_map = {}

@@ -23,23 +23,34 @@ def calculate_reward(agent):
     else:
         return agent.money
 
+def setup_screen(render_mode: str):
+
+    if render_mode != "human":
+        return
+
+    screen = pygame.display.set_mode((default_screen_size_x, default_screen_size_y))
+    pygame.display.set_caption("Agent-based Strategy RL")
+    screen.fill((0, 0, 0))  # Fill the screen with black color
+    return screen
+
+
 
 def capture_game_state_as_image():
     screen_capture = pygame.display.get_surface()
     return np.transpose(pygame.surfarray.array3d(screen_capture), axes=[1, 0, 2])
 
+default_screen_size_x = 1000
+default_screen_size_y = 1000
 
 class MapEnvironment(gym.Env):
     """
     A reinforcement learning environment for a multi-agent 2D Gridworld.
 
     Attributes:
-        env_settings (dict): Configuration settings for the environment.
-        num_agents (int): Number of agents in the environment.
-        render_mode (bool): Whether to render the environment.
-        map (Map): The grid map of the environment.
-        agents (List[Agent]): List of agents in the environment.
-        action_manager (ActionManager): Manages the application of actions.
+        env_settings (Dict[str, Any]): A dictionary containing environment settings.
+        num_agents (int): The number of agents in the environment.
+        render_mode (str): The mode to render with. Options are 'human' or 'rgb_array'.
+        seed (Optional[int]): The seed for the environment's random number generator.
     """
 
     metadata = {"render.modes": ["human", "rgb_array"]}
@@ -48,39 +59,29 @@ class MapEnvironment(gym.Env):
         self,
         env_settings: Any,
         num_agents: int,
-        screen,
         render_mode: str = "rgb_array",
-        game_type: str = "automated",
-        map_file: str = None,
+        seed: Optional[int] = None,
     ):
         super(MapEnvironment, self).__init__()
 
-        if game_type == "human":
-            self.render_mode = "human"
-            self.player = True
-        else:
-            self.player = False
-
         self.env_settings = env_settings
+
         self.num_agents = num_agents
         self.render_mode = render_mode
 
-        self.screen = screen
+        self.screen = setup_screen(self.render_mode)
 
         # Initialize the map
-        self.map = Map(self.screen.get_width())
-        if map_file is None:
-            self.map.create_map(self.env_settings)
-        else:
-            self.map.load_topography_resources(map_file, self.env_settings)
+        self.map = Map(self)
 
         # Initialize agents
         self.agents: List[Agent] = [Agent(i, self) for i in range(self.num_agents)]
 
         # Initialize action manager
-        self.action_manager = ActionManager(self, self.env_settings)
+        self.action_manager = ActionManager(self)
 
         # Define action and observation spaces
+        self.observation_space = None # TODO: do this
         self.action_space = spaces.Tuple(
             [
                 spaces.Dict(
@@ -95,9 +96,82 @@ class MapEnvironment(gym.Env):
         )
 
         for agent in self.agents:
-            agent.reset(self.env_settings)
+            agent.reset()
 
-    def define_observation_space(self):
+
+    def reset(self, seed=None):
+        """
+        Resets the environment to an initial state and returns an initial observation.
+        """
+        super().reset(seed=seed)
+        self.map.reset()
+        for agent in self.agents:
+            agent.reset()
+        map_obs, agent_info, visibility_masks = self._get_observation()
+        info = {"info": "no info here"}
+        return map_obs, agent_info, visibility_masks, info
+
+    def step(
+        self, actions: Any
+    ):
+        """
+        Executes the actions for all agents and updates the environment state.
+
+        Args:
+            actions (List[Dict[str, int]]): A list of action dictionaries for each agent.
+        """
+        info = {}
+
+        # Apply actions using ActionManager
+        rewards, dones = self.action_manager.apply_actions(actions, self.agents)
+
+        # Update environment state
+        self._update_environment_state()
+
+        # Collect observations
+        map_obs, agent_info, visibility_masks = self._get_observation()
+
+        return map_obs, rewards, dones, info
+
+    def render(self):
+        """
+        Renders the environment.
+
+        Args:
+            mode (str): The mode to render with. Options are 'human' or 'rgb_array'.
+
+        Returns:
+            Optional[np.ndarray]: The rendered image array if mode is 'rgb_array', else None.
+        """
+
+        if self.render_mode == "human":
+            # Implement rendering logic using Pygame or another library
+            self.map.draw(self.screen, 1, 0, 0)
+            for agent in self.agents:
+                agent.draw(self.map.tile_size, 0, 0,0)
+            # Update the display
+            pygame.display.flip()
+
+        elif self.render_mode == "rgb_array":
+            # Return an RGB array of the current frame
+            screen_capture = capture_game_state_as_image()
+            return screen_capture
+        else:
+            raise NotImplementedError("Unknown render mode !!")
+
+    def close(self):
+        """
+        Closes the environment.
+        """
+        pygame.quit()
+
+    def _seed(self, seed=None) -> None:
+        """
+        Sets the seed for the environment's random number generator.
+        """
+        self.np_random = np.random.RandomState(seed)
+
+    def _define_observation_space(self):
         # Number of features per tile on the map (as per your 'get_full_info' method)
         num_features_per_tile = 5  # 'height', 'biome', 'resources', 'land_type', 'owner_value', 'land_money_value'
 
@@ -198,66 +272,6 @@ class MapEnvironment(gym.Env):
             {"map": map_observation_space, "agents": agents_observation_space}
         )
 
-    def reset(self) -> Dict[str, Any]:
-        """
-        Resets the environment to an initial state and returns an initial observation.
-
-        Returns:
-            observation (Dict[str, Any]): The initial observation of the environment.
-        """
-        self.map.reset()
-        for agent in self.agents:
-            agent.reset(self.env_settings)
-
-        return self._get_observation()
-
-    def step(
-        self, actions: Any
-    ) -> Tuple[dict[str, Any], List[float], List[bool], Dict]:
-        """
-        Executes the actions for all agents and updates the environment state.
-
-        Args:
-            actions (List[Dict[str, int]]): A list of action dictionaries for each agent.
-        """
-        info = {}
-
-        # Apply actions using ActionManager
-        rewards, dones = self.action_manager.apply_actions(actions, self.agents)
-
-        # Update environment state
-        self._update_environment_state()
-
-        # Collect observations
-        observations = self.get_observation()
-
-        return observations, rewards, dones, info
-
-    def render(self) -> Optional[np.ndarray]:
-        """
-        Renders the environment.
-
-        Args:
-            mode (str): The mode to render with. Options are 'human' or 'rgb_array'.
-
-        Returns:
-            Optional[np.ndarray]: The rendered image array if mode is 'rgb_array', else None.
-        """
-
-        if self.render_mode == "human":
-            # Implement rendering logic using Pygame or another library
-            self.map.draw(self.screen, 1, 0, 0)
-            for agent in self.agents:
-                agent.draw(self.screen, self.map.tile_size, 0, 0, 0)
-            # Update the display
-            pygame.display.flip()
-
-        elif self.render_mode == "rgb_array":
-            # Return an RGB array of the current frame
-            screen_capture = self.capture_game_state_as_image()
-            return screen_capture
-        else:
-            raise NotImplementedError("Unknown ender mode !!")
 
     def _update_environment_state(self):
         """
@@ -269,7 +283,7 @@ class MapEnvironment(gym.Env):
         for agent in self.agents:
             agent.update()
 
-    def get_observation(self) -> Dict[str, Any]:
+    def _get_observation(self) -> Dict[str, Any]:
         """
         Constructs the observation dictionary.
 
@@ -286,13 +300,8 @@ class MapEnvironment(gym.Env):
         #     [agent.get_observation() for agent in self.agents],
         #     dtype=np.float32,
         # )
-        observation = {
-            "map": map_observation,
-            "agents": None,
-            "visibility_masks": all_visible_masks,
-        }
-        return observation
 
-    def capture_game_state_as_image(self):
-        screen_capture = pygame.display.get_surface()
-        return np.transpose(pygame.surfarray.array3d(screen_capture), axes=[1, 0, 2])
+        np_all_visible_masks = np.array(all_visible_masks)
+        agent_info = np.array([])
+
+        return map_observation, agent_info, np_all_visible_masks

@@ -42,9 +42,9 @@ class Map_Square:
     Class for a single square/ tile on the map
     """
 
-    def __init__(self, id, x, y, square_size, land_value=LandType.LAND):
+    def __init__(self, tile_id: int, x: int, y: int, land_value=LandType.LAND):
         # coordinates and ids
-        self.tile_id = id
+        self.tile_id = tile_id
         self.x = x
         self.y = y
 
@@ -72,7 +72,6 @@ class Map_Square:
         self.land_money_value = 1
 
         # ui stuff
-        self.square_size = square_size
         self.default_border_color = COLOR_DEFAULT_BORDER
         self.default_color = land_type_color(LandType.LAND)
 
@@ -187,10 +186,11 @@ class Map_Square:
             self.building_int &= ~building.get_building_type_id()
 
     # drawing stuff #
-    def draw(self, screen, new_x, new_y, new_square_size):
+    def draw(self, screen, square_size: int, new_x: int, new_y: int, new_square_size: int):
         """
         Draw the square on the screen
         :param screen:
+        :param square_size:
         :param new_x:
         :param new_y:
         :param new_square_size:
@@ -201,10 +201,10 @@ class Map_Square:
             screen,
             self.land_type_color,
             (
-                self.x * self.square_size,
-                self.y * self.square_size,
-                self.square_size,
-                self.square_size,
+                self.x * square_size,
+                self.y * square_size,
+                square_size,
+                square_size,
             ),
         )
 
@@ -213,16 +213,16 @@ class Map_Square:
                 screen,
                 self.owner_color,
                 (
-                    self.x * self.square_size,
-                    self.y * self.square_size,
-                    self.square_size,
-                    self.square_size,
+                    self.x * square_size,
+                    self.y * square_size,
+                    square_size,
+                    square_size,
                 ),
                 1,
             )
 
         for building in self.buildings:
-            building.draw(screen, self.square_size, self.owner_color)
+            building.draw(screen, square_size, self.owner_color)
 
     # observation stuff #
     def get_full_info(self):
