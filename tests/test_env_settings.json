@@ -1,0 +1,138 @@
+{
+    "map_width": 100,
+    "map_height": 100,
+    "water_budget_per_agent": 0.4,
+    "mountain_budget_per_agent": 0.1,
+    "dessert_budget_per_agent": 0.1,
+    "numb_rivers": 0,
+    "resource_density": 0.1,
+    "biomes": [
+        {
+            "name": "Tundra"
+        },
+        {
+            "name": "Boreal Forest"
+        },
+        {
+            "name": "Temperate Rainforest"
+        },
+        {
+            "name": "Tropical Rainforest"
+        },
+        {
+            "name": "Temperate forest"
+        },
+        {
+            "name": "woodland/ Shrubland"
+        },
+        {
+            "name": "Temperate grassland/ cold dessert"
+        },
+        {
+            "name": "subtropical desert"
+        },
+        {
+            "name": "tropical forest/ savanna"
+        }
+    ],
+    "land_resources": [
+        {
+            "name": "fresh water"
+        },
+        {
+            "name": "wood"
+        },
+        {
+            "name": "iron"
+
+        },
+        {
+            "name": "gold"
+        },
+        {
+            "name": "coal"
+        },
+        {
+            "name": "oil"
+        },
+        {
+            "name": "wheat"
+        }
+    ],
+    "sea_resources": [
+        {
+            "name": "fish"
+        },
+        {
+            "name": "oil"
+        }
+    ],
+    "height_values": [
+        {
+            "name": "ocean",
+            "value": -1
+        },
+        {
+            "name": "coast",
+            "value": 0
+        },
+        {
+            "name": "river/ lake",
+            "value": 1
+        },
+        {
+            "name": "lowland",
+            "value": 2
+        },
+        {
+            "name": "hill",
+            "value": 3
+        },
+        {
+            "name": "mountain",
+            "value": 4
+        }
+    ],
+    "agent_initial_budget": 10000,
+    "agent_initial_budget_distribution": "equal",
+    "actions": {
+        "move": {
+            "cost": 10,
+            "reward": 0
+        },
+        "claim": {
+            "cost":100,
+            "reward": 10
+        },
+        "city": {
+            "cost": 200,
+            "reward": 20,
+            "id": 1
+        },
+        "road": {
+            "cost": 5,
+            "reward": 3,
+            "id": 2
+        },
+        "bridge": {
+            "cost": 5,
+            "reward": 3,
+            "id": 4
+        },
+        "farm": {
+            "cost": 10,
+            "reward": 5,
+            "id": 8
+        }
+    },
+    "buildings": [
+        {
+            "name": "building1",
+            "cost": 1
+        },
+        {
+            "name": "builiding2",
+            "cost": 2
+        }
+    ]
+}
