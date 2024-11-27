@@ -18,6 +18,11 @@
 #### Farm
 - can only be placed on an already claimed tile
 
+# RL considerations
+
+## Action space
+
+
 # Code quality
 
 ### pre-commit
@@ -80,6 +85,9 @@ python -m memory_profiler your_script.py
 
 
 # TODO
+
+- [ ] adapt more stringly to openAI gym interface
+- [ ] pygame should only be needed to handle here
 
 ## RL Setup
 - [ ] Integrartion with PufferLib

@@ -1,9 +1,9 @@
 {
     "map_width": 100,
     "map_height": 100,
-    "water_budget_per_agent": 0.4,
-    "mountain_budget_per_agent": 0.1,
-    "dessert_budget_per_agent": 0.1,
+    "water_budget_per_agent": 0.0,
+    "mountain_budget_per_agent": 0.0,
+    "dessert_budget_per_agent": 0.0,
     "numb_rivers": 0,
     "resource_density": 0.1,
     "biomes": [
@@ -97,32 +97,38 @@
     "agent_initial_budget_distribution": "equal",
     "actions": {
         "move": {
-            "cost": 10,
+            "action_id": 0,
+            "cost": -1,
             "reward": 0
         },
         "claim": {
+            "action_id": 1,
             "cost":100,
             "reward": 10
         },
-        "city": {
+        "build_city": {
+            "action_id": 2,
             "cost": 200,
             "reward": 20,
-            "id": 1
+            "build_type_id": 1
         },
-        "road": {
-            "cost": 5,
+        "build_road": {
+            "action_id": 3,
+            "cost": -100,
             "reward": 3,
-            "id": 2
+            "build_type_id": 2
         },
-        "bridge": {
-            "cost": 5,
+        "build_bridge": {
+            "action_id": 4,
+            "cost": 0,
             "reward": 3,
-            "id": 4
+            "build_type_id": 4
         },
-        "farm": {
-            "cost": 10,
+        "build_farm": {
+            "action_id": 5,
+            "cost": 8,
             "reward": 5,
-            "id": 8
+            "build_type_id": 8
         }
     },
     "buildings": [

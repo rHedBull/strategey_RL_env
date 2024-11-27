@@ -1,9 +1,9 @@
 {
     "map_width": 100,
     "map_height": 100,
-    "water_budget_per_agent": 0.4,
-    "mountain_budget_per_agent": 0.1,
-    "dessert_budget_per_agent": 0.1,
+    "water_budget_per_agent": 0.0,
+    "mountain_budget_per_agent": 0.0,
+    "dessert_budget_per_agent": 0.0,
     "numb_rivers": 0,
     "resource_density": 0.1,
     "biomes": [
@@ -107,22 +107,22 @@
         "city": {
             "cost": 200,
             "reward": 20,
-            "id": 1
+            "build_type_id": 1
         },
         "road": {
             "cost": 5,
             "reward": 3,
-            "id": 2
+            "build_type_id": 2
         },
         "bridge": {
             "cost": 5,
             "reward": 3,
-            "id": 4
+            "build_type_id": 4
         },
         "farm": {
             "cost": 10,
             "reward": 5,
-            "id": 8
+            "build_type_id": 8
         }
     },
     "buildings": [

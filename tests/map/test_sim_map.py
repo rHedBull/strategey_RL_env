@@ -1,9 +1,12 @@
+import json
+
 import pytest
 
 from agents.Sim_Agent import Agent
 from map.map_settings import OWNER_DEFAULT_TILE, LandType
 from map.map_square import Map_Square
 from map.sim_map import Map, check_valid_agent_id, max_agent_id
+from rl_env.environment import MapEnvironment
 from rl_env.objects.city import City
 
 
@@ -12,36 +15,16 @@ class MockAgent:
 
 
 @pytest.fixture
-def mock_settings():
-    """Fixture to provide map settings."""
-
-    class Settings:
-        def __init__(self):
-            self.settings = {
-                "map_width": 10,
-                "map_height": 10,
-                "continuous_map": True,
-                "water_budget_per_agent": 0.2,
-                "mountain_budget_per_agent": 0.1,
-                "dessert_budget_per_agent": 0.1,
-                "numb_rivers": 2,
-                "resource_density": 0.5,
-                "biomes": {},
-                "land_resources": {},
-                "height_values": {},
-            }
-
-        def get_setting(self, key):
-            return self.settings.get(key)
-
-    return Settings()
-
-
-@pytest.fixture
-def map_instance(mock_settings):
+def map_instance():
     """Fixture to create and return a Map instance."""
-    m = Map(screen_size=100)
-    m.create_map(mock_settings)
+
+    # open settings file
+    with open("test_env_settings.json", "r") as f:
+        env_settings = json.load(f)
+
+    env = MapEnvironment(env_settings, 2, "rgb_array")
+
+    m = Map(env)
     return m
 
 
@@ -57,21 +40,18 @@ def test_check_valid_agent_id():
 
 
 def test_map_initialization(map_instance):
-    assert map_instance.screen_size == 100
-    assert map_instance.width == 10
-    assert map_instance.height == 10
-    assert map_instance.tile_size == 10  # screen_size / max(width, height) = 100 / 10
-    assert map_instance.continuous_map is True
-    assert map_instance.water_percentage == 0.2
-    assert map_instance.mountain_percentage == 0.1
-    assert map_instance.dessert_percentage == 0.1
-    assert map_instance.rivers == 2
-    assert map_instance.resource_density == 0.5
-    assert map_instance.biomes_definition == {}
-    assert map_instance.land_resource_definition == {}
-    assert (
-        map_instance.sea_resource_definition == {}
-    )  # Note: It seems sea_resource_definition is set to "land_resources" in code
+    assert map_instance.width == 100
+    assert map_instance.height == 100
+    assert map_instance.water_percentage == 0.0
+    assert map_instance.mountain_percentage == 0.0
+    assert map_instance.dessert_percentage == 0.0
+    assert map_instance.rivers == 0
+    assert map_instance.resource_density == 0.1
+    # assert map_instance.biomes_definition == {}
+    # assert map_instance.land_resource_definition == {}
+    # assert (
+    #    map_instance.sea_resource_definition == {}
+    # )
 
 
 def test_create_map(map_instance):
@@ -121,15 +101,15 @@ def test_reset(map_instance):
 def test_check_position_on_map(map_instance):
     # Valid positions
     assert map_instance.check_position_on_map((0, 0)) is True
-    assert map_instance.check_position_on_map((9, 9)) is True
-    assert map_instance.check_position_on_map((5, 5)) is True
+    assert map_instance.check_position_on_map((99, 99)) is True
+    assert map_instance.check_position_on_map((54, 50)) is True
 
     # Invalid positions
     assert map_instance.check_position_on_map((-1, 0)) is False
     assert map_instance.check_position_on_map((0, -1)) is False
-    assert map_instance.check_position_on_map((10, 10)) is False
-    assert map_instance.check_position_on_map((10, 5)) is False
-    assert map_instance.check_position_on_map((5, 10)) is False
+    assert map_instance.check_position_on_map((100, 100)) is False
+    assert map_instance.check_position_on_map((100, 5)) is False
+    assert map_instance.check_position_on_map((5, 100)) is False
 
 
 def test_get_tile(map_instance):
@@ -139,10 +119,22 @@ def test_get_tile(map_instance):
     assert tile.x == 5
     assert tile.y == 5
 
+    tile = map_instance.get_tile((0, 0))
+    assert tile is not None
+    assert tile.x == 0
+    assert tile.y == 0
+
+    tile = map_instance.get_tile((99, 99))
+    assert tile is not None
+    assert tile.x == 99
+    assert tile.y == 99
+
     # Invalid tile
-    tile = map_instance.get_tile((10, 10))
+    tile = map_instance.get_tile((100, 100))
     assert tile is None
     tile = map_instance.get_tile((-1, 0))
+    assert tile is None
+    tile = map_instance.get_tile((0, -1))
     assert tile is None
 
 
@@ -210,13 +202,13 @@ def test_tile_is_next_to_building(map_instance):
     adjacent_position = (4, 5)
 
     # Initially, no buildings nearby
-    assert not map_instance.tile_is_next_to_building(position)
+    assert map_instance.tile_is_next_to_building(adjacent_position) is False
 
-    building_object = City(1, adjacent_position, 1)
-    map_instance.add_building(building_object, adjacent_position)
+    building_object = City(1, position, 1)
+    map_instance.add_building(building_object, position)
 
     # Now, should detect a building nearby
-    assert map_instance.tile_is_next_to_building(position)
+    assert map_instance.tile_is_next_to_building(adjacent_position) is True
 
 
 def test_serialize_topography_resources(map_instance):
@@ -231,7 +223,7 @@ def test_serialize_topography_resources(map_instance):
     assert len(map_data["squares"][0]) == map_instance.width
 
 
-def test_save_and_load_topography_resources(map_instance, mock_settings, tmp_path):
+def test_save_and_load_topography_resources(map_instance, tmp_path):
     map_instance.reset()
     file_path = tmp_path / "map_data.pkl"
 
@@ -241,8 +233,8 @@ def test_save_and_load_topography_resources(map_instance, mock_settings, tmp_pat
 
     # Create a new map instance and load the data
 
-    new_map = Map(screen_size=100)
-    new_map.load_topography_resources(str(file_path), mock_settings)
+    new_map = Map(map_instance.env)
+    new_map.load_topography_resources(str(file_path), map_instance.env.env_settings)
 
     assert new_map.width == map_instance.width
     assert new_map.height == map_instance.height

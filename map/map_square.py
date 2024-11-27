@@ -186,7 +186,9 @@ class Map_Square:
             self.building_int &= ~building.get_building_type_id()
 
     # drawing stuff #
-    def draw(self, screen, square_size: int, new_x: int, new_y: int, new_square_size: int):
+    def draw(
+        self, screen, square_size: int, new_x: int, new_y: int, new_square_size: int
+    ):
         """
         Draw the square on the screen
         :param screen:

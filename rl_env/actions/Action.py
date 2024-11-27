@@ -50,8 +50,8 @@ class Action(ABC):
 
     def get_cost(self, env) -> float:
         """Return the cost of the action."""
-        return env.env_settings.get_setting("actions")[self.action_type.value]["cost"]
+        return env.env_settings.get("actions")[self.action_type.value]["cost"]
 
     def get_reward(self, env) -> float:
         """Return the reward for the action."""
-        return env.env_settings.get_setting("actions")[self.action_type.value]["reward"]
+        return env.env_settings.get("actions")[self.action_type.value]["reward"]

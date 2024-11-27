@@ -16,7 +16,7 @@ def map_square():
     """
     Fixture to create a Map_Square instance before each test.
     """
-    return Map_Square(id=1, x=5, y=10, square_size=32, land_value=LandType.LAND)
+    return Map_Square(1, 5, 10, land_value=LandType.LAND)
 
 
 def test_initialization(map_square):
@@ -26,7 +26,6 @@ def test_initialization(map_square):
     assert map_square.tile_id == 1
     assert map_square.x == 5
     assert map_square.y == 10
-    assert map_square.square_size == 32
     assert map_square.land_type == LandType.LAND
     assert map_square.height == 0
     assert map_square.precepitation == 0

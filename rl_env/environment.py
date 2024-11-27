@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 import gymnasium as gym
 import numpy as np
@@ -23,8 +23,8 @@ def calculate_reward(agent):
     else:
         return agent.money
 
-def setup_screen(render_mode: str):
 
+def setup_screen(render_mode: str):
     if render_mode != "human":
         return
 
@@ -34,13 +34,14 @@ def setup_screen(render_mode: str):
     return screen
 
 
-
 def capture_game_state_as_image():
     screen_capture = pygame.display.get_surface()
     return np.transpose(pygame.surfarray.array3d(screen_capture), axes=[1, 0, 2])
 
+
 default_screen_size_x = 1000
 default_screen_size_y = 1000
+
 
 class MapEnvironment(gym.Env):
     """
@@ -79,25 +80,14 @@ class MapEnvironment(gym.Env):
 
         # Initialize action manager
         self.action_manager = ActionManager(self)
+        self.action_mapping = None
 
         # Define action and observation spaces
-        self.observation_space = None # TODO: do this
-        self.action_space = spaces.Tuple(
-            [
-                spaces.Dict(
-                    {
-                        "move": spaces.Discrete(
-                            5
-                        ),  # 0: No move, 1: Up, 2: Down, 3: Left, 4: Right
-                    }
-                )
-                for _ in range(self.num_agents)
-            ]
-        )
+        self.observation_space = None  # TODO: do this
+        self.action_space = self._define_action_space()
 
         for agent in self.agents:
             agent.reset()
-
 
     def reset(self, seed=None):
         """
@@ -111,9 +101,7 @@ class MapEnvironment(gym.Env):
         info = {"info": "no info here"}
         return map_obs, agent_info, visibility_masks, info
 
-    def step(
-        self, actions: Any
-    ):
+    def step(self, actions: Any):
         """
         Executes the actions for all agents and updates the environment state.
 
@@ -123,7 +111,7 @@ class MapEnvironment(gym.Env):
         info = {}
 
         # Apply actions using ActionManager
-        rewards, dones = self.action_manager.apply_actions(actions, self.agents)
+        rewards, dones = self.action_manager.apply_actions(actions)
 
         # Update environment state
         self._update_environment_state()
@@ -131,7 +119,8 @@ class MapEnvironment(gym.Env):
         # Collect observations
         map_obs, agent_info, visibility_masks = self._get_observation()
 
-        return map_obs, rewards, dones, info
+        truncated = False
+        return map_obs, rewards, False, truncated, info
 
     def render(self):
         """
@@ -148,7 +137,7 @@ class MapEnvironment(gym.Env):
             # Implement rendering logic using Pygame or another library
             self.map.draw(self.screen, 1, 0, 0)
             for agent in self.agents:
-                agent.draw(self.map.tile_size, 0, 0,0)
+                agent.draw(self.map.tile_size, 0, 0, 0)
             # Update the display
             pygame.display.flip()
 
@@ -164,12 +153,6 @@ class MapEnvironment(gym.Env):
         Closes the environment.
         """
         pygame.quit()
-
-    def _seed(self, seed=None) -> None:
-        """
-        Sets the seed for the environment's random number generator.
-        """
-        self.np_random = np.random.RandomState(seed)
 
     def _define_observation_space(self):
         # Number of features per tile on the map (as per your 'get_full_info' method)
@@ -272,6 +255,26 @@ class MapEnvironment(gym.Env):
             {"map": map_observation_space, "agents": agents_observation_space}
         )
 
+    def _define_action_space(self):
+        actions = self.env_settings["actions"]
+
+        enabled_actions = []
+
+        for action_name, action_properties in actions.items():
+            # Check if the action is enabled (cost is not -1)
+            if action_properties.get("cost", -1) >= 0:
+                enabled_actions.append(action_name)
+
+        num_action_types = len(enabled_actions)
+        grid_width = self.map.width
+        grid_height = self.map.height
+
+        self.action_mapping = {
+            i: action_name for i, action_name in enumerate(enabled_actions)
+        }
+        action_space = spaces.MultiDiscrete([num_action_types, grid_width, grid_height])
+
+        return action_space
 
     def _update_environment_state(self):
         """

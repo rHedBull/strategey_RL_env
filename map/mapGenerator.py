@@ -2,8 +2,9 @@ import logging
 import os
 import uuid
 
-from map.sim_map import Map
 from settings.settings import Settings
+
+from map.sim_map import Map
 
 # Configure logging
 logging.basicConfig(

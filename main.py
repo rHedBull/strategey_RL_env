@@ -2,9 +2,9 @@ import argparse
 import logging
 
 import pygame
+from settings.settings import Settings
 
 from rl_env.environment import MapEnvironment
-from settings.settings import Settings
 from test_env.Run import Run
 
 # Set up logging configuration to display info messages

@@ -1,18 +1,19 @@
-from random import random
-from typing import Any, Tuple
+from typing import Tuple
 
 import numpy as np
 import pygame
 
 from map.map_settings import AGENT_COLORS, PLAYER_COLOR
 
+
 def get_visible_mask(agent_id: int, map_v):
     bitmask = 1 << agent_id
     visible = (map_v.visibility_map & bitmask) > 0
     return visible
 
+
 def calculate_new_position(
-        current_position: Tuple[int, int], move_direction: int
+    current_position: Tuple[int, int], move_direction: int
 ) -> Tuple[int, int]:
     """
     Calculates the new position based on the current position and move direction.
@@ -49,7 +50,6 @@ class Agent:
     """
 
     def __init__(self, agent_id: int, env):
-
         self.id = agent_id
         self.env = env
 

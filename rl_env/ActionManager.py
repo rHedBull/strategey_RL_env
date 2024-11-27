@@ -8,33 +8,26 @@ from rl_env.actions.BuildCityAction import BuildCityAction
 from rl_env.actions.BuildFarmAction import BuildFarmAction
 from rl_env.actions.BuildRoadAction import BuildBridgeAction, BuildRoadAction
 from rl_env.actions.ClaimAction import ClaimAction
-from rl_env.actions.MoveAction import MoveAction
+
+invalid_action_penalty = -10
 
 
-def create_action(agent, action_data):
-    action_type = action_data.get("type")
-    action_props = action_data.get("props")
-    if action_type == "move":
-        direction = action_props.get("direction")
-        return MoveAction(agent, direction)
-    elif action_type == "claim":
-        position = action_props.get("position")
+def create_action(agent, action_type, position):
+    if action_type == "claim":
         return ClaimAction(agent, position)
     elif action_type == "build_city":
-        position = action_props.get("position")
         return BuildCityAction(agent, position)
     elif action_type == "build_road":
-        position = action_props.get("position")
         return BuildRoadAction(agent, position)
     elif action_type == "build_bridge":
-        position = action_props.get("position")
         return BuildBridgeAction(agent, position)
     elif action_type == "build_farm":
-        position = action_props.get("position")
         return BuildFarmAction(agent, position)
+    # elif action_type == "move":
+    #     return MoveAction(agent, position)
     else:
         # Handle unknown action type
-        pass
+        return None
 
 
 class ActionManager:
@@ -52,9 +45,7 @@ class ActionManager:
         # Define a structured array with the fields 'action' and 'agent_id'.
         self.conflict_map = {}
 
-    def apply_actions(
-        self, actions: Any, agents: List[Agent]
-    ) -> Tuple[List[float], List[bool]]:
+    def apply_actions(self, actions: Any) -> Tuple[List[float], List[bool]]:
         """
         Processes the movement actions of all agents, resolves conflicts,
         and returns the outcomes for each agent.
@@ -67,7 +58,7 @@ class ActionManager:
             Dict[int, Dict[str, Any]]: A dictionary mapping agent IDs to their action outcomes.
         """
 
-        proposed_actions = {}
+        agents = self.env.agents
         rewards = np.zeros(
             len(agents), dtype=float
         )  # TODO: init with invalid action penalty
@@ -76,56 +67,68 @@ class ActionManager:
         for agent, agent_actions in zip(agents, actions):
             proposed_turn_actions = []
             for action in agent_actions:
-                if not action:
+                if action is None:
                     continue
 
-                action = create_action(agent, action)
+                action_type = self.env.action_mapping.get(action[0])
+                if action_type is None:
+                    # Handle unknown action type
+                    rewards[agent.id] += invalid_action_penalty
+                    continue
+                x = action[1]
+                y = action[2]
+                position = (x, y)
+
+                action = create_action(agent, action_type, position)
 
                 if action.validate(self.env):
                     proposed_turn_actions.append(action)
                     position_key = action.position
                     self.conflict_map.setdefault(position_key, []).append(action)
 
-            proposed_actions[agent.id] = proposed_turn_actions
-
-        self.resolve_conflict(proposed_actions)
+        determined_actions = self.resolve_conflict()
 
         # Execute actions
-        for action_id, determined_actions in proposed_actions.items():
-            for action in determined_actions:
-                reward = action.execute(self.env)
-                rewards[action_id] = reward
-                dones[action_id] = False
+        for action in determined_actions:
+            agent_id = action.agent.id
+            reward = action.execute(self.env)
+            rewards[agent_id] = reward
+            dones[agent_id] = False
 
         # Clear the conflict map for the next turn
         self.conflict_map = {}
 
         return rewards, dones
 
-    def resolve_conflict(self, proposed_actions):
+    def resolve_conflict(self):
+        winner_actions = []
         for position, actions_at_position in self.conflict_map.items():
-            if len(actions_at_position) > 1:
-                print(
-                    f"Conflict detected at position {position} among agents {[action.agent.id for action in actions_at_position]}."
-                )
+            if len(actions_at_position) == 1:
+                winner_actions.append(actions_at_position[0])
+                continue
 
-                # Implement your conflict resolution strategy here.
-                # What when multiple actions of same agent on same position?
-                # what how do the different actions interact with each other? of different agents
+            print(
+                f"Conflict detected at position {position} among agents {[action.agent.id for action in actions_at_position]}."
+            )
 
-                # For fairness, we can randomly select a winner.
-                winner = random.choice(actions_at_position)
-                print(
-                    f"Agent {winner.agent.id} wins the conflict at position {position}."
-                )
+            # Implement your conflict resolution strategy here.
+            # What when multiple actions of same agent on same position?
+            # what how do the different actions interact with each other? of different agents
 
-                # Invalidate other actions at this position
-                for action in actions_at_position:
-                    if action != winner:
-                        proposed_actions[action.agent.id].remove(action)
-                        print(
-                            f"Agent {action.agent.id}'s action at position {position} has been invalidated due to conflict."
-                        )
+            # For fairness, we can randomly select a winner.
+            winner = random.choice(actions_at_position)
+            print(f"Agent {winner.agent.id} wins the conflict at position {position}.")
+            winner_actions.append(winner)
+
+        return winner_actions
+
+        # # Invalidate other actions at this position
+        # for action in actions_at_position:
+        #     if action != winner:
+        #         proposed_actions[action.agent.id].remove(action)
+        #         print(
+        #             f"Agent {action.agent.id}'s action at position {position} has been invalidated due to conflict."
+        #         )
 
     def update_claimable_tiles(self, agent: Agent, new_claimed_tile: Tuple[int, int]):
         """

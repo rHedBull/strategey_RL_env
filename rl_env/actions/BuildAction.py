@@ -50,17 +50,15 @@ class BuildAction(Action, ABC):
 
     def get_cost(self, env) -> float:
         """Return the cost of the action."""
-        return env.env_settings.get_setting("actions")[self.building_type.value]["cost"]
+        return env.env_settings.get("actions")[self.building_type.value]["cost"]
 
     def get_reward(self, env) -> float:
         """Return the reward for the action."""
-        return env.env_settings.get_setting("actions")[self.building_type.value][
-            "reward"
-        ]
+        return env.env_settings.get("actions")[self.building_type.value]["reward"]
 
     def get_building_type_id(self, env) -> int:
         """Return the building type id."""
-        return env.env_settings.get_setting("actions")[self.building_type.value]["id"]
+        return env.env_settings.get("actions")[self.building_type.value]["id"]
 
 
 def fit_building_to_land_type(

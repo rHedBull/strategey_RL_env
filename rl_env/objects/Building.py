@@ -7,10 +7,10 @@ import pygame
 
 
 class BuildingType(Enum):
-    CITY = "city"
-    ROAD = "road"
-    BRIDGE = "bridge"
-    FARM = "farm"
+    CITY = "build_city"
+    ROAD = "build_road"
+    BRIDGE = "build_bridge"
+    FARM = "build_farm"
 
 
 class Building(ABC):

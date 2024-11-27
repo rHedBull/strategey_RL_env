@@ -41,8 +41,8 @@ class Map:
         height_values: The height values of the map.
         visibility_map: A 2D numpy array to store the visibility of each tile.
     """
-    def __init__(self, env):
 
+    def __init__(self, env):
         self.env = env
 
         self.tiles = None
@@ -86,7 +86,7 @@ class Map:
                 self.tile_size = int(self.env.screen.get_width() / self.width)
             self.tile_size = max(1, self.tile_size)
         else:
-            self.tile_size = -1 # not needed if no rendering
+            self.tile_size = -1  # not needed if no rendering
 
         self.continuous_map = settings.get("continuous_map")
 
@@ -106,11 +106,7 @@ class Map:
         # create map squares
         self.squares = [
             [
-                Map_Square(
-                    (y_index * self.width + x_index),
-                    x_index,
-                    y_index
-                )
+                Map_Square((y_index * self.width + x_index), x_index, y_index)
                 for x_index in range(self.width)
             ]
             for y_index in range(self.height)
@@ -347,7 +343,7 @@ class Map:
     def tile_is_next_to_building(self, position) -> bool:
         # check if any of the neighbouring tiles has a building
         # TODO: switch to just up, down, left, right
-        x, y = position
+        y, x = position
         for i in range(-1, 2):
             for j in range(-1, 2):
                 tile = self.get_tile((y + j, x + i))
