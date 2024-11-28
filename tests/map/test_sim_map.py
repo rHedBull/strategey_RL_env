@@ -144,36 +144,36 @@ def test_visibility_methods(map_instance):
     agent_id2 = 3
 
     # Initially not visible
-    assert not map_instance.is_visible(position, agent_id)
-    assert not map_instance.is_visible(position, agent_id2)
+    assert map_instance.is_visible(position, agent_id) is False
+    assert map_instance.is_visible(position, agent_id2) is False
 
     # Set visible
     map_instance.set_visible(position, agent_id)
-    assert map_instance.is_visible(position, agent_id)
-    assert not map_instance.is_visible(position, agent_id2)
+    assert map_instance.is_visible(position, agent_id) is True
+    assert map_instance.is_visible(position, agent_id2) is False
 
     # Set visible for another agent
     map_instance.set_visible(position, agent_id2)
-    assert map_instance.is_visible(position, agent_id)
-    assert map_instance.is_visible(position, agent_id2)
+    assert map_instance.is_visible(position, agent_id) is True
+    assert map_instance.is_visible(position, agent_id2) is True
 
     # Clear visible
     map_instance.clear_visible(position, agent_id)
-    assert not map_instance.is_visible(position, agent_id)
-    assert map_instance.is_visible(position, agent_id2)
+    assert map_instance.is_visible(position, agent_id) is False
+    assert map_instance.is_visible(position, agent_id2) is True
 
     # Test with invalid agent ID
     invalid_agent_id = max_agent_id
     map_instance.set_visible(position, invalid_agent_id)  # Should have no effect
-    assert map_instance.is_visible(position, agent_id2)
-    assert not map_instance.is_visible(position, invalid_agent_id)
+    assert map_instance.is_visible(position, agent_id2) is True
+    assert map_instance.is_visible(position, invalid_agent_id) is False
 
     map_instance.clear_visible(position, invalid_agent_id)  # Should have no effect
-    assert map_instance.is_visible(position, agent_id2)
-    assert not map_instance.is_visible(position, invalid_agent_id)
+    assert map_instance.is_visible(position, agent_id2) is True
+    assert map_instance.is_visible(position, invalid_agent_id) is False
 
     map_instance.clear_visible(position, agent_id2)
-    assert not map_instance.is_visible(position, agent_id2)
+    assert map_instance.is_visible(position, agent_id2) is False
 
 
 def test_claim_tile(map_instance):
@@ -185,16 +185,23 @@ def test_claim_tile(map_instance):
     map_instance.claim_tile(mock_agent, position)
     assert tile.owner_id == mock_agent.id
 
+    # test here what happens at conflict claiming
+
 
 def test_add_building(map_instance):
     position = (2, 4)
     building_object = City(1, position, 1)  # Mock building object
     tile = map_instance.get_tile(position)
 
-    assert not tile.has_any_building()
+    assert tile.has_any_building() is False
     map_instance.add_building(building_object, position)
-    assert tile.has_any_building()
+    assert tile.has_any_building() is True
     assert building_object in tile.buildings
+
+    # test remove building
+    tile.remove_building(building_object)
+    assert tile.has_any_building() is False
+    assert building_object not in tile.buildings
 
 
 def test_tile_is_next_to_building(map_instance):
@@ -222,6 +229,55 @@ def test_serialize_topography_resources(map_instance):
     assert len(map_data["squares"]) == map_instance.height
     assert len(map_data["squares"][0]) == map_instance.width
 
+def test_get_surrounding_tiles(map_instance):
+    map_instance.reset()  # Ensure map is in a known state
+
+    # Test Case 1: Middle position
+    middle_position = (2, 2)
+    surrounding_tiles = map_instance.get_surrounding_tiles(middle_position)
+    assert len(surrounding_tiles) == 8, "Middle position should have 8 surrounding tiles."
+
+    # Define expected tiles based on the grid's known state
+    # For example, if tiles are represented by their (y, x) positions
+    expected_positions = [
+        (1, 1), (1, 2), (1, 3),
+        (2, 1),         (2, 3),
+        (3, 1), (3, 2), (3, 3)
+    ]
+
+    for tile in surrounding_tiles:
+        tile_pos = (tile.x, tile.y)
+        assert tile_pos in expected_positions, f"Tile ({tile.x}, {tile.y}) not expected in middle position surroundings."
+
+    # Test Case 2: Corner position
+    corner_position = (0, 0)
+    surrounding_tiles = map_instance.get_surrounding_tiles(corner_position)
+    assert len(surrounding_tiles) == 3, "Corner position should have 3 surrounding tiles (some may be out of bounds)."
+
+    expected_positions = [
+
+                        (0, 1),
+                (1, 0), (1, 1)
+    ]
+
+    for tile in surrounding_tiles:
+        tile_pos = (tile.x, tile.y)
+        assert tile_pos in expected_positions, f"Tile ({tile.x}, {tile.y}) not expected in corner position surroundings."
+
+    # Test Case 3: Edge position
+    edge_position = (0, 2)
+    surrounding_tiles = map_instance.get_surrounding_tiles(edge_position)
+    assert len(surrounding_tiles) == 5, "Edge position should have 5 surrounding tiles (some may be out of bounds)."
+
+    expected_positions = [
+                (0, 1), (1, 1),
+                        (1, 2),
+                (0, 3), (1, 3)
+    ]
+
+    for tile in surrounding_tiles:
+        tile_pos = (tile.x, tile.y)
+        assert tile_pos in expected_positions, f"Tile ({tile.x}, {tile.y}) not expected in edge position surroundings."
 
 def test_save_and_load_topography_resources(map_instance, tmp_path):
     map_instance.reset()

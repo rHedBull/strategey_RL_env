@@ -367,7 +367,11 @@ class Map:
         surrounding_tiles = []
         for i in range(-1, 2):
             for j in range(-1, 2):
-                surrounding_tiles.append(self.get_tile((y + j, x + i)))
+                pos = (y + j, x + i)
+                if i == 0 and j == 0:
+                    continue
+                if self.check_position_on_map(pos):
+                    surrounding_tiles.append(self.get_tile(pos))
         return surrounding_tiles
 
     # visibility stuff #
