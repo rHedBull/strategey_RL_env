@@ -1,7 +1,5 @@
-from typing import Tuple
-
 from agents.Sim_Agent import Agent
-from MapPosition import MapPosition
+from map.MapPosition import MapPosition
 from rl_env.actions.BuildAction import BuildAction
 from rl_env.objects.Building import BuildingType
 from rl_env.objects.Farm import Farm

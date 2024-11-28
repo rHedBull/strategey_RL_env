@@ -1,9 +1,8 @@
 from abc import ABC, abstractmethod
 from enum import Enum, auto
-from typing import Tuple
 
 from agents.Sim_Agent import Agent
-from MapPosition import MapPosition
+from map.MapPosition import MapPosition
 
 
 class ActionType(Enum):

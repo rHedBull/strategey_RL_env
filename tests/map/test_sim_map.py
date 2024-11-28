@@ -5,7 +5,7 @@ from agents.Sim_Agent import Agent
 from map.map_settings import OWNER_DEFAULT_TILE, LandType
 from map.map_square import Map_Square
 from map.sim_map import Map, check_valid_agent_id, max_agent_id
-from MapPosition import MapPosition
+from map.MapPosition import MapPosition
 from rl_env.environment import MapEnvironment
 from rl_env.objects.city import City
 

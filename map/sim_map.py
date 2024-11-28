@@ -1,10 +1,9 @@
 import math
 import pickle
-from typing import Tuple
 
 import numpy as np
 
-from MapPosition import MapPosition
+from map.MapPosition import MapPosition
 from map.map_agent import Map_Agent
 from map.map_settings import LandType
 from map.map_square import Map_Square

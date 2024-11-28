@@ -1,9 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import Tuple
 
 from agents.Sim_Agent import Agent
 from map.map_settings import ALLOWED_BUILDING_PLACEMENTS
-from MapPosition import MapPosition
+from map.MapPosition import MapPosition
 from rl_env.actions.Action import Action, ActionType
 from rl_env.objects.Building import BuildingType
 

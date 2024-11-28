@@ -3,7 +3,7 @@ from typing import Any, List, Tuple
 
 import numpy as np
 
-from MapPosition import MapPosition
+from map.MapPosition import MapPosition
 from agents.Sim_Agent import Agent
 from rl_env.actions.BuildCityAction import BuildCityAction
 from rl_env.actions.BuildFarmAction import BuildFarmAction

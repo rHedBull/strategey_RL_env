@@ -4,7 +4,7 @@ import numpy as np
 import pygame
 
 from map.map_settings import AGENT_COLORS, PLAYER_COLOR
-from MapPosition import MapPosition
+from map.MapPosition import MapPosition
 
 
 def get_visible_mask(agent_id: int, map_v):

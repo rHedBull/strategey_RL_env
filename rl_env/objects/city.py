@@ -2,7 +2,7 @@ from typing import Tuple
 
 import pygame
 
-from MapPosition import MapPosition
+from map.MapPosition import MapPosition
 from rl_env.objects.Building import Building, BuildingType
 from rl_env.objects.Ownable import Ownable
 

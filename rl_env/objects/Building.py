@@ -5,7 +5,7 @@ from uuid import uuid1
 
 import pygame
 
-from MapPosition import MapPosition
+from map.MapPosition import MapPosition
 
 
 class BuildingType(Enum):

@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from MapPosition import MapPosition
+from map.MapPosition import MapPosition
 from map.map_settings import OWNER_DEFAULT_TILE, LandType
 from rl_env.environment import MapEnvironment
 from rl_env.objects.Building import BuildingType
