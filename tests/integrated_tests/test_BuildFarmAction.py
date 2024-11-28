@@ -35,17 +35,23 @@ def test_build_simple_farm(setup):
     build_farm_action = [4, pos_x, pos_y]
     tile1 = env.map.get_tile((pos_x, pos_y))
 
-    # test build without visibility, should not work
+    # no visibility, should not work
     observation, reward, terminated, truncated, info = env.step(
         [[ build_farm_action]]
     )
     assert tile1.has_any_building() is False
 
-    # set visible and claimed
+    # set visible
     env.map.set_visible((pos_x, pos_y), agent_id)
-    tile1.owner_id = other_agent_id # claimed by another agent
+    # visible but unclaimed, should not work now
+    observation, reward, terminated, truncated, info = env.step(
+        [[build_farm_action]]
+    )
+    assert tile1.has_any_building() is False
 
-    # should not work now
+    # claimed by another agent
+    tile1.owner_id = other_agent_id # claimed by another agent
+    # visible but claimed by other agent, should not work now
     observation, reward, terminated, truncated, info = env.step(
         [[build_farm_action]]
     )
@@ -86,10 +92,12 @@ def test_building_farm_on_water_mountain_desert(setup):
     special_env.reset()
     agent_id = 0
 
-    # set visible
-    special_env.map.set_visible((pos_x, pos_y), agent_id)
+
     tile1 = special_env.map.get_tile((pos_x, pos_y))
     tile2 = special_env.map.get_tile((pos_x + 1, pos_y + 1))
+    # set visible and claimed
+    special_env.map.set_visible((pos_x, pos_y), agent_id)
+    tile1.owner_id = agent_id
 
     # should not work on ocean
     tile1.set_land_type(LandType.OCEAN)
