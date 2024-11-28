@@ -16,16 +16,6 @@ class MockAgent:
         self.id = id
 
 
-# @pytest.fixture
-# def map_instance(mock_settings):
-#     """Fixture to create and return a Map instance."""
-#
-#     env = MapEnvironment(settings, 2, "rgb_array")
-#     #manager = ActionManager(env)
-#     yield env
-#     env.close()
-
-
 @pytest.fixture
 def env():
     # open settings file

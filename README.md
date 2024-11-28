@@ -2,21 +2,30 @@
 
 ## Game Rules
 
+### Claiming tiles
+- a tile can only be claimed if it is visible
+- a tile can only be claimed if it is not already claimed
+- a tile can only be claimed if it is adjacent to a claimed tile or a building not including roads and bridges
+
 ### Buildings
 #### Roads
-- must be placed on an already claimed tile
+- must be placed on an already self claimed tile
 - or next to another building including roads and bridges
+- only placable on: normal Land, Dessert and Marsh
 
 #### Bridge
-- must be placed on an already claimed tile
+- must be placed on an already self claimed tile
 - or next to another building including roads and bridges
+- - only placable on: normal Ocean and River
 
 #### City
-- can only be placed on a visible tile
+- can only be placed on a visible or already self claimed tiles
 - placing a city claims the tile
+- only placable on: normal Land, Dessert and Marsh
 
 #### Farm
-- can only be placed on an already claimed tile
+- can only be placed on an already self claimed tile
+- only placable on: normal Land and Marsh
 
 # RL considerations
 
