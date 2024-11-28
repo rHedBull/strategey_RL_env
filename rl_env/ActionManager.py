@@ -3,8 +3,8 @@ from typing import Any, List, Tuple
 
 import numpy as np
 
-from map.MapPosition import MapPosition
 from agents.Sim_Agent import Agent
+from map.MapPosition import MapPosition
 from rl_env.actions.BuildCityAction import BuildCityAction
 from rl_env.actions.BuildFarmAction import BuildFarmAction
 from rl_env.actions.BuildRoadAction import BuildBridgeAction, BuildRoadAction

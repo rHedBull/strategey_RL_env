@@ -2,10 +2,10 @@ from unittest.mock import Mock
 
 import pytest
 
-from map.MapPosition import MapPosition
 from map.map_settings import (COLOR_DEFAULT_BORDER, OWNER_DEFAULT_TILE,
                               LandType, land_type_color)
 from map.map_square import Map_Square
+from map.MapPosition import MapPosition
 from rl_env.objects.Building import BuildingType
 from rl_env.objects.city import City
 from rl_env.objects.Farm import Farm

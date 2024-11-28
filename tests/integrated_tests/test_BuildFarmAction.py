@@ -2,8 +2,8 @@ import json
 
 import pytest
 
-from map.MapPosition import MapPosition
 from map.map_settings import LandType
+from map.MapPosition import MapPosition
 from rl_env.environment import MapEnvironment
 from rl_env.objects.Building import BuildingType
 from rl_env.objects.city import City

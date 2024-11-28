@@ -2,8 +2,8 @@ import json
 
 import pytest
 
-from map.MapPosition import MapPosition
 from map.map_settings import OWNER_DEFAULT_TILE, LandType
+from map.MapPosition import MapPosition
 from rl_env.environment import MapEnvironment
 from rl_env.objects.Building import BuildingType
 from rl_env.objects.city import City
@@ -195,7 +195,9 @@ def test_building_road_on_water_mountain_desert(setup):
 
     # should work on marsh
     tile1.set_land_type(LandType.MARSH)
-    special_env.map.set_visible(MapPosition(position_1.x + 1, position_1.y + 1), agent_id)
+    special_env.map.set_visible(
+        MapPosition(position_1.x + 1, position_1.y + 1), agent_id
+    )
     observation, reward, terminated, truncated, info = special_env.step(
         [[build_road_action]]
     )

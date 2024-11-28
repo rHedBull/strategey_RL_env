@@ -3,10 +3,10 @@ import pickle
 
 import numpy as np
 
-from map.MapPosition import MapPosition
 from map.map_agent import Map_Agent
 from map.map_settings import LandType
 from map.map_square import Map_Square
+from map.MapPosition import MapPosition
 from test_env.Agent import Agent
 
 features_per_tile = 3
@@ -109,8 +109,9 @@ class Map:
         # Create map squares
         for x_index in range(self.width):
             for y_index in range(self.height):
-                self.squares[x_index][y_index] = Map_Square((y_index * self.width + x_index),
-                                                            MapPosition(x_index, y_index))
+                self.squares[x_index][y_index] = Map_Square(
+                    (y_index * self.width + x_index), MapPosition(x_index, y_index)
+                )
 
         self.reset()
 
@@ -151,21 +152,35 @@ class Map:
                 # check if water arround
                 if square.get_land_type() != LandType.OCEAN:
                     if (
-                            (square.position.x > 0 and
-                             self.squares[square.position.x - 1][
-                                 square.position.y].get_land_type() == LandType.OCEAN)  # left neighbor
-                            or
-                            (square.position.x < self.width - 1 and
-                             self.squares[square.position.x + 1][
-                                 square.position.y].get_land_type() == LandType.OCEAN)  # right neighbor
-                            or
-                            (square.position.y > 0 and
-                             self.squares[square.position.x][
-                                 square.position.y - 1].get_land_type() == LandType.OCEAN)  # top neighbor
-                            or
-                            (square.position.y < self.height - 1 and
-                             self.squares[square.position.x][square.position.y + 1].get_land_type() == LandType.OCEAN)
-                    # bottom neighbor
+                        (
+                            square.position.x > 0
+                            and self.squares[square.position.x - 1][
+                                square.position.y
+                            ].get_land_type()
+                            == LandType.OCEAN
+                        )  # left neighbor
+                        or (
+                            square.position.x < self.width - 1
+                            and self.squares[square.position.x + 1][
+                                square.position.y
+                            ].get_land_type()
+                            == LandType.OCEAN
+                        )  # right neighbor
+                        or (
+                            square.position.y > 0
+                            and self.squares[square.position.x][
+                                square.position.y - 1
+                            ].get_land_type()
+                            == LandType.OCEAN
+                        )  # top neighbor
+                        or (
+                            square.position.y < self.height - 1
+                            and self.squares[square.position.x][
+                                square.position.y + 1
+                            ].get_land_type()
+                            == LandType.OCEAN
+                        )
+                        # bottom neighbor
                     ):
                         square.set_land_type(LandType.MARSH)
 
@@ -181,7 +196,9 @@ class Map:
         )  # number of features per tile
         for row in self.squares:
             for square in row:
-                map_info[square.position.x][square.position.y] = square.get_observation_state()
+                map_info[square.position.x][
+                    square.position.y
+                ] = square.get_observation_state()
         return map_info
 
     def get_full_map_as_matrix(self):
@@ -222,7 +239,7 @@ class Map:
         for row in self.squares:
             for square in row:
                 new_x = (square.position.x * zoom_level) + pan_x
-                new_y = (square.position.x* zoom_level) + pan_y
+                new_y = (square.position.x * zoom_level) + pan_y
                 new_size = self.tile_size * zoom_level
                 square.draw(screen, self.tile_size, new_x, new_y, new_size)
 
@@ -373,7 +390,6 @@ class Map:
         surrounding_tiles = []
         for i in range(-1, 2):
             for j in range(-1, 2):
-
                 if i == 0 and j == 0:
                     continue
                 tmp_pos = MapPosition(x + i, y + j)
@@ -408,7 +424,6 @@ class Map:
             return True
         else:
             return False
-
 
         # TODO: sth messed up with coordinates of visibility map!!, works now, but not in the tests
         # TODO: switch to common use of either position as tuple or Class or self.x, self.y

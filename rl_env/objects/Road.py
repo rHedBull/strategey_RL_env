@@ -78,7 +78,6 @@ def update_road_bridge_shape(road_or_bridge, map):
 
     # Check surrounding tiles for roads and bridges
 
-
     up = map.get_tile(MapPosition(x, y - 1))
     down = map.get_tile(MapPosition(x, y + 1))
     left = map.get_tile(MapPosition(x - 1, y))

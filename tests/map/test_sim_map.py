@@ -1,11 +1,12 @@
 import json
+
 import pytest
 
 from agents.Sim_Agent import Agent
 from map.map_settings import OWNER_DEFAULT_TILE, LandType
 from map.map_square import Map_Square
-from map.sim_map import Map, check_valid_agent_id, max_agent_id
 from map.MapPosition import MapPosition
+from map.sim_map import Map, check_valid_agent_id, max_agent_id
 from rl_env.environment import MapEnvironment
 from rl_env.objects.city import City
 
@@ -231,55 +232,66 @@ def test_serialize_topography_resources(map_instance):
     assert len(map_data["squares"]) == map_instance.height
     assert len(map_data["squares"][0]) == map_instance.width
 
+
 def test_get_surrounding_tiles(map_instance):
     map_instance.reset()  # Ensure map is in a known state
 
     # Test Case 1: Middle position
     middle_position = MapPosition(2, 2)
     surrounding_tiles = map_instance.get_surrounding_tiles(middle_position)
-    assert len(surrounding_tiles) == 8, "Middle position should have 8 surrounding tiles."
+    assert (
+        len(surrounding_tiles) == 8
+    ), "Middle position should have 8 surrounding tiles."
 
     # Define expected tiles based on the grid's known state
     # For example, if tiles are represented by their (y, x) positions
     expected_positions = [
-        (1, 1), (2, 1), (3, 1),
-        (1, 2),         (3, 2),
-        (1, 3), (2, 3), (3, 3)
+        (1, 1),
+        (2, 1),
+        (3, 1),
+        (1, 2),
+        (3, 2),
+        (1, 3),
+        (2, 3),
+        (3, 3),
     ]
 
     for tile in surrounding_tiles:
         tile_position = (tile.position.x, tile.position.y)
-        assert tile_position  in expected_positions, f"Tile:({tile.position.x}, {tile.position.y}) not expected in middle position surroundings."
+        assert (
+            tile_position in expected_positions
+        ), f"Tile:({tile.position.x}, {tile.position.y}) not expected in middle position surroundings."
 
     # Test Case 2: Corner position
     corner_position = MapPosition(0, 0)
     surrounding_tiles = map_instance.get_surrounding_tiles(corner_position)
-    assert len(surrounding_tiles) == 3, "Corner position should have 3 surrounding tiles (some may be out of bounds)."
+    assert (
+        len(surrounding_tiles) == 3
+    ), "Corner position should have 3 surrounding tiles (some may be out of bounds)."
 
-    expected_positions = [
-
-                        (1, 0),
-                (0, 1), (1, 1)
-    ]
+    expected_positions = [(1, 0), (0, 1), (1, 1)]
 
     for tile in surrounding_tiles:
         tile_position = (tile.position.x, tile.position.y)
-        assert tile_position  in expected_positions, f"Tile ({tile.position.x}, {tile.position.y}) not expected in corner position surroundings."
+        assert (
+            tile_position in expected_positions
+        ), f"Tile ({tile.position.x}, {tile.position.y}) not expected in corner position surroundings."
 
     # Test Case 3: Edge position
     edge_position = MapPosition(2, 0)
     surrounding_tiles = map_instance.get_surrounding_tiles(edge_position)
-    assert len(surrounding_tiles) == 5, "Edge position should have 5 surrounding tiles (some may be out of bounds)."
+    assert (
+        len(surrounding_tiles) == 5
+    ), "Edge position should have 5 surrounding tiles (some may be out of bounds)."
 
-    expected_positions = [
-
-                (1, 0),         (3, 0),
-                (1, 1), (2, 1), (3, 1)
-    ]
+    expected_positions = [(1, 0), (3, 0), (1, 1), (2, 1), (3, 1)]
 
     for tile in surrounding_tiles:
         tile_position = (tile.position.x, tile.position.y)
-        assert tile_position in expected_positions, f"Tile ({tile.position.x}, {tile.position.y}) not expected in edge position surroundings."
+        assert (
+            tile_position in expected_positions
+        ), f"Tile ({tile.position.x}, {tile.position.y}) not expected in edge position surroundings."
+
 
 def test_save_and_load_topography_resources(map_instance, tmp_path):
     map_instance.reset()

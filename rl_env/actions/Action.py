@@ -12,9 +12,7 @@ class ActionType(Enum):
 
 
 class Action(ABC):
-    def __init__(
-        self, agent: Agent, position: MapPosition, action_type: ActionType
-    ):
+    def __init__(self, agent: Agent, position: MapPosition, action_type: ActionType):
         self.agent = agent
 
         if position is None:
