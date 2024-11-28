@@ -50,7 +50,6 @@ class ClaimAction(Action):
         return reward
 
 
-
 def is_claimable(agent: Agent, position: Tuple[int, int]) -> bool:
     # check if position is in agent's claimable_tiles list
 

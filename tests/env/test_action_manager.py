@@ -102,9 +102,6 @@ def test_apply_actions_no_conflicts(env):
 
 
 def test_apply_actions_with_conflict(env):
-    agent_1 = MockAgent(id=1)
-    agent_2 = MockAgent(id=2)
-
     build_1 = [1, 1, 1]  # build on same position
     build_3 = [1, 2, 2]  # build same on different position
     conflicting_actions = [

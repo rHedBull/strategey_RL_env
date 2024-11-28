@@ -363,7 +363,6 @@ class Map:
         return False
 
     def get_surrounding_tiles(self, position: Tuple[int, int]):
-
         y, x = position
         surrounding_tiles = []
         for i in range(-1, 2):

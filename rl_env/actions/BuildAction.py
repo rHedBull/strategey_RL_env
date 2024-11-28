@@ -58,7 +58,9 @@ class BuildAction(Action, ABC):
 
     def get_building_type_id(self, env) -> int:
         """Return the building type id."""
-        return env.env_settings.get("actions")[self.building_type.value]["build_type_id"]
+        return env.env_settings.get("actions")[self.building_type.value][
+            "build_type_id"
+        ]
 
 
 def fit_building_to_land_type(

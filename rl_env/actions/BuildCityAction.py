@@ -1,10 +1,10 @@
 from typing import Tuple
 
 from agents.Sim_Agent import Agent
+from map.map_settings import OWNER_DEFAULT_TILE
 from rl_env.actions.BuildAction import BuildAction
 from rl_env.objects.Building import BuildingType
 from rl_env.objects.city import City
-from map.map_settings import OWNER_DEFAULT_TILE
 
 
 class BuildCityAction(BuildAction):
@@ -24,7 +24,6 @@ class BuildCityAction(BuildAction):
                 return False
             else:
                 return True
-
 
         if tile_owner_id != OWNER_DEFAULT_TILE:
             print(f"Tile{self.position} is already owned by an agent.")

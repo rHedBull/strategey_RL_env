@@ -36,40 +36,30 @@ def test_build_simple_farm(setup):
     tile1 = env.map.get_tile((pos_x, pos_y))
 
     # no visibility, should not work
-    observation, reward, terminated, truncated, info = env.step(
-        [[ build_farm_action]]
-    )
+    observation, reward, terminated, truncated, info = env.step([[build_farm_action]])
     assert tile1.has_any_building() is False
 
     # set visible
     env.map.set_visible((pos_x, pos_y), agent_id)
     # visible but unclaimed, should not work now
-    observation, reward, terminated, truncated, info = env.step(
-        [[build_farm_action]]
-    )
+    observation, reward, terminated, truncated, info = env.step([[build_farm_action]])
     assert tile1.has_any_building() is False
 
     # claimed by another agent
-    tile1.owner_id = other_agent_id # claimed by another agent
+    tile1.owner_id = other_agent_id  # claimed by another agent
     # visible but claimed by other agent, should not work now
-    observation, reward, terminated, truncated, info = env.step(
-        [[build_farm_action]]
-    )
+    observation, reward, terminated, truncated, info = env.step([[build_farm_action]])
     assert tile1.has_any_building() is False
 
     # set tile claimed, should work
     tile1.owner_id = agent_id
-    observation, reward, terminated, truncated, info = env.step(
-        [[build_farm_action]]
-    )
+    observation, reward, terminated, truncated, info = env.step([[build_farm_action]])
     assert tile1.has_any_building() is True
     assert tile1.has_building(BuildingType.FARM) is True
     assert tile1.owner_id == agent_id
 
     # test build on top of existing building, should not work
-    observation, reward, terminated, truncated, info = env.step(
-        [[build_farm_action]]
-    )
+    observation, reward, terminated, truncated, info = env.step([[build_farm_action]])
     assert tile1.has_any_building() is True
     assert tile1.has_building(BuildingType.FARM) is True
     assert tile1.owner_id == agent_id
@@ -92,9 +82,7 @@ def test_building_farm_on_water_mountain_desert(setup):
     special_env.reset()
     agent_id = 0
 
-
     tile1 = special_env.map.get_tile((pos_x, pos_y))
-    tile2 = special_env.map.get_tile((pos_x + 1, pos_y + 1))
     # set visible and claimed
     special_env.map.set_visible((pos_x, pos_y), agent_id)
     tile1.owner_id = agent_id

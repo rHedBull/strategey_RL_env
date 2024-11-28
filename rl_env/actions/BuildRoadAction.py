@@ -48,6 +48,8 @@ class BuildBridgeAction(BuildAction):
         if env.map.tile_is_next_to_building(self.position):
             return True
 
+        return False
+
     def perform_build(self, env):
         building_type_id = self.get_building_type_id(env)
         bridge = Bridge(self.position, building_type_id)
