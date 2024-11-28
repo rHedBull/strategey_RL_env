@@ -1,6 +1,7 @@
 from typing import Tuple
 
 from agents.Sim_Agent import Agent
+from map.map_settings import OWNER_DEFAULT_TILE
 from rl_env.actions.Action import Action, ActionType
 
 
@@ -12,11 +13,27 @@ class ClaimAction(Action):
         if not super().validate(env):
             return False
 
-        if env.map.get_tile(self.position).get_owner() == self.agent:
-            print(f"Agent {self.agent.id}: Already owns tile at {self.position}.")
+        if env.map.get_tile(self.position).get_owner() != OWNER_DEFAULT_TILE:
+            print(f"Tile{self.position} is already owned by an agent.")
             return False
 
-        # TODO: what to do if already claimed by other agent?
+        # check if visible for agent
+        if not env.map.is_visible(self.position, self.agent.id):
+            print(f"Tile{self.position} is not visible for agent.")
+            return False
+
+        # surrounding tiles
+        surrounding_tiles = env.map.get_surrounding_tiles(self.position)
+
+        adjacent_claimed = False
+        for tile in surrounding_tiles:
+            if tile.get_owner() == self.agent.id:
+                adjacent_claimed = True
+                break
+
+        if not adjacent_claimed:
+            print(f"Tile{self.position} is not adjacent to any claimed tile.")
+            return False
 
         return True
 
@@ -31,6 +48,7 @@ class ClaimAction(Action):
             f"Agent {self.agent.id}: Claimed tile at {self.position}. Reward: {reward}"
         )
         return reward
+
 
 
 def is_claimable(agent: Agent, position: Tuple[int, int]) -> bool:
