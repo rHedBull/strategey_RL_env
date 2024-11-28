@@ -2,13 +2,14 @@ from typing import Tuple
 
 from agents.Sim_Agent import Agent
 from map.map_settings import OWNER_DEFAULT_TILE
+from MapPosition import MapPosition
 from rl_env.actions.BuildAction import BuildAction
 from rl_env.objects.Building import BuildingType
 from rl_env.objects.city import City
 
 
 class BuildCityAction(BuildAction):
-    def __init__(self, agent: Agent, position: Tuple[int, int]):
+    def __init__(self, agent: Agent, position: MapPosition):
         super().__init__(agent, position, BuildingType.CITY)
 
     def validate(self, env) -> bool:

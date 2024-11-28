@@ -3,13 +3,14 @@ from typing import Tuple
 
 from agents.Sim_Agent import Agent
 from map.map_settings import ALLOWED_BUILDING_PLACEMENTS
+from MapPosition import MapPosition
 from rl_env.actions.Action import Action, ActionType
 from rl_env.objects.Building import BuildingType
 
 
 class BuildAction(Action, ABC):
     def __init__(
-        self, agent: Agent, position: Tuple[int, int], building_type: BuildingType
+        self, agent: Agent, position: MapPosition, building_type: BuildingType
     ):
         super().__init__(agent, position, ActionType.BUILD)
         self.building_type = building_type
@@ -64,7 +65,7 @@ class BuildAction(Action, ABC):
 
 
 def fit_building_to_land_type(
-    env, position: Tuple[int, int], build_type: BuildingType
+    env, position: MapPosition, build_type: BuildingType
 ) -> bool:
     """Check if the land type at the given position is suitable for the building type."""
 

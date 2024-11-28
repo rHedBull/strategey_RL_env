@@ -2,6 +2,7 @@ import json
 
 import pytest
 
+from MapPosition import MapPosition
 from map.map_settings import OWNER_DEFAULT_TILE
 from rl_env.environment import MapEnvironment
 from rl_env.objects.city import City
@@ -19,23 +20,25 @@ def setup():
     agent_id = 0
     pos_x = 2
     pos_y = 2
-    city = City(agent_id, (pos_x + 1, pos_y), 1)
+    position_1 = MapPosition(pos_x, pos_y)
+    position_2 = MapPosition(pos_x + 1, pos_y)
+    city = City(agent_id, position_2, 1)
 
     env = MapEnvironment(env_settings, 2, "rgb_array", seed=100)
-    yield env, city, agent_id, pos_x, pos_y
+    yield env, city, agent_id, position_1, position_2
     env.close()
 
 
 def test_simple_claim(setup):
-    env, city, agent_id, pos_x, pos_y = setup
+    env, city, agent_id, position_1, position_2 = setup
     env.reset()
 
-    road = Road((pos_x + 1, pos_y), 2)
-    bridge = Bridge((pos_x + 1, pos_y), 2)
+    road = Road(position_2, 2)
+    bridge = Bridge(position_2, 2)
 
-    claim_action = [0, pos_x, pos_y]
-    tile1 = env.map.get_tile((pos_x, pos_y))
-    tile2 = env.map.get_tile((pos_x + 1, pos_y))
+    claim_action = [0, position_1.x, position_1.y]
+    tile1 = env.map.get_tile(position_1)
+    tile2 = env.map.get_tile(position_2)
 
     assert tile1.get_owner() == OWNER_DEFAULT_TILE
 
@@ -44,7 +47,7 @@ def test_simple_claim(setup):
     assert tile1.get_owner() == OWNER_DEFAULT_TILE
 
     # set visible and adjacent tile claimed
-    env.map.set_visible((pos_x, pos_y), agent_id)
+    env.map.set_visible(position_1, agent_id)
     # set adjacent tile to be claimed by agent
     tile2.owner_id = agent_id
 
@@ -80,15 +83,17 @@ def test_simple_claim(setup):
 
 
 def test_claiming_with_agent_conflicts(setup):
-    env, city, agent_id, pos_x, pos_y = setup
+    env, city, agent_id, position_1, position_2 = setup
     other_agent_id = 3
-    claim_action = [0, pos_x, pos_y]
-    tile1 = env.map.get_tile((pos_x, pos_y))
-    tile2 = env.map.get_tile((pos_x + 1, pos_y))
-    tile3 = env.map.get_tile((pos_x, pos_y + 1))
+    claim_action = [0, position_1.x, position_1.y]
+    tile1 = env.map.get_tile(position_1)
+    tile2 = env.map.get_tile(position_2)
+
+    pos_3 = MapPosition(position_1.x, position_1.y + 1)
+    tile3 = env.map.get_tile(pos_3)
 
     # set visible
-    env.map.set_visible((pos_x, pos_y), agent_id)
+    env.map.set_visible(position_1, agent_id)
 
     tile2.owner_id = other_agent_id
     # adjacent tiles are claimed only by another agent, should not work

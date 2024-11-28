@@ -2,6 +2,7 @@ from typing import Tuple
 
 import pygame
 
+from MapPosition import MapPosition
 from map.map_settings import (COLOR_DEFAULT_BORDER, OWNER_DEFAULT_TILE,
                               LandType, land_type_color)
 from rl_env.objects.Building import Building, BuildingType
@@ -42,11 +43,10 @@ class Map_Square:
     Class for a single square/ tile on the map
     """
 
-    def __init__(self, tile_id: int, x: int, y: int, land_value=LandType.LAND):
+    def __init__(self, tile_id: int, position: MapPosition, land_value=LandType.LAND):
         # coordinates and ids
         self.tile_id = tile_id
-        self.x = x
-        self.y = y
+        self.position = position
 
         # land properties
         self.land_type = LandType.LAND
@@ -203,8 +203,8 @@ class Map_Square:
             screen,
             self.land_type_color,
             (
-                self.x * square_size,
-                self.y * square_size,
+                self.position.x * square_size,
+                self.position.y * square_size,
                 square_size,
                 square_size,
             ),
@@ -215,8 +215,8 @@ class Map_Square:
                 screen,
                 self.owner_color,
                 (
-                    self.x * square_size,
-                    self.y * square_size,
+                    self.position.x * square_size,
+                    self.position.y * square_size,
                     square_size,
                     square_size,
                 ),

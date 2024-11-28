@@ -3,6 +3,7 @@ from typing import Any, List, Tuple
 
 import numpy as np
 
+from MapPosition import MapPosition
 from agents.Sim_Agent import Agent
 from rl_env.actions.BuildCityAction import BuildCityAction
 from rl_env.actions.BuildFarmAction import BuildFarmAction
@@ -12,7 +13,7 @@ from rl_env.actions.ClaimAction import ClaimAction
 invalid_action_penalty = -10
 
 
-def create_action(agent, action_type, position):
+def create_action(agent, action_type, position: MapPosition):
     if action_type == "claim":
         return ClaimAction(agent, position)
     elif action_type == "build_city":
@@ -77,7 +78,7 @@ class ActionManager:
                     continue
                 x = action[1]
                 y = action[2]
-                position = (x, y)
+                position = MapPosition(x, y)
 
                 action = create_action(agent, action_type, position)
 

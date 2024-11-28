@@ -2,6 +2,7 @@ import json
 
 import pytest
 
+from MapPosition import MapPosition
 from map.map_settings import OWNER_DEFAULT_TILE, LandType
 from rl_env.environment import MapEnvironment
 from rl_env.objects.Building import BuildingType
@@ -18,28 +19,29 @@ def setup():
     agent_id = 0
     pos_x = 2
     pos_y = 2
-    city = City(agent_id, (pos_x + 1, pos_y), 1)
-    yield env, city, agent_id, pos_x, pos_y
+    position_1 = MapPosition(pos_x, pos_y)
+    position_2 = MapPosition(pos_x + 1, pos_y)
+    city = City(agent_id, position_2, 1)
+    yield env, city, agent_id, position_1, position_2
     env.close()
 
 
 def test_build_simple_city(setup):
-    env, city, agent_id, pos_x, pos_y = setup
+    env, city, agent_id, position_1, position_2 = setup
 
     env.reset()
     other_agent_id = 3
-    pos_x = 2
-    pos_y = 2
+
     agent_id = 0
-    build_city_action = [1, pos_x, pos_y]
-    tile1 = env.map.get_tile((pos_x, pos_y))
+    build_city_action = [1, position_1.x, position_1.y]
+    tile1 = env.map.get_tile(position_1)
 
     # no visibility, should not work
     observation, reward, terminated, truncated, info = env.step([[build_city_action]])
     assert tile1.has_any_building() is False
 
     # set visible and unclaimed
-    env.map.set_visible((pos_x, pos_y), agent_id)
+    env.map.set_visible(position_1, agent_id)
     tile1.owner_id = other_agent_id  # claimed by another agent
 
     # visible but claimed by other agent, should not work now
@@ -62,9 +64,9 @@ def test_build_simple_city(setup):
 
 
 def test_building_city_on_water_mountain_desert(setup):
-    env, city, agent_id, pos_x, pos_y = setup
+    env, city, agent_id, position_1, position_2 = setup
 
-    build_city_action = [1, pos_x, pos_y]
+    build_city_action = [1, position_1.x, position_1.y]
 
     # test all water
     with open("test_env_settings.json", "r") as f:
@@ -75,8 +77,8 @@ def test_building_city_on_water_mountain_desert(setup):
     special_env.reset()
 
     # set visible
-    special_env.map.set_visible((pos_x, pos_y), agent_id)
-    tile1 = special_env.map.get_tile((pos_x, pos_y))
+    special_env.map.set_visible(position_1, agent_id)
+    tile1 = special_env.map.get_tile(position_1)
 
     # should not work on ocean
     tile1.set_land_type(LandType.OCEAN)

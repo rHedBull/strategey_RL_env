@@ -1,11 +1,11 @@
 import json
-
 import pytest
 
 from agents.Sim_Agent import Agent
 from map.map_settings import OWNER_DEFAULT_TILE, LandType
 from map.map_square import Map_Square
 from map.sim_map import Map, check_valid_agent_id, max_agent_id
+from MapPosition import MapPosition
 from rl_env.environment import MapEnvironment
 from rl_env.objects.city import City
 
@@ -100,50 +100,52 @@ def test_reset(map_instance):
 
 def test_check_position_on_map(map_instance):
     # Valid positions
-    assert map_instance.check_position_on_map((0, 0)) is True
-    assert map_instance.check_position_on_map((99, 99)) is True
-    assert map_instance.check_position_on_map((54, 50)) is True
+    assert map_instance.check_position_on_map(MapPosition(0, 0)) is True
+    assert map_instance.check_position_on_map(MapPosition(99, 99)) is True
+    assert map_instance.check_position_on_map(MapPosition(54, 50)) is True
 
     # Invalid positions
-    assert map_instance.check_position_on_map((-1, 0)) is False
-    assert map_instance.check_position_on_map((0, -1)) is False
-    assert map_instance.check_position_on_map((100, 100)) is False
-    assert map_instance.check_position_on_map((100, 5)) is False
-    assert map_instance.check_position_on_map((5, 100)) is False
+    assert map_instance.check_position_on_map(MapPosition(-1, 0)) is False
+    assert map_instance.check_position_on_map(MapPosition(0, -1)) is False
+    assert map_instance.check_position_on_map(MapPosition(100, 100)) is False
+    assert map_instance.check_position_on_map(MapPosition(100, 5)) is False
+    assert map_instance.check_position_on_map(MapPosition(5, 100)) is False
 
 
 def test_get_tile(map_instance):
     # Valid tile
-    tile = map_instance.get_tile((5, 5))
+    tile = map_instance.get_tile(MapPosition(5, 5))
     assert tile is not None
-    assert tile.x == 5
-    assert tile.y == 5
+    assert tile.position.x == 5
+    assert tile.position.y == 5
 
-    tile = map_instance.get_tile((0, 0))
+    tile = map_instance.get_tile(MapPosition(0, 0))
     assert tile is not None
-    assert tile.x == 0
-    assert tile.y == 0
+    assert tile.position.x == 0
+    assert tile.position.y == 0
 
-    tile = map_instance.get_tile((99, 99))
+    tile = map_instance.get_tile(MapPosition(99, 99))
     assert tile is not None
-    assert tile.x == 99
-    assert tile.y == 99
+    assert tile.position.x == 99
+    assert tile.position.y == 99
 
     # Invalid tile
-    tile = map_instance.get_tile((100, 100))
+    tile = map_instance.get_tile(MapPosition(100, 100))
     assert tile is None
-    tile = map_instance.get_tile((-1, 0))
+    tile = map_instance.get_tile(MapPosition(-1, 0))
     assert tile is None
-    tile = map_instance.get_tile((0, -1))
+    tile = map_instance.get_tile(MapPosition(0, -1))
     assert tile is None
 
 
 def test_visibility_methods(map_instance):
-    position = (3, 9)
+    position = MapPosition(3, 5)
     agent_id = 10  # Valid agent ID
     agent_id2 = 3
 
     # Initially not visible
+    # check if of type bool
+    assert isinstance(map_instance.is_visible(position, agent_id), bool)
     assert map_instance.is_visible(position, agent_id) is False
     assert map_instance.is_visible(position, agent_id2) is False
 
@@ -177,7 +179,7 @@ def test_visibility_methods(map_instance):
 
 
 def test_claim_tile(map_instance):
-    position = (2, 4)
+    position = MapPosition(2, 4)
     mock_agent = Agent(7, None)  # Using a mock agent
     tile = map_instance.get_tile(position)
 
@@ -189,7 +191,7 @@ def test_claim_tile(map_instance):
 
 
 def test_add_building(map_instance):
-    position = (2, 4)
+    position = MapPosition(2, 4)
     building_object = City(1, position, 1)  # Mock building object
     tile = map_instance.get_tile(position)
 
@@ -205,8 +207,8 @@ def test_add_building(map_instance):
 
 
 def test_tile_is_next_to_building(map_instance):
-    position = (3, 5)
-    adjacent_position = (4, 5)
+    position = MapPosition(3, 5)
+    adjacent_position = MapPosition(4, 5)
 
     # Initially, no buildings nearby
     assert map_instance.tile_is_next_to_building(adjacent_position) is False
@@ -233,51 +235,51 @@ def test_get_surrounding_tiles(map_instance):
     map_instance.reset()  # Ensure map is in a known state
 
     # Test Case 1: Middle position
-    middle_position = (2, 2)
+    middle_position = MapPosition(2, 2)
     surrounding_tiles = map_instance.get_surrounding_tiles(middle_position)
     assert len(surrounding_tiles) == 8, "Middle position should have 8 surrounding tiles."
 
     # Define expected tiles based on the grid's known state
     # For example, if tiles are represented by their (y, x) positions
     expected_positions = [
-        (1, 1), (1, 2), (1, 3),
-        (2, 1),         (2, 3),
-        (3, 1), (3, 2), (3, 3)
+        (1, 1), (2, 1), (3, 1),
+        (1, 2),         (3, 2),
+        (1, 3), (2, 3), (3, 3)
     ]
 
     for tile in surrounding_tiles:
-        tile_pos = (tile.x, tile.y)
-        assert tile_pos in expected_positions, f"Tile ({tile.x}, {tile.y}) not expected in middle position surroundings."
+        tile_position = (tile.position.x, tile.position.y)
+        assert tile_position  in expected_positions, f"Tile:({tile.position.x}, {tile.position.y}) not expected in middle position surroundings."
 
     # Test Case 2: Corner position
-    corner_position = (0, 0)
+    corner_position = MapPosition(0, 0)
     surrounding_tiles = map_instance.get_surrounding_tiles(corner_position)
     assert len(surrounding_tiles) == 3, "Corner position should have 3 surrounding tiles (some may be out of bounds)."
 
     expected_positions = [
 
-                        (0, 1),
-                (1, 0), (1, 1)
+                        (1, 0),
+                (0, 1), (1, 1)
     ]
 
     for tile in surrounding_tiles:
-        tile_pos = (tile.x, tile.y)
-        assert tile_pos in expected_positions, f"Tile ({tile.x}, {tile.y}) not expected in corner position surroundings."
+        tile_position = (tile.position.x, tile.position.y)
+        assert tile_position  in expected_positions, f"Tile ({tile.position.x}, {tile.position.y}) not expected in corner position surroundings."
 
     # Test Case 3: Edge position
-    edge_position = (0, 2)
+    edge_position = MapPosition(2, 0)
     surrounding_tiles = map_instance.get_surrounding_tiles(edge_position)
     assert len(surrounding_tiles) == 5, "Edge position should have 5 surrounding tiles (some may be out of bounds)."
 
     expected_positions = [
-                (0, 1), (1, 1),
-                        (1, 2),
-                (0, 3), (1, 3)
+
+                (1, 0),         (3, 0),
+                (1, 1), (2, 1), (3, 1)
     ]
 
     for tile in surrounding_tiles:
-        tile_pos = (tile.x, tile.y)
-        assert tile_pos in expected_positions, f"Tile ({tile.x}, {tile.y}) not expected in edge position surroundings."
+        tile_position = (tile.position.x, tile.position.y)
+        assert tile_position in expected_positions, f"Tile ({tile.position.x}, {tile.position.y}) not expected in edge position surroundings."
 
 def test_save_and_load_topography_resources(map_instance, tmp_path):
     map_instance.reset()
@@ -300,8 +302,8 @@ def test_save_and_load_topography_resources(map_instance, tmp_path):
     # Compare some squares
     for y in range(new_map.height):
         for x in range(new_map.width):
-            original_square = map_instance.get_tile((x, y))
-            loaded_square = new_map.get_tile((x, y))
+            original_square = map_instance.get_tile(MapPosition(x, y))
+            loaded_square = new_map.get_tile(MapPosition(x, y))
             assert loaded_square.tile_id == original_square.tile_id
             assert loaded_square.x == original_square.x
             assert loaded_square.y == original_square.y

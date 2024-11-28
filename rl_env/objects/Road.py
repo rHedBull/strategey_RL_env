@@ -2,6 +2,7 @@ from typing import Tuple
 
 import pygame
 
+from MapPosition import MapPosition
 from rl_env.objects.Building import Building, BuildingType
 
 road_color = (128, 128, 128)
@@ -18,7 +19,7 @@ class RoadShape:
 
 
 class Road(Building):
-    def __init__(self, position: Tuple[int, int], building_type_id, shape=None):
+    def __init__(self, position: MapPosition, building_type_id, shape=None):
         super().__init__(position, BuildingType.ROAD, building_type_id)
 
         self.max_level = 3
@@ -42,7 +43,7 @@ class Road(Building):
 
 
 class Bridge(Building):
-    def __init__(self, position: Tuple[int, int], building_type_id: int, shape=None):
+    def __init__(self, position: MapPosition, building_type_id: int, shape=None):
         super().__init__(position, BuildingType.BRIDGE, building_type_id)
 
         self.max_level = 3
@@ -70,17 +71,18 @@ def update_road_bridge_shape(road_or_bridge, map):
     Update the road shape of the tile at the given position based on surrounding roads and bridges.
 
     :param map: Map object
-    :param position: Tuple of x, y position
+    :param position: MapPosition
     """
-    x = road_or_bridge.x
-    y = road_or_bridge.y
+    x = road_or_bridge.position.x
+    y = road_or_bridge.position.y
 
     # Check surrounding tiles for roads and bridges
 
-    up = map.get_tile((x, y - 1))
-    down = map.get_tile((x, y + 1))
-    left = map.get_tile((x - 1, y))
-    right = map.get_tile((x + 1, y))
+
+    up = map.get_tile(MapPosition(x, y - 1))
+    down = map.get_tile(MapPosition(x, y + 1))
+    left = map.get_tile(MapPosition(x - 1, y))
+    right = map.get_tile(MapPosition(x + 1, y))
 
     # Update road shape based on surrounding roads and bridges
     shape = RoadShape()

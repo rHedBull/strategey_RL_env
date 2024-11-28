@@ -2,6 +2,7 @@ import json
 
 import pytest
 
+from MapPosition import MapPosition
 from map.map_settings import OWNER_DEFAULT_TILE, LandType
 from rl_env.environment import MapEnvironment
 from rl_env.objects.Building import BuildingType
@@ -21,25 +22,27 @@ def setup():
     agent_id = 0
     pos_x = 2
     pos_y = 2
-    city = City(agent_id, (pos_x + 1, pos_y), 1)
+    position_1 = MapPosition(pos_x, pos_y)
+    position_2 = MapPosition(pos_x + 1, pos_y)
+    city = City(agent_id, position_2, 1)
+    yield env, city, agent_id, position_1, position_2
 
-    yield env, city, agent_id, pos_x, pos_y
     env.close()
 
 
 def test_build_simple_road(setup):
-    env, city, agent_id, pos_x, pos_y = setup
-    build_road_action = [2, pos_x, pos_y]
+    env, city, agent_id, position_1, position_2 = setup
+    build_road_action = [2, position_1.x, position_1.y]
 
     env.reset()
-    tile1 = env.map.get_tile((pos_x, pos_y))
+    tile1 = env.map.get_tile(position_1)
 
     # not visible, should not work
     observation, reward, terminated, truncated, info = env.step([[build_road_action]])
     assert tile1.has_any_building() is False
 
     # set visible and claimed by another agent
-    env.map.set_visible((pos_x, pos_y), agent_id)
+    env.map.set_visible(position_1, agent_id)
     tile1.owner_id = 3  # claimed by another agent
 
     # visible but claimed by another agent, should not work now
@@ -78,18 +81,18 @@ def test_build_simple_road(setup):
     assert tile1.has_any_building() is False
 
     # add a city next to it
-    env.map.get_tile((pos_x + 1, pos_y)).add_building(city)
+    env.map.get_tile(position_2).add_building(city)
     observation, reward, terminated, truncated, info = env.step([[build_road_action]])
     assert tile1.has_any_building() is True
     assert tile1.has_building(BuildingType.ROAD) is True
 
 
 def test_build_simple_bridge(setup):
-    env, city, agent_id, pos_x, pos_y = setup
+    env, city, agent_id, position_1, position_2 = setup
     env.reset()
 
-    build_bridge_action = [3, pos_x, pos_y]
-    tile1 = env.map.get_tile((pos_x, pos_y))
+    build_bridge_action = [3, position_1.x, position_1.y]
+    tile1 = env.map.get_tile(position_1)
 
     tile1.set_land_type(LandType.OCEAN)
     # not visible, should not work
@@ -97,7 +100,7 @@ def test_build_simple_bridge(setup):
     assert tile1.has_any_building() is False
 
     # set visible and claimed by another agent
-    env.map.set_visible((pos_x, pos_y), agent_id)
+    env.map.set_visible(position_1, agent_id)
     tile1.owner_id = 3  # claimed by another agent
 
     # visible but claimed by another agent, should not work now
@@ -136,15 +139,15 @@ def test_build_simple_bridge(setup):
     assert tile1.has_any_building() is False
 
     # add a city next to it
-    env.map.get_tile((pos_x + 1, pos_y)).add_building(city)
+    env.map.get_tile(position_2).add_building(city)
     observation, reward, terminated, truncated, info = env.step([[build_bridge_action]])
     assert tile1.has_any_building() is True
     assert tile1.has_building(BuildingType.BRIDGE) is True
 
 
 def test_building_road_on_water_mountain_desert(setup):
-    env, city, agent_id, pos_x, pos_y = setup
-    build_road_action = [2, pos_x, pos_y]
+    env, city, agent_id, position_1, position_2 = setup
+    build_road_action = [2, position_1.x, position_1.y]
 
     # test all water
     with open("test_env_settings.json", "r") as f:
@@ -157,12 +160,12 @@ def test_building_road_on_water_mountain_desert(setup):
     special_env.reset()
     agent_id = 0
 
-    tile1 = special_env.map.get_tile((pos_x, pos_y))
+    tile1 = special_env.map.get_tile(position_1)
 
     # set visible
-    special_env.map.set_visible((pos_x, pos_y), agent_id)
+    special_env.map.set_visible(position_1, agent_id)
     # set city next to it
-    special_env.map.get_tile((pos_x + 1, pos_y)).add_building(city)
+    special_env.map.get_tile(position_2).add_building(city)
 
     # should not work on ocean
     tile1.set_land_type(LandType.OCEAN)
@@ -192,7 +195,7 @@ def test_building_road_on_water_mountain_desert(setup):
 
     # should work on marsh
     tile1.set_land_type(LandType.MARSH)
-    special_env.map.set_visible((pos_x + 1, pos_y + 1), agent_id)
+    special_env.map.set_visible(MapPosition(position_1.x + 1, position_1.y + 1), agent_id)
     observation, reward, terminated, truncated, info = special_env.step(
         [[build_road_action]]
     )
@@ -201,9 +204,9 @@ def test_building_road_on_water_mountain_desert(setup):
 
 
 def test_building_bridge_on_water_mountain_desert(setup):
-    env, city, agent_id, pos_x, pos_y = setup
+    env, city, agent_id, position_1, position_2 = setup
 
-    build_bridge_action = [3, pos_x, pos_y]
+    build_bridge_action = [3, position_1.x, position_1.y]
 
     # test all water
     with open("test_env_settings.json", "r") as f:
@@ -215,13 +218,13 @@ def test_building_bridge_on_water_mountain_desert(setup):
     special_env = MapEnvironment(env_settings, 2, "rgb_array")
     special_env.reset()
 
-    tile1 = special_env.map.get_tile((pos_x, pos_y))
+    tile1 = special_env.map.get_tile(position_1)
 
     # set visible
-    special_env.map.set_visible((pos_x, pos_y), agent_id)
+    special_env.map.set_visible(position_1, agent_id)
     # set city next to it
-    special_env.map.get_tile((pos_x + 1, pos_y)).add_building(city)
-    special_env.map.set_visible((pos_x, pos_y), agent_id)
+    special_env.map.get_tile(position_2).add_building(city)
+    special_env.map.set_visible(position_1, agent_id)
 
     # should not work on mountain
     tile1.set_land_type(LandType.MOUNTAIN)

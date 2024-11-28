@@ -2,11 +2,12 @@ from typing import Tuple
 
 from agents.Sim_Agent import Agent
 from map.map_settings import OWNER_DEFAULT_TILE
+from MapPosition import MapPosition
 from rl_env.actions.Action import Action, ActionType
 
 
 class ClaimAction(Action):
-    def __init__(self, agent: Agent, position: Tuple[int, int]):
+    def __init__(self, agent: Agent, position: MapPosition):
         super().__init__(agent, position, ActionType.CLAIM)
 
     def validate(self, env) -> bool:

@@ -3,6 +3,7 @@ from enum import Enum, auto
 from typing import Tuple
 
 from agents.Sim_Agent import Agent
+from MapPosition import MapPosition
 
 
 class ActionType(Enum):
@@ -13,7 +14,7 @@ class ActionType(Enum):
 
 class Action(ABC):
     def __init__(
-        self, agent: Agent, position: Tuple[int, int], action_type: ActionType
+        self, agent: Agent, position: MapPosition, action_type: ActionType
     ):
         self.agent = agent
 

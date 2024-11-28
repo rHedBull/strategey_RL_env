@@ -1,13 +1,14 @@
 from typing import Tuple
 
 from agents.Sim_Agent import Agent
+from MapPosition import MapPosition
 from rl_env.actions.BuildAction import BuildAction
 from rl_env.objects.Building import BuildingType
 from rl_env.objects.Farm import Farm
 
 
 class BuildFarmAction(BuildAction):
-    def __init__(self, agent: Agent, position: Tuple[int, int]):
+    def __init__(self, agent: Agent, position: MapPosition):
         super().__init__(agent, position, BuildingType.FARM)
 
     def validate(self, env) -> bool:

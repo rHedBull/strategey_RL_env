@@ -4,6 +4,7 @@ import numpy as np
 import pygame
 
 from map.map_settings import AGENT_COLORS, PLAYER_COLOR
+from MapPosition import MapPosition
 
 
 def get_visible_mask(agent_id: int, map_v):
@@ -13,8 +14,8 @@ def get_visible_mask(agent_id: int, map_v):
 
 
 def calculate_new_position(
-    current_position: Tuple[int, int], move_direction: int
-) -> Tuple[int, int]:
+    current_position: MapPosition, move_direction: int
+) -> MapPosition:
     """
     Calculates the new position based on the current position and move direction.
 
@@ -25,7 +26,8 @@ def calculate_new_position(
     Returns:
         Tuple[int, int]: The new position after the move.
     """
-    x, y = current_position
+    x = current_position.x
+    y = current_position.y
     if move_direction == 1:  # Up
         y -= 1
     elif move_direction == 2:  # Down
@@ -35,7 +37,7 @@ def calculate_new_position(
     elif move_direction == 4:  # Right
         x += 1
     # No move if move_direction is 0 or unrecognized
-    return (x, y)
+    return MapPosition(x, y)
 
 
 class Agent:
@@ -55,7 +57,7 @@ class Agent:
 
         self.max_x = None
         self.max_y = None
-        self.position = (-1, -1)
+        self.position = MapPosition(-1, -1)
 
         self.state = "active"
 
@@ -92,10 +94,9 @@ class Agent:
         self.claimed_tiles.clear()
         self.claimable_tiles.clear()
 
-        self.position = (
-            np.random.randint(0, self.max_x),
-            np.random.randint(0, self.max_y),
-        )
+        self.position.x = np.random.randint(0, self.max_x)
+        self.position.y = np.random.randint(0, self.max_y)
+
         self.claimed_tiles.add(self.position)  # initial spawn is a claimed tile
 
         self.update_local_visibility(self.position)
@@ -140,8 +141,8 @@ class Agent:
             self.env.screen,
             self.color,
             (
-                (self.position[0] * square_size) + radius,
-                (self.position[1] * square_size) + radius,
+                (self.position.x * square_size) + radius,
+                (self.position.y * square_size) + radius,
             ),
             radius,
         )
@@ -204,16 +205,20 @@ class Agent:
         self.update_local_visibility(new_claimed_tile)
 
     # visibility stuff #
-    def update_local_visibility(self, position: Tuple[int, int]):
+    def update_local_visibility(self, position: MapPosition):
         """
         Update the local visibility of the agent based on the map visibility.
 
         :param map:
         :param position: The position of the agent.
         """
-        x, y = position  # is x, y assigend correct here? it somehow works like this
+        x = position.x
+        y = position.y
 
+        tmp_pos = MapPosition(x, y)
         for i in range(-self.visibility_range, self.visibility_range + 1):
             for j in range(-self.visibility_range, self.visibility_range + 1):
-                if self.env.map.check_position_on_map((y + j, x + i)):
-                    self.env.map.set_visible((y + j, x + i), self.id)
+                tmp_pos.x = x + i
+                tmp_pos.y = y + j
+                if self.env.map.check_position_on_map(tmp_pos):
+                    self.env.map.set_visible(tmp_pos, self.id)

@@ -5,6 +5,8 @@ from uuid import uuid1
 
 import pygame
 
+from MapPosition import MapPosition
+
 
 class BuildingType(Enum):
     CITY = "build_city"
@@ -16,13 +18,13 @@ class BuildingType(Enum):
 class Building(ABC):
     def __init__(
         self,
-        position: Tuple[int, int],
+        position: MapPosition,
         building_type: BuildingType,
         building_type_id: int,
     ):
         self.id = uuid1()
 
-        self.x, self.y = position
+        self.position = position
 
         self.level = 0
         self.max_level = None

@@ -2,12 +2,13 @@ from typing import Tuple
 
 import pygame
 
+from MapPosition import MapPosition
 from rl_env.objects.Building import Building, BuildingType
 from rl_env.objects.Ownable import Ownable
 
 
 class City(Building, Ownable):
-    def __init__(self, agent_id: int, position: Tuple[int, int], building_type_id):
+    def __init__(self, agent_id: int, position: MapPosition, building_type_id):
         Ownable.__init__(self, agent_id)
         Building.__init__(self, position, BuildingType.CITY, building_type_id)
 
@@ -24,8 +25,8 @@ class City(Building, Ownable):
             screen,
             owner_color,
             (
-                self.x * square_size,
-                self.y * square_size,
+                self.position.x * square_size,
+                self.position.y * square_size,
                 square_size,
                 square_size,
             ),

@@ -2,12 +2,13 @@ from typing import Tuple
 
 import pygame
 
+from MapPosition import MapPosition
 from rl_env.objects.Building import Building, BuildingType
 from rl_env.objects.Ownable import Ownable
 
 
 class Farm(Building, Ownable):
-    def __init__(self, agent_id: int, position: Tuple[int, int], building_type_id: int):
+    def __init__(self, agent_id: int, position: MapPosition, building_type_id: int):
         Ownable.__init__(self, agent_id)
         Building.__init__(self, position, BuildingType.FARM, building_type_id)
 

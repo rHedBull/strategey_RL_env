@@ -1,10 +1,10 @@
 import math
 import pickle
-import random
 from typing import Tuple
 
 import numpy as np
 
+from MapPosition import MapPosition
 from map.map_agent import Map_Agent
 from map.map_settings import LandType
 from map.map_square import Map_Square
@@ -21,7 +21,8 @@ def check_valid_agent_id(agent_id: int) -> bool:
 class Map:
     """
     Represents the map of the environment.
-
+    x values in width horizontal, y values in height vertical
+    Position(x,y) with (0,0) in the top left corner
     Attributes:
         env: The environment object.
         tiles: The total number of tiles on the map.
@@ -103,14 +104,14 @@ class Map:
     def create_map(self, settings):
         self.load_settings(settings)
 
-        # create map squares
-        self.squares = [
-            [
-                Map_Square((y_index * self.width + x_index), x_index, y_index)
-                for x_index in range(self.width)
-            ]
-            for y_index in range(self.height)
-        ]
+        # Initialize the 2D list with the appropriate dimensions
+        self.squares = [[None for _ in range(self.height)] for _ in range(self.width)]
+
+        # Create map squares
+        for x_index in range(self.width):
+            for y_index in range(self.height):
+                self.squares[x_index][y_index] = Map_Square((y_index * self.width + x_index),
+                                                            MapPosition(x_index, y_index))
 
         self.reset()
 
@@ -151,19 +152,22 @@ class Map:
                 # check if water arround
                 if square.get_land_type() != LandType.OCEAN:
                     if (
-                        square.x > 0
-                        and self.squares[square.y][square.x - 1].get_land_type()
-                        == LandType.OCEAN
-                        or square.x < self.width - 1  # check water left
-                        and self.squares[square.y][square.x + 1].get_land_type()
-                        == LandType.OCEAN
-                        or square.y > 0  # check water right
-                        and self.squares[square.y - 1][square.x].get_land_type()
-                        == LandType.OCEAN
-                        or square.y < self.height - 1  # check water up
-                        and self.squares[square.y + 1][square.x].get_land_type()
-                        == LandType.OCEAN
-                    ):  # check water down
+                            (square.position.x > 0 and
+                             self.squares[square.position.x - 1][
+                                 square.position.y].get_land_type() == LandType.OCEAN)  # left neighbor
+                            or
+                            (square.position.x < self.width - 1 and
+                             self.squares[square.position.x + 1][
+                                 square.position.y].get_land_type() == LandType.OCEAN)  # right neighbor
+                            or
+                            (square.position.y > 0 and
+                             self.squares[square.position.x][
+                                 square.position.y - 1].get_land_type() == LandType.OCEAN)  # top neighbor
+                            or
+                            (square.position.y < self.height - 1 and
+                             self.squares[square.position.x][square.position.y + 1].get_land_type() == LandType.OCEAN)
+                    # bottom neighbor
+                    ):
                         square.set_land_type(LandType.MARSH)
 
         # set the visibility map to all zeros
@@ -178,7 +182,7 @@ class Map:
         )  # number of features per tile
         for row in self.squares:
             for square in row:
-                map_info[square.x][square.y] = square.get_observation_state()
+                map_info[square.position.x][square.position.y] = square.get_observation_state()
         return map_info
 
     def get_full_map_as_matrix(self):
@@ -191,20 +195,20 @@ class Map:
         for row in self.squares:
             for square in row:
                 info = square.get_full_info()
-                full_map_info[square.x][square.y] = info
+                full_map_info[square.position.x][square.position.y] = info
         return full_map_info
 
-    def claim_tile(self, agent: Agent, position: [int, int]) -> None:
+    def claim_tile(self, agent: Agent, position: MapPosition) -> None:
         """
         Claim a tile at position (x,y) for an agent
         :param position:
         :param agent:
         :return:
         """
-        x, y = position
-        self.squares[y][x].claim(agent)
 
-    def add_building(self, building_object, position: [int, int]) -> None:
+        self.squares[position.x][position.y].claim(agent)
+
+    def add_building(self, building_object, position: MapPosition) -> None:
         self.get_tile(position).add_building(building_object)
 
     def draw(self, screen, zoom_level, pan_x, pan_y):
@@ -218,20 +222,19 @@ class Map:
         """
         for row in self.squares:
             for square in row:
-                new_x = (square.x * zoom_level) + pan_x
-                new_y = (square.y * zoom_level) + pan_y
+                new_x = (square.position.x * zoom_level) + pan_x
+                new_y = (square.position.x* zoom_level) + pan_y
                 new_size = self.tile_size * zoom_level
                 square.draw(screen, self.tile_size, new_x, new_y, new_size)
 
-    def get_tile(self, position: [int, int]) -> Map_Square | None:
+    def get_tile(self, position: MapPosition) -> Map_Square | None:
         """
         Get the tile at position x, y
         :param position:
         :return: Map_Square object or None if position is not on the map
         """
         if self.check_position_on_map(position):
-            x, y = position
-            return self.squares[y][x]
+            return self.squares[position.x][position.y]
         return None
 
     def river_agents(self, tiles, rivers):
@@ -340,57 +343,72 @@ class Map:
             ]
             self.squares.append(row)
 
-    def tile_is_next_to_building(self, position) -> bool:
+    def tile_is_next_to_building(self, position: MapPosition) -> bool:
         # check if any of the neighbouring tiles has a building
         # TODO: switch to just up, down, left, right
-        y, x = position
+        x = position.x
+        y = position.y
         for i in range(-1, 2):
             for j in range(-1, 2):
-                tile = self.get_tile((y + j, x + i))
+                tmp_pos = MapPosition(x + i, y + j)
+                tile = self.get_tile(tmp_pos)
                 if tile and tile.has_any_building():
                     return True
         return False
 
-    def check_position_on_map(self, position: Tuple[int, int]) -> bool:
+    def check_position_on_map(self, position: MapPosition) -> bool:
         """
         :param position:
         :return:
         """
-        x, y = position
+        x = position.x
+        y = position.y
 
         if 0 <= x < self.width and 0 <= y < self.height:
             return True
         return False
 
-    def get_surrounding_tiles(self, position: Tuple[int, int]):
-        y, x = position
+    def get_surrounding_tiles(self, position: MapPosition):
+        x = position.x
+        y = position.y
         surrounding_tiles = []
         for i in range(-1, 2):
             for j in range(-1, 2):
-                pos = (y + j, x + i)
+
                 if i == 0 and j == 0:
                     continue
-                if self.check_position_on_map(pos):
-                    surrounding_tiles.append(self.get_tile(pos))
+                tmp_pos = MapPosition(x + i, y + j)
+                if self.check_position_on_map(tmp_pos):
+                    surrounding_tiles.append(self.get_tile(tmp_pos))
         return surrounding_tiles
 
     # visibility stuff #
-    def set_visible(self, position: Tuple[int, int], agent_id: int):
+    def set_visible(self, position: MapPosition, agent_id: int):
         if check_valid_agent_id(agent_id):
-            self.visibility_map[position] |= 1 << agent_id
+            self.visibility_map[(position.x, position.y)] |= 1 << agent_id
 
-    def clear_visible(self, position: Tuple[int, int], agent_id: int):
+    def clear_visible(self, position: MapPosition, agent_id: int):
         if check_valid_agent_id(agent_id):
-            self.visibility_map[position] &= ~(1 << agent_id)
+            self.visibility_map[(position.x, position.y)] &= ~(1 << agent_id)
 
-    def is_visible(self, position: Tuple[int, int], agent_id: int) -> bool:
+    def is_visible(self, position: MapPosition, agent_id: int) -> bool:
+        """
+        Check if a tile is visible to an agent.
+        :param position: The position of the tile.
+        :param agent_id: The ID of the agent.
+        :return: True if the tile is visible to the agent, False otherwise.
+        """
         if check_valid_agent_id(agent_id):
-            x = position[0]
-            y = position[1]
+
             bit = 1 << agent_id
-            numb = self.visibility_map[(y, x)]
+            numb = self.visibility_map[(position.x, position.y)]
             result = numb & (bit)
-            return result != 0
+            # should return bool
+            if result > 0:
+                return True
+            else:
+                return False
+
         # TODO: sth messed up with coordinates of visibility map!!, works now, but not in the tests
         # TODO: switch to common use of either position as tuple or Class or self.x, self.y
 
