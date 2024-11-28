@@ -397,16 +397,18 @@ class Map:
         :param agent_id: The ID of the agent.
         :return: True if the tile is visible to the agent, False otherwise.
         """
-        if check_valid_agent_id(agent_id):
+        if not check_valid_agent_id(agent_id):
+            return False
 
-            bit = 1 << agent_id
-            numb = self.visibility_map[(position.x, position.y)]
-            result = numb & (bit)
-            # should return bool
-            if result > 0:
-                return True
-            else:
-                return False
+        bit = 1 << agent_id
+        numb = self.visibility_map[(position.x, position.y)]
+        result = numb & (bit)
+        # should return bool
+        if result > 0:
+            return True
+        else:
+            return False
+
 
         # TODO: sth messed up with coordinates of visibility map!!, works now, but not in the tests
         # TODO: switch to common use of either position as tuple or Class or self.x, self.y
