@@ -362,6 +362,15 @@ class Map:
             return True
         return False
 
+    def get_surrounding_tiles(self, position: Tuple[int, int]):
+
+        y, x = position
+        surrounding_tiles = []
+        for i in range(-1, 2):
+            for j in range(-1, 2):
+                surrounding_tiles.append(self.get_tile((y + j, x + i)))
+        return surrounding_tiles
+
     # visibility stuff #
     def set_visible(self, position: Tuple[int, int], agent_id: int):
         if check_valid_agent_id(agent_id):
