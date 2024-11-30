@@ -3,12 +3,12 @@ import json
 import pytest
 
 from agents.Sim_Agent import Agent
-from map.map_settings import OWNER_DEFAULT_TILE, LandType
+from map.map_settings import OWNER_DEFAULT_TILE, LandType, max_agent_id
 from map.map_square import Map_Square
 from map.MapPosition import MapPosition
-from map.sim_map import Map, check_valid_agent_id, max_agent_id
+from map.sim_map import Map, check_valid_agent_id
 from rl_env.environment import MapEnvironment
-from rl_env.objects.city import City
+from rl_env.objects.City import City
 
 
 class MockAgent:

@@ -137,6 +137,7 @@ class Map_Square:
         return self.land_type
 
     def get_round_value(self):
+        # in theory add other dynamic effects here
         return self._land_money_value
 
     # claim stuff #

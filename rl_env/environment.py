@@ -5,7 +5,7 @@ import numpy as np
 import pygame
 from gymnasium import spaces
 
-from agents.Sim_Agent import Agent, get_visible_mask
+from agents.Sim_Agent import Agent
 from map.sim_map import Map
 from rl_env.ActionManager import ActionManager
 
@@ -110,13 +110,10 @@ class MapEnvironment(gym.Env):
         """
         info = {}
 
-        # Apply actions using ActionManager
         rewards, dones = self.action_manager.apply_actions(actions)
 
-        # Update environment state
         self._update_environment_state()
 
-        # Collect observations
         observations = self._get_observation()
 
         truncated = False
@@ -272,7 +269,7 @@ class MapEnvironment(gym.Env):
         #     all_visible_masks.append(get_visible_mask(agent.id, self.map))
 
         map_observation = self.map.get_observation()
-        agent_observations = np.zeros((self.num_agents, len(self.agent_features))     , dtype=np.float32  )
+        agent_observations = np.zeros((self.num_agents, len(self.agent_features)), dtype=np.float32  )
 
         for i, agent in enumerate(self.agents):
             agent_observations[i] = agent.get_observation()
@@ -281,4 +278,3 @@ class MapEnvironment(gym.Env):
         # agent_info = np.array([])
 
         return {"map": map_observation, "agents": agent_observations}
-        #spaces.Dict({"map": map_observation, "agents": agent_observations})

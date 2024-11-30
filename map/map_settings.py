@@ -72,3 +72,5 @@ ALLOWED_BUILDING_PLACEMENTS = {
     BuildingType.FARM: {LandType.LAND, LandType.MARSH},
     # Add mappings for other building types
 }
+
+max_agent_id = 63  # based on current setup of visibility map, would have to use other datatype or multiple maps for more agents

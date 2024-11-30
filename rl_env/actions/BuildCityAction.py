@@ -3,7 +3,7 @@ from map.map_settings import OWNER_DEFAULT_TILE
 from map.MapPosition import MapPosition
 from rl_env.actions.BuildAction import BuildAction
 from rl_env.objects.Building import BuildingType
-from rl_env.objects.city import City
+from rl_env.objects.City import City
 
 
 class BuildCityAction(BuildAction):

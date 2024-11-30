@@ -4,13 +4,10 @@ import pickle
 import numpy as np
 
 from map.map_agent import Map_Agent
-from map.map_settings import LandType
+from map.map_settings import LandType, max_agent_id
 from map.map_square import Map_Square
 from map.MapPosition import MapPosition
 from test_env.Agent import Agent
-
-
-max_agent_id = 63  # based on current setup of visibility map, would have to use other datatype or multiple maps for more agents
 
 
 def check_valid_agent_id(agent_id: int) -> bool:
@@ -20,7 +17,8 @@ def check_valid_agent_id(agent_id: int) -> bool:
 class Map:
     """
     Represents the map of the environment.
-    x values in width horizontal, y values in height vertical
+    x values in width horizontal, y v
+    alues in height vertical
     Position(x,y) with (0,0) in the top left corner
     Attributes:
         env: The environment object.
