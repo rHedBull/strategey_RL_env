@@ -35,7 +35,7 @@ class BuildCityAction(BuildAction):
         city = City(self.agent.id, self.position, building_type_id)
         env.map.add_building(city, self.position)
         # TODO: add city to agent's list of buildings
-        env.map.claim_tile(self.agent, self.position)
-        self.agent.claimed_tiles.add(self.position)
 
+        env.map.claim_tile(self.agent, self.position)
+        self.agent.add_claimed_tile(self.position)
         self.agent.update_local_visibility(self.position)

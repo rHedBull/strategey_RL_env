@@ -63,7 +63,7 @@ class Agent:
 
         # resources
         self.money = None
-        self.claimed_tiles = set()
+        self._claimed_tiles = set()
         self.claimable_tiles = set()
 
         # exclude player color id 0
@@ -91,13 +91,13 @@ class Agent:
         self.max_x = self.env.env_settings.get("map_width")
         self.max_y = self.env.env_settings.get("map_height")
 
-        self.claimed_tiles.clear()
+        self._claimed_tiles.clear()
         self.claimable_tiles.clear()
 
         self.position.x = np.random.randint(0, self.max_x)
         self.position.y = np.random.randint(0, self.max_y)
 
-        self.claimed_tiles.add(self.position)  # initial spawn is a claimed tile
+        self._claimed_tiles.add(self.position)  # initial spawn is a claimed tile
 
         self.update_local_visibility(self.position)
 
@@ -162,9 +162,9 @@ class Agent:
         )  # for now state is only active or done, but could be extended
 
     def get_claimed_tiles(self):
-        return self.claimed_tiles
+        return self._claimed_tiles
 
-    def update_claimable_tiles(self, new_claimed_tile: Tuple[int, int]):
+    def update_claimable_tiles(self, new_claimed_tile: MapPosition):
         """
         Updates the agent's set of claimable tiles by adding new adjacent tiles
         to the newly claimed tile. Limits the number of additions to 3 (or 5 if diagonals are allowed).
@@ -172,7 +172,8 @@ class Agent:
         :param agent: The agent who claimed the new tile.
         :param new_claimed_tile: The position of the newly claimed tile.
         """
-        x, y = new_claimed_tile
+        x = new_claimed_tile.x
+        y = new_claimed_tile.y
 
         new_possible = [
             (x, y - 1),  # Up
@@ -188,7 +189,7 @@ class Agent:
         #         #     (x - 1, y + 1),
         #         #     (x + 1, y + 1)
         #         # ]
-        claimed_copy = self.claimed_tiles.copy()
+        claimed_copy = self._claimed_tiles.copy()
         claimable_copy = self.claimable_tiles.copy()
 
         new_claimable = []
