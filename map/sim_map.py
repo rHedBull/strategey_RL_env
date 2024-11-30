@@ -9,7 +9,7 @@ from map.map_square import Map_Square
 from map.MapPosition import MapPosition
 from test_env.Agent import Agent
 
-features_per_tile = 3
+
 max_agent_id = 63  # based on current setup of visibility map, would have to use other datatype or multiple maps for more agents
 
 
@@ -188,31 +188,37 @@ class Map:
         self.visibility_map = np.zeros((self.width, self.height), dtype=np.int64)
 
     def get_observation(self):
-        """define here what infor is visible to all agents
+        """
+        define here what infor is visible to all agents
         Assuming full observability of map for now
         """
         map_info = np.zeros(
-            (self.width, self.height, features_per_tile)
-        )  # number of features per tile
+            (self.width, self.height, len(self.env.features_per_tile)), dtype=np.float32
+        )
+
+        features = self.env.features_per_tile
+
         for row in self.squares:
             for square in row:
-                map_info[square.position.x][
-                    square.position.y
-                ] = square.get_observation_state()
+                square_array = np.zeros(len(features), dtype=np.float32)
+
+                i = 0
+                for feature in features:
+                    name = feature["name"]
+
+                    if name == "tile_ownership":
+                        square_array[i] = square.get_owner_id()
+                    elif name == "tile_ownership":
+                        square_array[i] = square.get_land_type()
+                    elif name == "land_money_value":
+                        square_array[i] = square.get_land_money_value()
+                    elif name == "resources":
+                        square_array[i] = square.get_land_type()
+
+                    map_info[square.position.x][square.position.y] = square_array
+                    i += 1
+
         return map_info
-
-    def get_full_map_as_matrix(self):
-        """
-        Get the full map as a matrix. Including each square's full information.
-        Not really meant for the agents to see. Rather to recreate the map later.
-        """
-
-        full_map_info = np.zeros((self.width, self.height, 2))
-        for row in self.squares:
-            for square in row:
-                info = square.get_full_info()
-                full_map_info[square.position.x][square.position.y] = info
-        return full_map_info
 
     def claim_tile(self, agent: Agent, position: MapPosition) -> None:
         """
@@ -221,7 +227,6 @@ class Map:
         :param agent:
         :return:
         """
-
         self.squares[position.x][position.y].claim(agent)
 
     def add_building(self, building_object, position: MapPosition) -> None:
@@ -424,8 +429,5 @@ class Map:
             return True
         else:
             return False
-
-        # TODO: sth messed up with coordinates of visibility map!!, works now, but not in the tests
-        # TODO: switch to common use of either position as tuple or Class or self.x, self.y
 
     # TODO: maybe enable bulk operations here later, to make exploration in general more efficient

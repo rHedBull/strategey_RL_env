@@ -155,11 +155,30 @@ class Agent:
 
         return possible_actions
 
-    def get_observation(self) -> [float, float]:
-        # define here what information of all agents is visible to all other agents
-        return np.array(
-            [1.0, self.money], dtype=np.float32
-        )  # for now state is only active or done, but could be extended
+    def get_observation(self):
+        agent_observation = np.zeros(
+            (len(self.env.agent_features)),
+            dtype=np.float32
+        )
+
+        features = self.env.agent_features
+
+        i = 0
+        for feature in features:
+            name = feature["name"]
+
+            if name == "agent_money":
+                agent_observation[i] = self.money
+            elif name == "agent_map_ownership":
+                agent_observation[i] = (self.env.map.width * self.env.map.height) / len(self._claimed_tiles)
+            elif name == "agent_map_resources":
+                agent_observation[i] = 1.0
+            i += 1
+
+        return agent_observation
+
+    def add_claimed_tile(self, position: MapPosition):
+        self._claimed_tiles.add(position)
 
     def get_claimed_tiles(self):
         return self._claimed_tiles

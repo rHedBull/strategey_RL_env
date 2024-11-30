@@ -37,7 +37,7 @@ def test_initialization(map_square):
     assert map_square.visibility_bitmask == 0
     assert map_square.buildings == set()
     assert map_square.building_int == 0
-    assert map_square.land_money_value == 1
+    assert map_square._land_money_value == 1
     assert map_square.default_border_color == COLOR_DEFAULT_BORDER
     assert map_square.default_color == land_type_color(LandType.LAND)
     assert map_square.land_type_color == land_type_color(LandType.LAND)
@@ -57,7 +57,7 @@ def test_reset(map_square):
     map_square.visibility_bitmask = 255
     map_square.land_type = LandType.MOUNTAIN
     map_square.land_type_color = land_type_color(LandType.MOUNTAIN)
-    map_square.land_money_value = 5
+    map_square._land_money_value = 5
     map_square.buildings.add(city)
     map_square.building_int = 1
 
@@ -70,7 +70,7 @@ def test_reset(map_square):
     assert map_square.land_type == LandType.LAND
     assert map_square.land_type_color == land_type_color(LandType.LAND)
     assert map_square.owner_color == COLOR_DEFAULT_BORDER
-    assert map_square.land_money_value == 1
+    assert map_square._land_money_value == 1
     assert map_square.buildings == set()
     assert map_square.building_int == 0
 

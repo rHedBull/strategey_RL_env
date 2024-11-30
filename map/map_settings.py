@@ -32,12 +32,12 @@ OWNER_DEFAULT_TILE = -1
 
 
 class LandType(Enum):
-    LAND = auto()
-    OCEAN = auto()
-    RIVER = auto()
-    MARSH = auto()
-    MOUNTAIN = auto()
-    DESERT = auto()
+    LAND = 0
+    OCEAN = 1
+    RIVER = 2
+    MARSH = 3
+    MOUNTAIN = 4
+    DESERT = 5 # if you change this you need to change observation space
 
 
 def land_type_color(land_type: LandType):

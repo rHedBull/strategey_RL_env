@@ -83,7 +83,7 @@ class MapEnvironment(gym.Env):
         self.action_mapping = None
 
         # Define action and observation spaces
-        self.observation_space = None  # TODO: do this
+        self.observation_space = self._define_observation_space()
         self.action_space = self._define_action_space()
 
         for agent in self.agents:
@@ -97,9 +97,9 @@ class MapEnvironment(gym.Env):
         self.map.reset()
         for agent in self.agents:
             agent.reset()
-        map_obs, agent_info, visibility_masks = self._get_observation()
+        observations = self._get_observation()
         info = {"info": "no info here"}
-        return map_obs, agent_info, visibility_masks, info
+        return observations, info
 
     def step(self, actions: Any):
         """
@@ -117,10 +117,10 @@ class MapEnvironment(gym.Env):
         self._update_environment_state()
 
         # Collect observations
-        map_obs, agent_info, visibility_masks = self._get_observation()
+        observations = self._get_observation()
 
         truncated = False
-        return map_obs, rewards, False, truncated, info
+        return observations, rewards, False, truncated, info
 
     def render(self):
         """
@@ -155,103 +155,76 @@ class MapEnvironment(gym.Env):
         pygame.quit()
 
     def _define_observation_space(self):
-        # Number of features per tile on the map (as per your 'get_full_info' method)
-        num_features_per_tile = 5  # 'height', 'biome', 'resources', 'land_type', 'owner_value', 'land_money_value'
 
-        # Define the minimum and maximum values for each map feature
-        # Replace these with the actual min and max values appropriate for your environment
-        min_height = 0.0
-        max_height = 100.0
+        data = self.env_settings["map_features"]
+        selected_features = [feature for feature in data if feature.get('select', False)]
+        self.features_per_tile = selected_features
 
-        min_biome = 0  # Assuming biome is an integer code (e.g., 0 to 10)
-        max_biome = 10
+        data = self.env_settings["agent_features"]
+        selected_features = [feature for feature in data if feature.get('select', False)]
+        self.agent_features = selected_features
 
-        # min_resources = 0.0
-        # max_resources = 1000.0
+        # map observation space
+        map_feature_mins = np.zeros(len(self.features_per_tile), dtype=np.float32)
+        map_feature_maxs = np.zeros(len(self.features_per_tile), dtype=np.float32)
 
-        min_land_type = 0  # Assuming land_type is an integer code (e.g., 0 to 5)
-        max_land_type = 5
+        i = 0
+        for feature in self.features_per_tile:
 
-        min_owner_value = (
-            0  # Assuming owner_value is an integer (e.g., agent ID starting from 0)
-        )
-        max_owner_value = (
-            self.num_agents - 1
-        )  # Agent IDs range from 0 to num_agents - 1
+            map_feature_mins[i] = float(feature['values']['min'])
+            map_feature_maxs[i] = float(feature['values']['max'])
+            i += 1
 
-        min_land_money_value = 0.0
-        max_land_money_value = 10000.0
-
-        # Create arrays for the minimum and maximum values of the map features
-        map_feature_mins = np.array(
-            [
-                min_height,
-                min_biome,
-                # min_resources,
-                min_land_type,
-                min_owner_value,
-                min_land_money_value,
-            ],
-            dtype=np.float32,
-        )
-
-        map_feature_maxs = np.array(
-            [
-                max_height,
-                max_biome,
-                # max_resources,
-                max_land_type,
-                max_owner_value,
-                max_land_money_value,
-            ],
-            dtype=np.float32,
-        )
-
-        # Create the low and high arrays for the map observation space
-        # These arrays have the shape (map_width, map_height, num_features_per_tile)
         map_low = (
             np.zeros(
-                (self.map.width, self.map.height, num_features_per_tile),
+                (self.map.width, self.map.height, len(self.features_per_tile)),
                 dtype=np.float32,
             )
             + map_feature_mins
         )
         map_high = (
             np.zeros(
-                (self.map.width, self.map.height, num_features_per_tile),
+                (self.map.width, self.map.height, len(self.features_per_tile)),
                 dtype=np.float32,
             )
             + map_feature_maxs
         )
-
-        # Define the map observation space
         map_observation_space = spaces.Box(low=map_low, high=map_high, dtype=np.float32)
 
-        # Number of features per agent ('state' and 'money')
-        num_agent_features = 2
+        # agent observation space
+        agent_feature_mins = np.zeros(len(self.agent_features), dtype=np.float32)
+        agent_feature_maxs = np.zeros(len(self.agent_features), dtype=np.float32)
 
-        # Define the minimum and maximum values for each agent feature
-        # Replace these with the actual min and max values appropriate for your environment
-        state_min = 0.0
-        state_max = 1.0
+        i = 0
+        for feature in self.agent_features:
 
-        money_min = 0.0
-        money_max = 1000.0
+            agent_feature_mins[i] = float(feature['values']['min'])
+            agent_feature_maxs[i] = float(feature['values']['max'])
+            i += 1
 
-        # Create arrays for the minimum and maximum values of the agent features
-        agent_feature_mins = np.array([state_min, money_min], dtype=np.float32)
-        agent_feature_maxs = np.array([state_max, money_max], dtype=np.float32)
+        agent_low = (
+                np.zeros(
+                    (self.num_agents, len(self.agent_features)),
+                    dtype=np.float32,
+                )
+                + agent_feature_mins
+        )
+        agent_high = (
+                np.zeros(
+                    (self.num_agents, len(self.agent_features)),
+                    dtype=np.float32,
+                )
+                + agent_feature_maxs
+        )
 
-        # Define the agents' observation space
         agents_observation_space = spaces.Box(
-            low=agent_feature_mins,
-            high=agent_feature_maxs,
-            shape=(self.num_agents, num_agent_features),
+            low=agent_low,
+            high=agent_high,
+            shape=(self.num_agents, len(self.agent_features)),
             dtype=np.float32,
         )
 
-        # Define the overall observation space using spaces.Dict
-        self.observation_space = spaces.Dict(
+        return spaces.Dict(
             {"map": map_observation_space, "agents": agents_observation_space}
         )
 
@@ -286,7 +259,7 @@ class MapEnvironment(gym.Env):
         for agent in self.agents:
             agent.update()
 
-    def _get_observation(self) -> Dict[str, Any]:
+    def _get_observation(self):
         """
         Constructs the observation dictionary.
 
@@ -294,17 +267,18 @@ class MapEnvironment(gym.Env):
             observation (Dict[str, Any]): The current observation.
         """
 
-        all_visible_masks = []
-        for agent in self.agents:
-            all_visible_masks.append(get_visible_mask(agent.id, self.map))
+        # all_visible_masks = []
+        # for agent in self.agents:
+        #     all_visible_masks.append(get_visible_mask(agent.id, self.map))
 
         map_observation = self.map.get_observation()
-        # agent_observations = np.array(
-        #     [agent.get_observation() for agent in self.agents],
-        #     dtype=np.float32,
-        # )
+        agent_observations = np.zeros((self.num_agents, len(self.agent_features))     , dtype=np.float32  )
 
-        np_all_visible_masks = np.array(all_visible_masks)
-        agent_info = np.array([])
+        for i, agent in enumerate(self.agents):
+            agent_observations[i] = agent.get_observation()
 
-        return map_observation, agent_info, np_all_visible_masks
+        # np_all_visible_masks = np.array(all_visible_masks)
+        # agent_info = np.array([])
+
+        return {"map": map_observation, "agents": agent_observations}
+        #spaces.Dict({"map": map_observation, "agents": agent_observations})

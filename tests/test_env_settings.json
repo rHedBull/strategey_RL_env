@@ -140,5 +140,69 @@
             "name": "builiding2",
             "cost": 2
         }
+    ],
+    "map_features": [
+        {
+            "name": "land_type",
+            "select": true,
+            "values": {
+                "min": 0,
+                "max": 5
+            }
+        },
+        {
+            "name": "tile_ownership",
+            "select": false
+        },
+        {
+            "name": "land_money_value",
+            "select": false,
+            "values": {
+                "min": 0,
+                "max": 10000
+            }
+        },
+        {
+            "name": "resources",
+            "select": false
+        }
+    ],
+    "agent_features": [
+        {
+            "name": "agent_money",
+            "select": true,
+            "values":{
+                "min": 0,
+                "max": 1000000
+            }
+        },
+        {
+            "name": "agent_map_ownership",
+            "select": false,
+            "values":{
+                "min": 0,
+                "max": 1
+            }
+        },
+        {
+            "name": "money_collection_rate",
+            "select": false
+        },
+        {
+            "name": "resource_access",
+            "select": false
+        },
+        {
+            "name": "resource_collection_rate",
+            "select": false
+        },
+        {
+            "name": "production_rate",
+            "select": false
+        },
+        {
+            "name": "resource_collection_rate",
+            "select": false
+        }
     ]
 }

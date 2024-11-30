@@ -69,7 +69,7 @@ class Map_Square:
         self.buildings = set()
         self.building_int = 0  # a bit mask to easily check for buildings present here
 
-        self.land_money_value = 1
+        self._land_money_value = 1
 
         # ui stuff
         self.default_border_color = COLOR_DEFAULT_BORDER
@@ -87,7 +87,7 @@ class Map_Square:
         self.land_type_color = land_type_color(LandType.LAND)
         self.owner_color = COLOR_DEFAULT_BORDER
 
-        self.land_money_value = 1
+        self._land_money_value = 1
 
         self.buildings.clear()
         self.building_int = 0
@@ -137,7 +137,7 @@ class Map_Square:
         return self.land_type
 
     def get_round_value(self):
-        return self.land_money_value
+        return self._land_money_value
 
     # claim stuff #
     def claim(self, agent):
@@ -242,6 +242,9 @@ class Map_Square:
 
     def get_observation_state(self):
         return self.get_full_info()
+
+    def get_land_money_value(self):
+        return self._land_money_value
 
     def calculate_land_money_value(self):
         """

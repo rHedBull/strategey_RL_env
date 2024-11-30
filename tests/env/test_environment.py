@@ -20,17 +20,19 @@ def env():
 
 def test_reset(env):
     # Test reset function
-    observation, agent_observation, visibility_masks, info = env.reset()
+    observation, info = env.reset()
+
+    map_observation = observation["map"]
+    agent_observation = observation["agents"]
+
+
     assert isinstance(
-        observation, np.ndarray
-    ), "Reset should return an observation of type np.ndarray"
+        map_observation, np.ndarray
+    ), "Reset should return an map_observation of type np.ndarray"
+
     assert isinstance(
         agent_observation, np.ndarray
-    ), "Reset should return an agent observation of type np.ndarray"
-    assert isinstance(
-        visibility_masks, np.ndarray
-    ), "Reset should return visibility masks of type np.ndarray"
-    assert isinstance(info, dict), "Reset should return info as a dictionary"
+    ), "Reset should return an map_observation of type np.ndarray"
 
 
 def test_step(env):
@@ -55,9 +57,16 @@ def test_step(env):
         [agent_2_random_actions]
     )
 
+    map_observation = observation["map"]
+    agent_observation = observation["agents"]
+
     assert isinstance(
-        observation, np.ndarray
-    ), "Step should return an observation of type np.ndarray"
+        map_observation, np.ndarray
+    ), "Reset should return an map_observation of type np.ndarray"
+
+    assert isinstance(
+        agent_observation, np.ndarray
+    ), "Reset should return an map_observation of type np.ndarray"
     assert isinstance(reward, np.ndarray), "Reward should be a numpy array"
     assert isinstance(terminated, bool), "Terminated flag should be a boolean"
     assert isinstance(truncated, bool), "Truncated flag should be a boolean"
@@ -65,8 +74,12 @@ def test_step(env):
 
     observation, reward, terminated, truncated, info = env.step([agent_invalid_action])
     assert isinstance(
-        observation, np.ndarray
-    ), "Step should return an observation of type np.ndarray"
+        map_observation, np.ndarray
+    ), "Reset should return an map_observation of type np.ndarray"
+
+    assert isinstance(
+        agent_observation, np.ndarray
+    ), "Reset should return an map_observation of type np.ndarray"
     assert isinstance(reward, np.ndarray), "Reward should be a numpy array"
     assert isinstance(terminated, bool), "Terminated flag should be a boolean"
     assert isinstance(truncated, bool), "Truncated flag should be a boolean"
@@ -97,6 +110,7 @@ def test_observation_space(env):
         observation_space, gym.spaces.Space
     ), "Observation space should be an instance of gym.spaces.Space"
     observation, _ = env.reset()
+
     assert observation_space.contains(
         observation
     ), "Observation should be valid in the observation space"
