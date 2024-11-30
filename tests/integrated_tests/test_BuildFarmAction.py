@@ -24,13 +24,13 @@ def setup():
     pos_y = 2
     position_1 = MapPosition(pos_x, pos_y)
     position_2 = MapPosition(pos_x + 1, pos_y)
-    city = City(agent_id, position_2, 1)
-    yield env, city, agent_id, position_1, position_2
+
+    yield env, agent_id, position_1, position_2
     env.close()
 
 
 def test_build_simple_farm(setup):
-    env, city, agent_id, position_1, position_2 = setup
+    env, agent_id, position_1, position_2 = setup
     env.reset()
 
     other_agent_id = 3
@@ -69,7 +69,7 @@ def test_build_simple_farm(setup):
 
 
 def test_building_farm_on_water_mountain_desert(setup):
-    env, city, agent_id, position_1, position_2 = setup
+    env, agent_id, position_1, position_2 = setup
     build_farm_action = [4, position_1.x, position_1.y]
 
     # test all water

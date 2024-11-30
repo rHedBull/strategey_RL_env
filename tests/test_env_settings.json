@@ -110,25 +110,33 @@
             "action_id": 2,
             "cost": 200,
             "reward": 20,
-            "build_type_id": 1
+            "build_type_id": 1,
+            "money_gain_per_turn": 110,
+            "maintenance_cost_per_turn": 10,
+            "max_level": 3
         },
         "build_road": {
             "action_id": 3,
             "cost": -100,
             "reward": 3,
-            "build_type_id": 2
+            "build_type_id": 2,
+            "max_level": 3
         },
         "build_bridge": {
             "action_id": 4,
             "cost": 0,
             "reward": 3,
-            "build_type_id": 4
+            "build_type_id": 4,
+            "max_level": 3
         },
         "build_farm": {
             "action_id": 5,
             "cost": 8,
             "reward": 5,
-            "build_type_id": 8
+            "build_type_id": 8,
+            "money_gain_per_turn": 20,
+            "maintenance_cost_per_turn": 5,
+            "max_level": 3
         }
     },
     "map_features": [
@@ -175,7 +183,7 @@
             }
         },
         {
-            "name": "money_collection_rate",
+            "name": "last_money_pl",
             "select": false
         },
         {

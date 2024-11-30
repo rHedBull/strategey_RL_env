@@ -31,8 +31,8 @@ class BuildCityAction(BuildAction):
         return True
 
     def perform_build(self, env):
-        building_type_id = self.get_building_type_id(env)
-        city = City(self.agent.id, self.position, building_type_id)
+        params = self.get_building_parameters(env)
+        city = City(self.agent.id, self.position, params)
         env.map.add_building(city, self.position)
         # TODO: add city to agent's list of buildings
 

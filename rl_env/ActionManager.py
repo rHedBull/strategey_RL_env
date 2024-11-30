@@ -13,7 +13,7 @@ from rl_env.actions.ClaimAction import ClaimAction
 invalid_action_penalty = -10
 
 
-def create_action(agent, action_type, position: MapPosition):
+def create_action(agent: Agent, action_type, position: MapPosition):
     if action_type == "claim":
         return ClaimAction(agent, position)
     elif action_type == "build_city":

@@ -1,3 +1,5 @@
+from typing import Dict
+
 import pygame
 
 from map.MapPosition import MapPosition
@@ -6,9 +8,9 @@ from rl_env.objects.Ownable import Ownable
 
 
 class Farm(Building, Ownable):
-    def __init__(self, agent_id: int, position: MapPosition, building_type_id: int):
+    def __init__(self, agent_id: int, position: MapPosition, building_parameters: Dict):
         Ownable.__init__(self, agent_id)
-        Building.__init__(self, position, BuildingType.FARM, building_type_id)
+        Building.__init__(self, position, BuildingType.FARM, building_parameters)
 
     def draw(self, screen: pygame.Surface, square_size: int, colors: dict):
         """
@@ -20,8 +22,8 @@ class Farm(Building, Ownable):
                        Expected keys: 'line' for line color, 'background' for square background.
         """
         # Calculate the top-left corner of the square
-        top_left_x = self.x * square_size
-        top_left_y = self.y * square_size
+        top_left_x = self.position.x * square_size
+        top_left_y = self.position.y * square_size
 
         # Define the color for the lines
         line_color = (0, 0, 0)  # Default to black if not specified

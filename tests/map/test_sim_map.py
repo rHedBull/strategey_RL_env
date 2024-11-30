@@ -25,12 +25,18 @@ def map_instance():
 
     env = MapEnvironment(env_settings, 2, "rgb_array")
 
-    m = Map(env)
-    return m
+    map = Map(env)
+    mock_city_params = {"building_type_id": 1,
+                        "money_gain_per_turn": 110,
+                        "maintenance_cost_per_turn": 10,
+                        "max_level": 3}
+    yield map, mock_city_params
 
 
 def test_check_valid_agent_id():
     # Test valid IDs
+
+
     assert check_valid_agent_id(0) is True
     assert check_valid_agent_id(max_agent_id - 1) is True
 
@@ -41,6 +47,9 @@ def test_check_valid_agent_id():
 
 
 def test_map_initialization(map_instance):
+
+    map_instance, mock_city_params = map_instance
+
     assert map_instance.width == 100
     assert map_instance.height == 100
     assert map_instance.water_percentage == 0.0
@@ -56,6 +65,8 @@ def test_map_initialization(map_instance):
 
 
 def test_create_map(map_instance):
+    map_instance, mock_city_params = map_instance
+
     assert len(map_instance.squares) == map_instance.height
     for row in map_instance.squares:
         assert len(row) == map_instance.width
@@ -76,6 +87,7 @@ def test_create_map(map_instance):
 
 def test_reset(map_instance):
     # Before reset, squares should have default land type
+    map_instance, mock_city_params = map_instance
     for row in map_instance.squares:
         for square in row:
             assert square.land_type == LandType.LAND
@@ -100,6 +112,7 @@ def test_reset(map_instance):
 
 
 def test_check_position_on_map(map_instance):
+    map_instance, mock_city_params = map_instance
     # Valid positions
     assert map_instance.check_position_on_map(MapPosition(0, 0)) is True
     assert map_instance.check_position_on_map(MapPosition(99, 99)) is True
@@ -114,6 +127,7 @@ def test_check_position_on_map(map_instance):
 
 
 def test_get_tile(map_instance):
+    map_instance, mock_city_params = map_instance
     # Valid tile
     tile = map_instance.get_tile(MapPosition(5, 5))
     assert tile is not None
@@ -144,6 +158,7 @@ def test_visibility_methods(map_instance):
     agent_id = 10  # Valid agent ID
     agent_id2 = 3
 
+    map_instance, mock_city_params = map_instance
     # Initially not visible
     # check if of type bool
     assert isinstance(map_instance.is_visible(position, agent_id), bool)
@@ -181,6 +196,7 @@ def test_visibility_methods(map_instance):
 
 def test_claim_tile(map_instance):
     position = MapPosition(2, 4)
+    map_instance, mock_city_params = map_instance
     mock_agent = Agent(7, None)  # Using a mock agent
     tile = map_instance.get_tile(position)
 
@@ -193,7 +209,8 @@ def test_claim_tile(map_instance):
 
 def test_add_building(map_instance):
     position = MapPosition(2, 4)
-    building_object = City(1, position, 1)  # Mock building object
+    map_instance, mock_city_params = map_instance
+    building_object = City(1, position, mock_city_params)  # Mock building object
     tile = map_instance.get_tile(position)
 
     assert tile.has_any_building() is False
@@ -210,11 +227,12 @@ def test_add_building(map_instance):
 def test_tile_is_next_to_building(map_instance):
     position = MapPosition(3, 5)
     adjacent_position = MapPosition(4, 5)
+    map_instance, mock_city_params = map_instance
 
     # Initially, no buildings nearby
     assert map_instance.tile_is_next_to_building(adjacent_position) is False
 
-    building_object = City(1, position, 1)
+    building_object = City(1, position, mock_city_params)
     map_instance.add_building(building_object, position)
 
     # Now, should detect a building nearby
@@ -222,6 +240,7 @@ def test_tile_is_next_to_building(map_instance):
 
 
 def test_serialize_topography_resources(map_instance):
+    map_instance, mock_city_params = map_instance
     map_instance.reset()  # Ensure map is in a known state
 
     map_data = map_instance.serialize_topography_resources()
@@ -234,6 +253,7 @@ def test_serialize_topography_resources(map_instance):
 
 
 def test_get_surrounding_tiles(map_instance):
+    map_instance, mock_city_params = map_instance
     map_instance.reset()  # Ensure map is in a known state
 
     # Test Case 1: Middle position
@@ -294,6 +314,7 @@ def test_get_surrounding_tiles(map_instance):
 
 
 def test_save_and_load_topography_resources(map_instance, tmp_path):
+    map_instance, mock_city_params = map_instance
     map_instance.reset()
     file_path = tmp_path / "map_data.pkl"
 
@@ -317,7 +338,7 @@ def test_save_and_load_topography_resources(map_instance, tmp_path):
             original_square = map_instance.get_tile(MapPosition(x, y))
             loaded_square = new_map.get_tile(MapPosition(x, y))
             assert loaded_square.tile_id == original_square.tile_id
-            assert loaded_square.x == original_square.x
-            assert loaded_square.y == original_square.y
+            assert loaded_square.position.x == original_square.position.x
+            assert loaded_square.position.y == original_square.position.y
             assert loaded_square.land_type == original_square.land_type
             # assert loaded_square.resources == original_square.resources

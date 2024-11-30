@@ -17,13 +17,19 @@ def map_square():
     """
     Fixture to create a Map_Square instance before each test.
     """
-    return Map_Square(1, MapPosition(5, 10), land_value=LandType.LAND)
+    mock_city_params = {"building_type_id": 1,
+                        "money_gain_per_turn": 110,
+                        "maintenance_cost_per_turn": 10,
+                        "max_level": 3}
+    map_square = Map_Square(1, MapPosition(5, 10), land_value=LandType.LAND)
+    yield mock_city_params, map_square
 
 
 def test_initialization(map_square):
     """
     Test that Map_Square initializes correctly with given parameters.
     """
+    mock_city_params, map_square = map_square
     assert map_square.tile_id == 1
     assert map_square.position.x == 5
     assert map_square.position.y == 10
@@ -48,9 +54,10 @@ def test_reset(map_square):
     """
     Test that the reset method restores the initial state.
     """
+    mock_city_params, map_square = map_square
 
     mock_agent_id = 7
-    city = City(mock_agent_id, map_square.position, 1)
+    city = City(mock_agent_id, map_square.position, mock_city_params)
 
     # Modify some attributes
     map_square.owner_id = 2
@@ -79,6 +86,7 @@ def test_set_and_get_owner(map_square):
     """
     Test setting and getting the owner of the map square.
     """
+    mock_city_params, map_square = map_square
     agent_id = 42
     agent_color = (128, 0, 128)  # Purple
 
@@ -96,6 +104,9 @@ def test_set_and_get_land_type(map_square):
     """
     Test setting and getting the land type of the map square.
     """
+
+    mock_city_params, map_square = map_square
+
     new_land_type = LandType.MOUNTAIN
     map_square.set_land_type(new_land_type)
     assert map_square.get_land_type() == new_land_type
@@ -111,6 +122,8 @@ def test_claim(map_square):
     """
     Test claiming the map square by an agent.
     """
+
+    mock_city_params, map_square = map_square
     agent = Mock()
     agent.id = 7
     agent.color = (0, 255, 0)  # Green
@@ -128,9 +141,10 @@ def test_add_building(map_square):
     """
     Test adding a building to the map square.
     """
+    mock_city_params, map_square = map_square
 
     mock_agent_id = 7
-    city = City(mock_agent_id, map_square.position, 1)
+    city = City(mock_agent_id, map_square.position, mock_city_params)
 
     assert city not in map_square.buildings
     assert map_square.building_int == 0
@@ -145,10 +159,13 @@ def test_has_building(map_square):
     """
     Test checking for specific building types.
     """
+    mock_city_params, map_square = map_square
 
+    mock_road_params = {"building_type_id": 2,
+                        "max_level": 3}
     mock_agent_id = 7
-    city = City(mock_agent_id, map_square.position, 1)
-    road = Road(map_square.position, 2)
+    city = City(mock_agent_id, map_square.position, mock_city_params)
+    road = Road(map_square.position, mock_road_params)
 
     assert map_square.has_building(BuildingType.CITY) is False
     assert map_square.has_building(BuildingType.ROAD) is False
@@ -170,10 +187,13 @@ def test_has_any_building(map_square):
     """
     Test checking if any building exists on the map square.
     """
+
+    mock_city_params, map_square = map_square
+
     assert map_square.has_any_building() is False
 
     mock_agent_id = 7
-    city = City(mock_agent_id, map_square.position, 1)
+    city = City(mock_agent_id, map_square.position, mock_city_params)
 
     map_square.add_building(city)
     assert map_square.has_any_building() is True
@@ -183,10 +203,13 @@ def test_remove_building(map_square):
     """
     Test removing a building from the map square.
     """
-
+    mock_city_params, map_square = map_square
     mock_agent_id = 7
-    city = City(mock_agent_id, map_square.position, 1)
-    road = Road(map_square.position, 2)
+
+    mock_road_params = {"building_type_id": 2,
+            "max_level": 3}
+    city = City(mock_agent_id, map_square.position, mock_city_params)
+    road = Road(map_square.position, mock_road_params)
 
     map_square.add_building(city)
     assert map_square.has_any_building() is True
@@ -220,11 +243,12 @@ def test_get_full_info(map_square):
     """
     Test retrieving the full info of the map square.
     """
-    mock_building_id = 3
+    mock_city_params, map_square = map_square
+
     mock_owner_agent = 7
     map_square.set_land_type(LandType.MOUNTAIN)
     map_square.set_owner(mock_owner_agent, (255, 0, 0))  # Red
-    building = City(mock_owner_agent, MapPosition(0, 0), mock_building_id)
+    building = City(mock_owner_agent, MapPosition(0, 0), mock_city_params)
     map_square.add_building(building)
 
     expected_state = [
@@ -241,10 +265,17 @@ def test_has_road_and_bridge(map_square):
     """
     Test checking for the presence of roads and bridges.
     """
+    mock_city_params, map_square = map_square
 
-    road = Road(map_square.position, 2)
-    bridge = Bridge(map_square.position, 4)
-    farm = Farm(0, map_square.position, 8)
+    mock_road_params = {"building_type_id": 2,
+                        "max_level": 3}
+    mock_bridge_params = {"building_type_id": 4,
+                        "max_level": 3}
+    mock_farm_params = {"building_type_id": 8,
+                        "max_level": 3}
+    road = Road(map_square.position, mock_road_params)
+    bridge = Bridge(map_square.position, mock_bridge_params)
+    farm = Farm(0, map_square.position, mock_farm_params)
 
     assert map_square.has_road() is False
     assert map_square.has_bridge() is False

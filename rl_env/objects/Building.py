@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Tuple
+from typing import Tuple, Dict
 from uuid import uuid1
 
 import pygame
@@ -20,16 +20,21 @@ class Building(ABC):
         self,
         position: MapPosition,
         building_type: BuildingType,
-        building_type_id: int,
+        building_parameters: Dict,
     ):
         self.id = uuid1()
 
         self.position = position
 
         self.level = 0
-        self.max_level = None
+        self.max_level = building_parameters.get("max_level", 1)
         self.building_type = building_type
-        self.building_type_id = building_type_id
+        self.building_type_id = building_parameters.get("building_type_id")
+
+        self.money_gain_per_turn = building_parameters.get("money_gain_per_turn", 0)
+        self.maintenance_cost_per_turn = building_parameters.get("maintenance_cost_per_turn", 0)
+        self.income_per_turn = 0
+        self.calculate_income()
 
     @abstractmethod
     def draw(
@@ -55,7 +60,15 @@ class Building(ABC):
     def upgrade(self):
         new_level = self.level + 1
         self.level = min(new_level, self.max_level)
+        self.calculate_income()
 
     def downgrade(self):
         new_level = self.level - 1
         self.level = max(new_level, 0)
+        self.calculate_income()
+
+    def calculate_income(self):
+        self.income_per_turn = self.money_gain_per_turn - self.maintenance_cost_per_turn
+
+    def get_income(self):
+        return self.income_per_turn

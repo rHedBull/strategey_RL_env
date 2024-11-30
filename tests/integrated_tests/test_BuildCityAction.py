@@ -21,13 +21,13 @@ def setup():
     pos_y = 2
     position_1 = MapPosition(pos_x, pos_y)
     position_2 = MapPosition(pos_x + 1, pos_y)
-    city = City(agent_id, position_2, 1)
-    yield env, city, agent_id, position_1, position_2
+
+    yield env, agent_id, position_1, position_2
     env.close()
 
 
 def test_build_simple_city(setup):
-    env, city, agent_id, position_1, position_2 = setup
+    env, agent_id, position_1, position_2 = setup
 
     env.reset()
     other_agent_id = 3
@@ -53,18 +53,24 @@ def test_build_simple_city(setup):
     observation, reward, terminated, truncated, info = env.step([[build_city_action]])
     assert tile1.has_any_building() is True
     assert tile1.has_building(BuildingType.CITY) is True
-    assert tile1.owner_id == agent_id
+    object = tile1.get_building(BuildingType.CITY)
+    assert isinstance(object ,City)
+    assert object.position.x == position_1.x
+    assert object.position.y == position_1.y
+    old_owner_id = tile1.owner_id
+    old_building_id = object.id
+    assert old_owner_id == agent_id
 
     # test build on top of existing building, should not work
     observation, reward, terminated, truncated, info = env.step([[build_city_action]])
     assert tile1.has_any_building() is True
     assert tile1.has_building(BuildingType.CITY) is True
-    assert tile1.owner_id == agent_id
-    # check that the building is still the same!!
+    assert tile1.owner_id == old_owner_id
+    assert tile1.get_building(BuildingType.CITY).id == old_building_id, "City should not be replaced"
 
 
 def test_building_city_on_water_mountain_desert(setup):
-    env, city, agent_id, position_1, position_2 = setup
+    env, agent_id, position_1, position_2 = setup
 
     build_city_action = [1, position_1.x, position_1.y]
 

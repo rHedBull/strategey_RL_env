@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Dict
 
 import pygame
 
@@ -19,10 +19,9 @@ class RoadShape:
 
 
 class Road(Building):
-    def __init__(self, position: MapPosition, building_type_id, shape=None):
-        super().__init__(position, BuildingType.ROAD, building_type_id)
+    def __init__(self, position: MapPosition, building_parameters: Dict, shape=None):
+        super().__init__(position, BuildingType.ROAD, building_parameters)
 
-        self.max_level = 3
         self.shape = shape if shape else RoadShape()
         self.shape.left = True
 
@@ -39,12 +38,12 @@ class Road(Building):
         :param screen: Pygame display surface
         """
 
-        draw_bridge_road(screen, self.x, self.y, square_size, self.shape, road_color)
+        draw_bridge_road(screen, self.position.x, self.position.y, square_size, self.shape, road_color)
 
 
 class Bridge(Building):
-    def __init__(self, position: MapPosition, building_type_id: int, shape=None):
-        super().__init__(position, BuildingType.BRIDGE, building_type_id)
+    def __init__(self, position: MapPosition, building_parameters: Dict, shape=None):
+        super().__init__(position, BuildingType.BRIDGE, building_parameters)
 
         self.max_level = 3
         self.shape = shape if shape else RoadShape()
@@ -63,7 +62,7 @@ class Bridge(Building):
         :param screen: Pygame display surface
         """
 
-        draw_bridge_road(screen, self.x, self.y, square_size, self.shape, bridge_color)
+        draw_bridge_road(screen, self.position.x, self.position.y, square_size, self.shape, bridge_color)
 
 
 def update_road_bridge_shape(road_or_bridge, map):

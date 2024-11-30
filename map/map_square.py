@@ -156,7 +156,7 @@ class Map_Square:
         Add a building to the square.
         """
         self.buildings.add(building)
-        self.building_int |= building.get_building_type_id()
+        self.building_int |= building.building_type_id
 
     def has_building(self, building_type: BuildingType):
         if building_type == BuildingType.CITY:
@@ -172,6 +172,11 @@ class Map_Square:
 
             # Perform bitwise AND to check if the building is present
         return (self.building_int & building_id) != 0
+
+    def get_building(self, building_type: BuildingType):
+        for building in self.buildings:
+            if building.building_type == building_type:
+                return building
 
     def has_any_building(self):
         if self.building_int > 0:

@@ -23,7 +23,7 @@ class BuildRoadAction(BuildAction):
         return False
 
     def perform_build(self, env):
-        building_type_id = self.get_building_type_id(env)
+        building_type_id = self.get_building_parameters(env)
         road = Road(self.position, building_type_id)
         env.map.add_building(road, self.position)
 
@@ -50,7 +50,7 @@ class BuildBridgeAction(BuildAction):
         return False
 
     def perform_build(self, env):
-        building_type_id = self.get_building_type_id(env)
+        building_type_id = self.get_building_parameters(env)
         bridge = Bridge(self.position, building_type_id)
         env.map.add_building(bridge, self.position)
 

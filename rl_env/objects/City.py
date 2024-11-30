@@ -8,11 +8,9 @@ from rl_env.objects.Ownable import Ownable
 
 
 class City(Building, Ownable):
-    def __init__(self, agent_id: int, position: MapPosition, building_type_id):
+    def __init__(self, agent_id: int, position: MapPosition, building_parameters: dict):
         Ownable.__init__(self, agent_id)
-        Building.__init__(self, position, BuildingType.CITY, building_type_id)
-
-        self.max_level = 3
+        Building.__init__(self, position, BuildingType.CITY, building_parameters)
 
     def draw(
         self,

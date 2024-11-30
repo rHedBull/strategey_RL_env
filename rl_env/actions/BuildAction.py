@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Dict
 
 from agents.Sim_Agent import Agent
 from map.map_settings import ALLOWED_BUILDING_PLACEMENTS
@@ -56,11 +57,17 @@ class BuildAction(Action, ABC):
         """Return the reward for the action."""
         return env.env_settings.get("actions")[self.building_type.value]["reward"]
 
-    def get_building_type_id(self, env) -> int:
+    def get_building_parameters(self, env) -> Dict:
         """Return the building type id."""
-        return env.env_settings.get("actions")[self.building_type.value][
-            "build_type_id"
-        ]
+        action = env.env_settings.get("actions")[self.building_type.value]
+        params = {
+            "building_type_id": action["build_type_id"],
+            "money_gain_per_turn": action.get("money_gain_per_turn", 0),
+            "maintenance_cost_per_turn": action.get("maintenance_cost_per_turn", 0),
+            "max_level": action.get("max_level", 1)
+        }
+        return params
+
 
 
 def fit_building_to_land_type(
