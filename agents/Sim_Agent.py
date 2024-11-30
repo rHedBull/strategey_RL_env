@@ -122,14 +122,14 @@ class Agent:
         self.done = False
 
     def update(self):
-        # Update the agent's state
 
-        # TODO: reenable this
-        # for _, tile in enumerate(self.claimed_tiles):
-        # self.money += tile.get_round_value()
+        round_money = 0
+        for _, tile in enumerate(self._claimed_tiles):
+            round_money += self.env.map.get_tile(tile).get_round_value()
 
-        if self.money <= 0:  # TODO adapt different state transitions
-            self.state = "Done"
+        self.money += round_money
+        self.last_money_pl = round_money
+
 
     def draw(self, square_size, zoom_level, pan_x, pan_y):
         radius = square_size / 2

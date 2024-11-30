@@ -138,7 +138,11 @@ class Map_Square:
 
     def get_round_value(self):
         # in theory add other dynamic effects here
-        return self._land_money_value
+        income = self._land_money_value
+        for building in self.buildings:
+            income += building.get_income()
+
+        return income
 
     # claim stuff #
     def claim(self, agent):

@@ -252,7 +252,7 @@ class MapEnvironment(gym.Env):
         """
         # Update map dynamics if any
         # self.map.update()
-        # Update agents
+
         for agent in self.agents:
             agent.update()
 
