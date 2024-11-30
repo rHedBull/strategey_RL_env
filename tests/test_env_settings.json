@@ -131,16 +131,6 @@
             "build_type_id": 8
         }
     },
-    "buildings": [
-        {
-            "name": "building1",
-            "cost": 1
-        },
-        {
-            "name": "builiding2",
-            "cost": 2
-        }
-    ],
     "map_features": [
         {
             "name": "land_type",
@@ -156,7 +146,7 @@
         },
         {
             "name": "land_money_value",
-            "select": false,
+            "select": true,
             "values": {
                 "min": 0,
                 "max": 10000
@@ -178,7 +168,7 @@
         },
         {
             "name": "agent_map_ownership",
-            "select": false,
+            "select": true,
             "values":{
                 "min": 0,
                 "max": 1

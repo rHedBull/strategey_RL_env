@@ -80,7 +80,6 @@ class Agent:
 
         self.reward = 0.0
         self.done = False
-        # TODO probably call self.reset() here ?
 
     def reset(self):
         """
@@ -170,7 +169,7 @@ class Agent:
             if name == "agent_money":
                 agent_observation[i] = self.money
             elif name == "agent_map_ownership":
-                agent_observation[i] = (self.env.map.width * self.env.map.height) / len(self._claimed_tiles)
+                agent_observation[i] = len(self._claimed_tiles)/ (self.env.map.width * self.env.map.height)
             elif name == "agent_map_resources":
                 agent_observation[i] = 1.0
             i += 1
