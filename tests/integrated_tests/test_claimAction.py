@@ -5,7 +5,7 @@ import pytest
 from map.map_settings import OWNER_DEFAULT_TILE
 from map.MapPosition import MapPosition
 from rl_env.environment import MapEnvironment
-from rl_env.objects.city import City
+from rl_env.objects.City import City
 from rl_env.objects.Road import Bridge, Road
 
 
