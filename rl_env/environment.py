@@ -7,7 +7,7 @@ from gymnasium import spaces
 
 from rl_env.ActionManager import ActionManager
 from rl_env.map.sim_map import Map
-from rl_env.Sim_Agent import Agent
+from rl_env.Agent import Agent
 
 
 def check_done(agent):

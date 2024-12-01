@@ -5,7 +5,7 @@ from rl_env.actions.Action import Action, ActionType
 from rl_env.map.map_settings import ALLOWED_BUILDING_PLACEMENTS
 from rl_env.map.MapPosition import MapPosition
 from rl_env.objects.Building import BuildingType
-from rl_env.Sim_Agent import Agent
+from rl_env.Agent import Agent
 
 
 class BuildAction(Action, ABC):

@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from enum import Enum, auto
 
 from rl_env.map import MapPosition
-from rl_env.Sim_Agent import Agent
+from rl_env.Agent import Agent
 
 
 class ActionType(Enum):

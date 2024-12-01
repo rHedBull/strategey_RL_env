@@ -8,7 +8,7 @@ from rl_env.map.map_square import Map_Square
 from rl_env.map.MapPosition import MapPosition
 from rl_env.map.sim_map import Map, check_valid_agent_id
 from rl_env.objects.City import City
-from rl_env.Sim_Agent import Agent
+from rl_env.Agent import Agent
 
 
 class MockAgent:

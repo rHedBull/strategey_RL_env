@@ -3,7 +3,7 @@ from typing import Tuple
 from rl_env.actions.Action import Action, ActionType
 from rl_env.map.map_settings import OWNER_DEFAULT_TILE
 from rl_env.map.MapPosition import MapPosition
-from rl_env.Sim_Agent import Agent
+from rl_env.Agent import Agent
 
 
 class ClaimAction(Action):

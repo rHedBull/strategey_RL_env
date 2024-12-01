@@ -8,7 +8,7 @@ from rl_env.actions.BuildFarmAction import BuildFarmAction
 from rl_env.actions.BuildRoadAction import BuildBridgeAction, BuildRoadAction
 from rl_env.actions.ClaimAction import ClaimAction
 from rl_env.map.MapPosition import MapPosition
-from rl_env.Sim_Agent import Agent
+from rl_env.Agent import Agent
 
 invalid_action_penalty = -10
 
