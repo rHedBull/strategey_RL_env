@@ -3,8 +3,8 @@ from typing import Tuple
 import numpy as np
 import pygame
 
-from map.map_settings import AGENT_COLORS, PLAYER_COLOR
-from map.MapPosition import MapPosition
+from rl_env.map.map_settings import AGENT_COLORS, PLAYER_COLOR
+from rl_env.map.MapPosition import MapPosition
 
 
 def get_visible_mask(agent_id: int, map_v):
@@ -52,7 +52,6 @@ class Agent:
     """
 
     def __init__(self, agent_id: int, env):
-
         self.id = agent_id
         self.env = env
 
@@ -122,14 +121,12 @@ class Agent:
         self.done = False
 
     def update(self):
-
         round_money = 0
         for _, tile in enumerate(self._claimed_tiles):
             round_money += self.env.map.get_tile(tile).get_round_value()
 
         self.money += round_money
         self.last_money_pl = round_money
-
 
     def draw(self, square_size, zoom_level, pan_x, pan_y):
         radius = square_size / 2
@@ -154,10 +151,7 @@ class Agent:
     #     return possible_actions
 
     def get_observation(self):
-        agent_observation = np.zeros(
-            (len(self.env.agent_features)),
-            dtype=np.float32
-        )
+        agent_observation = np.zeros((len(self.env.agent_features)), dtype=np.float32)
 
         features = self.env.agent_features
 
@@ -168,7 +162,9 @@ class Agent:
             if name == "agent_money":
                 agent_observation[i] = self.money
             elif name == "agent_map_ownership":
-                agent_observation[i] = len(self._claimed_tiles)/ (self.env.map.width * self.env.map.height)
+                agent_observation[i] = len(self._claimed_tiles) / (
+                    self.env.map.width * self.env.map.height
+                )
             elif name == "last_money_pl":
                 agent_observation[i] = self.last_money_pl
             i += 1
@@ -241,5 +237,3 @@ class Agent:
     #
     #     self.claimable_tiles.update(new_claimable)
     #     self.update_local_visibility(new_claimed_tile)
-
-

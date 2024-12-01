@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 from typing import Dict
 
-from agents.Sim_Agent import Agent
-from map.map_settings import ALLOWED_BUILDING_PLACEMENTS
-from map.MapPosition import MapPosition
 from rl_env.actions.Action import Action, ActionType
+from rl_env.map.map_settings import ALLOWED_BUILDING_PLACEMENTS
+from rl_env.map.MapPosition import MapPosition
 from rl_env.objects.Building import BuildingType
+from rl_env.Sim_Agent import Agent
 
 
 class BuildAction(Action, ABC):
@@ -64,10 +64,9 @@ class BuildAction(Action, ABC):
             "building_type_id": action["build_type_id"],
             "money_gain_per_turn": action.get("money_gain_per_turn", 0),
             "maintenance_cost_per_turn": action.get("maintenance_cost_per_turn", 0),
-            "max_level": action.get("max_level", 1)
+            "max_level": action.get("max_level", 1),
         }
         return params
-
 
 
 def fit_building_to_land_type(

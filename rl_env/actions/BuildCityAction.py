@@ -1,9 +1,9 @@
-from agents.Sim_Agent import Agent
-from map.map_settings import OWNER_DEFAULT_TILE
-from map.MapPosition import MapPosition
 from rl_env.actions.BuildAction import BuildAction
+from rl_env.map.map_settings import OWNER_DEFAULT_TILE
+from rl_env.map.MapPosition import MapPosition
 from rl_env.objects.Building import BuildingType
 from rl_env.objects.City import City
+from rl_env.Sim_Agent import Agent
 
 
 class BuildCityAction(BuildAction):

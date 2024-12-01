@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from enum import Enum, auto
 
-from agents.Sim_Agent import Agent
-from map.MapPosition import MapPosition
+from rl_env.map import MapPosition
+from rl_env.Sim_Agent import Agent
 
 
 class ActionType(Enum):

@@ -5,9 +5,9 @@ import numpy as np
 import pygame
 from gymnasium import spaces
 
-from agents.Sim_Agent import Agent
-from map.sim_map import Map
 from rl_env.ActionManager import ActionManager
+from rl_env.map.sim_map import Map
+from rl_env.Sim_Agent import Agent
 
 
 def check_done(agent):
@@ -152,13 +152,16 @@ class MapEnvironment(gym.Env):
         pygame.quit()
 
     def _define_observation_space(self):
-
         data = self.env_settings["map_features"]
-        selected_features = [feature for feature in data if feature.get('select', False)]
+        selected_features = [
+            feature for feature in data if feature.get("select", False)
+        ]
         self.features_per_tile = selected_features
 
         data = self.env_settings["agent_features"]
-        selected_features = [feature for feature in data if feature.get('select', False)]
+        selected_features = [
+            feature for feature in data if feature.get("select", False)
+        ]
         self.agent_features = selected_features
 
         # map observation space
@@ -167,9 +170,8 @@ class MapEnvironment(gym.Env):
 
         i = 0
         for feature in self.features_per_tile:
-
-            map_feature_mins[i] = float(feature['values']['min'])
-            map_feature_maxs[i] = float(feature['values']['max'])
+            map_feature_mins[i] = float(feature["values"]["min"])
+            map_feature_maxs[i] = float(feature["values"]["max"])
             i += 1
 
         map_low = (
@@ -194,24 +196,23 @@ class MapEnvironment(gym.Env):
 
         i = 0
         for feature in self.agent_features:
-
-            agent_feature_mins[i] = float(feature['values']['min'])
-            agent_feature_maxs[i] = float(feature['values']['max'])
+            agent_feature_mins[i] = float(feature["values"]["min"])
+            agent_feature_maxs[i] = float(feature["values"]["max"])
             i += 1
 
         agent_low = (
-                np.zeros(
-                    (self.num_agents, len(self.agent_features)),
-                    dtype=np.float32,
-                )
-                + agent_feature_mins
+            np.zeros(
+                (self.num_agents, len(self.agent_features)),
+                dtype=np.float32,
+            )
+            + agent_feature_mins
         )
         agent_high = (
-                np.zeros(
-                    (self.num_agents, len(self.agent_features)),
-                    dtype=np.float32,
-                )
-                + agent_feature_maxs
+            np.zeros(
+                (self.num_agents, len(self.agent_features)),
+                dtype=np.float32,
+            )
+            + agent_feature_maxs
         )
 
         agents_observation_space = spaces.Box(
@@ -269,7 +270,9 @@ class MapEnvironment(gym.Env):
         #     all_visible_masks.append(get_visible_mask(agent.id, self.map))
 
         map_observation = self.map.get_observation()
-        agent_observations = np.zeros((self.num_agents, len(self.agent_features)), dtype=np.float32  )
+        agent_observations = np.zeros(
+            (self.num_agents, len(self.agent_features)), dtype=np.float32
+        )
 
         for i, agent in enumerate(self.agents):
             agent_observations[i] = agent.get_observation()

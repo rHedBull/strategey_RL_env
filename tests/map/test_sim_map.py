@@ -2,13 +2,13 @@ import json
 
 import pytest
 
-from agents.Sim_Agent import Agent
-from map.map_settings import OWNER_DEFAULT_TILE, LandType, max_agent_id
-from map.map_square import Map_Square
-from map.MapPosition import MapPosition
-from map.sim_map import Map, check_valid_agent_id
 from rl_env.environment import MapEnvironment
+from rl_env.map.map_settings import OWNER_DEFAULT_TILE, LandType, max_agent_id
+from rl_env.map.map_square import Map_Square
+from rl_env.map.MapPosition import MapPosition
+from rl_env.map.sim_map import Map, check_valid_agent_id
 from rl_env.objects.City import City
+from rl_env.Sim_Agent import Agent
 
 
 class MockAgent:
@@ -26,16 +26,17 @@ def map_instance():
     env = MapEnvironment(env_settings, 2, "rgb_array")
 
     map = Map(env)
-    mock_city_params = {"building_type_id": 1,
-                        "money_gain_per_turn": 110,
-                        "maintenance_cost_per_turn": 10,
-                        "max_level": 3}
+    mock_city_params = {
+        "building_type_id": 1,
+        "money_gain_per_turn": 110,
+        "maintenance_cost_per_turn": 10,
+        "max_level": 3,
+    }
     yield map, mock_city_params
 
 
 def test_check_valid_agent_id():
     # Test valid IDs
-
 
     assert check_valid_agent_id(0) is True
     assert check_valid_agent_id(max_agent_id - 1) is True
@@ -47,7 +48,6 @@ def test_check_valid_agent_id():
 
 
 def test_map_initialization(map_instance):
-
     map_instance, mock_city_params = map_instance
 
     assert map_instance.width == 100

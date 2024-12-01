@@ -1,8 +1,8 @@
-from typing import Tuple, Dict
+from typing import Dict, Tuple
 
 import pygame
 
-from map.MapPosition import MapPosition
+from rl_env.map.MapPosition import MapPosition
 from rl_env.objects.Building import Building, BuildingType
 
 road_color = (128, 128, 128)
@@ -38,7 +38,14 @@ class Road(Building):
         :param screen: Pygame display surface
         """
 
-        draw_bridge_road(screen, self.position.x, self.position.y, square_size, self.shape, road_color)
+        draw_bridge_road(
+            screen,
+            self.position.x,
+            self.position.y,
+            square_size,
+            self.shape,
+            road_color,
+        )
 
 
 class Bridge(Building):
@@ -62,7 +69,14 @@ class Bridge(Building):
         :param screen: Pygame display surface
         """
 
-        draw_bridge_road(screen, self.position.x, self.position.y, square_size, self.shape, bridge_color)
+        draw_bridge_road(
+            screen,
+            self.position.x,
+            self.position.y,
+            square_size,
+            self.shape,
+            bridge_color,
+        )
 
 
 def update_road_bridge_shape(road_or_bridge, map):

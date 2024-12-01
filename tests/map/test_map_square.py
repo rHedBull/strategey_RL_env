@@ -2,10 +2,10 @@ from unittest.mock import Mock
 
 import pytest
 
-from map.map_settings import (COLOR_DEFAULT_BORDER, OWNER_DEFAULT_TILE,
-                              LandType, land_type_color)
-from map.map_square import Map_Square
-from map.MapPosition import MapPosition
+from rl_env.map.map_settings import (COLOR_DEFAULT_BORDER, OWNER_DEFAULT_TILE,
+                                     LandType, land_type_color)
+from rl_env.map.map_square import Map_Square
+from rl_env.map.MapPosition import MapPosition
 from rl_env.objects.Building import BuildingType
 from rl_env.objects.City import City
 from rl_env.objects.Farm import Farm
@@ -17,10 +17,12 @@ def map_square():
     """
     Fixture to create a Map_Square instance before each test.
     """
-    mock_city_params = {"building_type_id": 1,
-                        "money_gain_per_turn": 110,
-                        "maintenance_cost_per_turn": 10,
-                        "max_level": 3}
+    mock_city_params = {
+        "building_type_id": 1,
+        "money_gain_per_turn": 110,
+        "maintenance_cost_per_turn": 10,
+        "max_level": 3,
+    }
     map_square = Map_Square(1, MapPosition(5, 10), land_value=LandType.LAND)
     yield mock_city_params, map_square
 
@@ -161,8 +163,7 @@ def test_has_building(map_square):
     """
     mock_city_params, map_square = map_square
 
-    mock_road_params = {"building_type_id": 2,
-                        "max_level": 3}
+    mock_road_params = {"building_type_id": 2, "max_level": 3}
     mock_agent_id = 7
     city = City(mock_agent_id, map_square.position, mock_city_params)
     road = Road(map_square.position, mock_road_params)
@@ -206,8 +207,7 @@ def test_remove_building(map_square):
     mock_city_params, map_square = map_square
     mock_agent_id = 7
 
-    mock_road_params = {"building_type_id": 2,
-            "max_level": 3}
+    mock_road_params = {"building_type_id": 2, "max_level": 3}
     city = City(mock_agent_id, map_square.position, mock_city_params)
     road = Road(map_square.position, mock_road_params)
 
@@ -267,12 +267,9 @@ def test_has_road_and_bridge(map_square):
     """
     mock_city_params, map_square = map_square
 
-    mock_road_params = {"building_type_id": 2,
-                        "max_level": 3}
-    mock_bridge_params = {"building_type_id": 4,
-                        "max_level": 3}
-    mock_farm_params = {"building_type_id": 8,
-                        "max_level": 3}
+    mock_road_params = {"building_type_id": 2, "max_level": 3}
+    mock_bridge_params = {"building_type_id": 4, "max_level": 3}
+    mock_farm_params = {"building_type_id": 8, "max_level": 3}
     road = Road(map_square.position, mock_road_params)
     bridge = Bridge(map_square.position, mock_bridge_params)
     farm = Farm(0, map_square.position, mock_farm_params)

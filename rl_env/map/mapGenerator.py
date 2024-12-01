@@ -4,7 +4,7 @@ import uuid
 
 from settings.settings import Settings
 
-from map.sim_map import Map
+from rl_env.map.sim_map import Map
 
 # Configure logging
 logging.basicConfig(

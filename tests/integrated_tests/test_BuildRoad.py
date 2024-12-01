@@ -2,9 +2,9 @@ import json
 
 import pytest
 
-from map.map_settings import OWNER_DEFAULT_TILE, LandType
-from map.MapPosition import MapPosition
 from rl_env.environment import MapEnvironment
+from rl_env.map.map_settings import OWNER_DEFAULT_TILE, LandType
+from rl_env.map.MapPosition import MapPosition
 from rl_env.objects.Building import BuildingType
 from rl_env.objects.City import City
 
@@ -24,10 +24,12 @@ def setup():
     pos_y = 2
     position_1 = MapPosition(pos_x, pos_y)
     position_2 = MapPosition(pos_x + 1, pos_y)
-    mock_city_params = {"building_type_id": 1,
-                        "money_gain_per_turn": 110,
-                        "maintenance_cost_per_turn": 10,
-                        "max_level": 3}
+    mock_city_params = {
+        "building_type_id": 1,
+        "money_gain_per_turn": 110,
+        "maintenance_cost_per_turn": 10,
+        "max_level": 3,
+    }
     city = City(agent_id, position_2, mock_city_params)
     yield env, city, agent_id, position_1, position_2
 

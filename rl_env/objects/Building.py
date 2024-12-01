@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Tuple, Dict
+from typing import Dict, Tuple
 from uuid import uuid1
 
 import pygame
 
-from map.MapPosition import MapPosition
+from rl_env.map import MapPosition
 
 
 class BuildingType(Enum):
@@ -32,7 +32,9 @@ class Building(ABC):
         self.building_type_id = building_parameters.get("building_type_id")
 
         self.money_gain_per_turn = building_parameters.get("money_gain_per_turn", 0)
-        self.maintenance_cost_per_turn = building_parameters.get("maintenance_cost_per_turn", 0)
+        self.maintenance_cost_per_turn = building_parameters.get(
+            "maintenance_cost_per_turn", 0
+        )
         self.income_per_turn = 0
         self.calculate_income()
 

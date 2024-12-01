@@ -3,12 +3,12 @@ from typing import Any, List, Tuple
 
 import numpy as np
 
-from agents.Sim_Agent import Agent
-from map.MapPosition import MapPosition
 from rl_env.actions.BuildCityAction import BuildCityAction
 from rl_env.actions.BuildFarmAction import BuildFarmAction
 from rl_env.actions.BuildRoadAction import BuildBridgeAction, BuildRoadAction
 from rl_env.actions.ClaimAction import ClaimAction
+from rl_env.map.MapPosition import MapPosition
+from rl_env.Sim_Agent import Agent
 
 invalid_action_penalty = -10
 

@@ -25,7 +25,6 @@ def test_reset(env):
     map_observation = observation["map"]
     agent_observation = observation["agents"]
 
-
     assert isinstance(
         map_observation, np.ndarray
     ), "Reset should return an map_observation of type np.ndarray"

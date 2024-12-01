@@ -37,7 +37,7 @@ class LandType(Enum):
     RIVER = 2
     MARSH = 3
     MOUNTAIN = 4
-    DESERT = 5 # if you change this you need to change observation space
+    DESERT = 5  # if you change this you need to change observation space
 
 
 def land_type_color(land_type: LandType):

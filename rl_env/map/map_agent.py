@@ -1,7 +1,7 @@
 import math
 import random
 
-from map.map_settings import LandType
+from rl_env.map.map_settings import LandType
 
 
 class Map_Agent:

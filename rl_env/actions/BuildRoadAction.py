@@ -1,8 +1,8 @@
-from agents.Sim_Agent import Agent
-from map.MapPosition import MapPosition
 from rl_env.actions.BuildAction import BuildAction
+from rl_env.map import MapPosition
 from rl_env.objects.Building import BuildingType
 from rl_env.objects.Road import Bridge, Road, update_road_bridge_shape
+from rl_env.Sim_Agent import Agent
 
 
 class BuildRoadAction(BuildAction):
