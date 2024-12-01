@@ -1,8 +1,8 @@
-from rl_env.actions.BuildAction import BuildAction
-from rl_env.map import MapPosition
-from rl_env.objects.Building import BuildingType
-from rl_env.objects.Farm import Farm
-from rl_env.Agent import Agent
+from strategyRLEnv.actions.BuildAction import BuildAction
+from strategyRLEnv.map import MapPosition
+from strategyRLEnv.objects.Building import BuildingType
+from strategyRLEnv.objects.Farm import Farm
+from strategyRLEnv.Agent import Agent
 
 
 class BuildFarmAction(BuildAction):

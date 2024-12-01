@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 from typing import Dict
 
-from rl_env.actions.Action import Action, ActionType
-from rl_env.map.map_settings import ALLOWED_BUILDING_PLACEMENTS
-from rl_env.map.MapPosition import MapPosition
-from rl_env.objects.Building import BuildingType
-from rl_env.Agent import Agent
+from strategyRLEnv.actions.Action import Action, ActionType
+from strategyRLEnv.map.map_settings import ALLOWED_BUILDING_PLACEMENTS
+from strategyRLEnv.map.MapPosition import MapPosition
+from strategyRLEnv.objects.Building import BuildingType
+from strategyRLEnv.Agent import Agent
 
 
 class BuildAction(Action, ABC):

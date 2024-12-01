@@ -2,11 +2,11 @@ import json
 
 import pytest
 
-from rl_env.environment import MapEnvironment
-from rl_env.map.map_settings import OWNER_DEFAULT_TILE
-from rl_env.map.MapPosition import MapPosition
-from rl_env.objects.City import City
-from rl_env.objects.Road import Bridge, Road
+from strategyRLEnv.environment import MapEnvironment
+from strategyRLEnv.map.map_settings import OWNER_DEFAULT_TILE
+from strategyRLEnv.map.MapPosition import MapPosition
+from strategyRLEnv.objects.City import City
+from strategyRLEnv.objects.Road import Bridge, Road
 
 
 @pytest.fixture

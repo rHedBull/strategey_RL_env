@@ -1,7 +1,7 @@
 # land specific colors
 from enum import Enum, auto
 
-from rl_env.objects.Building import BuildingType
+from strategyRLEnv.objects.Building import BuildingType
 
 COLOR_DEFAULT_LAND = (34, 139, 34)
 COLOR_DEFAULT_RIVER = (0, 255, 255)

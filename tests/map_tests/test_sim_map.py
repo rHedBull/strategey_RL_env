@@ -2,13 +2,13 @@ import json
 
 import pytest
 
-from rl_env.environment import MapEnvironment
-from rl_env.map.map_settings import OWNER_DEFAULT_TILE, LandType, max_agent_id
-from rl_env.map.map_square import Map_Square
-from rl_env.map.MapPosition import MapPosition
-from rl_env.map.sim_map import Map, check_valid_agent_id
-from rl_env.objects.City import City
-from rl_env.Agent import Agent
+from strategyRLEnv.environment import MapEnvironment
+from strategyRLEnv.map.map_settings import OWNER_DEFAULT_TILE, LandType, max_agent_id
+from strategyRLEnv.map.map_square import Map_Square
+from strategyRLEnv.map.MapPosition import MapPosition
+from strategyRLEnv.map.sim_map import Map, check_valid_agent_id
+from strategyRLEnv.objects.City import City
+from strategyRLEnv.Agent import Agent
 
 
 class MockAgent:

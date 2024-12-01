@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from enum import Enum, auto
 
-from rl_env.map import MapPosition
-from rl_env.Agent import Agent
+from strategyRLEnv.map import MapPosition
+from strategyRLEnv.Agent import Agent
 
 
 class ActionType(Enum):

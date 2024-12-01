@@ -3,12 +3,12 @@ import json
 import numpy as np
 import pytest
 
-from rl_env.ActionManager import create_action
-from rl_env.actions.BuildCityAction import BuildCityAction
-from rl_env.actions.BuildFarmAction import BuildFarmAction
-from rl_env.actions.BuildRoadAction import BuildBridgeAction, BuildRoadAction
-from rl_env.actions.ClaimAction import ClaimAction
-from rl_env.environment import MapEnvironment
+from strategyRLEnv.ActionManager import create_action
+from strategyRLEnv.actions.BuildCityAction import BuildCityAction
+from strategyRLEnv.actions.BuildFarmAction import BuildFarmAction
+from strategyRLEnv.actions.BuildRoadAction import BuildBridgeAction, BuildRoadAction
+from strategyRLEnv.actions.ClaimAction import ClaimAction
+from strategyRLEnv.environment import MapEnvironment
 
 
 class MockAgent:

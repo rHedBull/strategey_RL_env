@@ -2,14 +2,14 @@ from unittest.mock import Mock
 
 import pytest
 
-from rl_env.map.map_settings import (COLOR_DEFAULT_BORDER, OWNER_DEFAULT_TILE,
-                                     LandType, land_type_color)
-from rl_env.map.map_square import Map_Square
-from rl_env.map.MapPosition import MapPosition
-from rl_env.objects.Building import BuildingType
-from rl_env.objects.City import City
-from rl_env.objects.Farm import Farm
-from rl_env.objects.Road import Bridge, Road
+from strategyRLEnv.map.map_settings import (COLOR_DEFAULT_BORDER, OWNER_DEFAULT_TILE,
+                                            LandType, land_type_color)
+from strategyRLEnv.map.map_square import Map_Square
+from strategyRLEnv.map.MapPosition import MapPosition
+from strategyRLEnv.objects.Building import BuildingType
+from strategyRLEnv.objects.City import City
+from strategyRLEnv.objects.Farm import Farm
+from strategyRLEnv.objects.Road import Bridge, Road
 
 
 @pytest.fixture

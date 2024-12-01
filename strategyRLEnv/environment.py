@@ -5,9 +5,9 @@ import numpy as np
 import pygame
 from gymnasium import spaces
 
-from rl_env.ActionManager import ActionManager
-from rl_env.map.sim_map import Map
-from rl_env.Agent import Agent
+from strategyRLEnv.ActionManager import ActionManager
+from strategyRLEnv.map.sim_map import Map
+from strategyRLEnv.Agent import Agent
 
 
 def check_done(agent):

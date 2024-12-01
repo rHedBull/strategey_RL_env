@@ -4,7 +4,7 @@ import gymnasium as gym
 import numpy as np
 import pytest
 
-from rl_env.environment import MapEnvironment
+from strategyRLEnv.environment import MapEnvironment
 
 
 @pytest.fixture

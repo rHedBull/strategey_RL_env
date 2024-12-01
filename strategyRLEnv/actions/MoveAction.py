@@ -1,7 +1,7 @@
 from typing import Tuple
 
-from rl_env.actions.Action import Action, ActionType
-from rl_env.Agent import Agent
+from strategyRLEnv.actions.Action import Action, ActionType
+from strategyRLEnv.Agent import Agent
 
 
 def calculate_new_position(

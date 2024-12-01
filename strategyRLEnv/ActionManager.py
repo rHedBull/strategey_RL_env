@@ -3,12 +3,12 @@ from typing import Any, List, Tuple
 
 import numpy as np
 
-from rl_env.actions.BuildCityAction import BuildCityAction
-from rl_env.actions.BuildFarmAction import BuildFarmAction
-from rl_env.actions.BuildRoadAction import BuildBridgeAction, BuildRoadAction
-from rl_env.actions.ClaimAction import ClaimAction
-from rl_env.map.MapPosition import MapPosition
-from rl_env.Agent import Agent
+from strategyRLEnv.actions.BuildCityAction import BuildCityAction
+from strategyRLEnv.actions.BuildFarmAction import BuildFarmAction
+from strategyRLEnv.actions.BuildRoadAction import BuildBridgeAction, BuildRoadAction
+from strategyRLEnv.actions.ClaimAction import ClaimAction
+from strategyRLEnv.map.MapPosition import MapPosition
+from strategyRLEnv.Agent import Agent
 
 invalid_action_penalty = -10
 

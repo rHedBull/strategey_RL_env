@@ -2,9 +2,9 @@ from typing import Dict
 
 import pygame
 
-from rl_env.map import MapPosition
-from rl_env.objects.Building import Building, BuildingType
-from rl_env.objects.Ownable import Ownable
+from strategyRLEnv.map import MapPosition
+from strategyRLEnv.objects.Building import Building, BuildingType
+from strategyRLEnv.objects.Ownable import Ownable
 
 
 class Farm(Building, Ownable):

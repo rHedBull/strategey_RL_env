@@ -1,0 +1,16 @@
+[tool.setuptools]
+packages = ["strategyRlEnv"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = "requirements.txt" }
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rl_env"
+version = "0.1.0"
+description = "A reinforcement learning environment based on simple game mechanics similar to Civilization"
+dependencies = []
+

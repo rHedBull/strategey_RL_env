@@ -3,8 +3,8 @@ from typing import Tuple
 import numpy as np
 import pygame
 
-from rl_env.map.map_settings import AGENT_COLORS, PLAYER_COLOR
-from rl_env.map.MapPosition import MapPosition
+from strategyRLEnv.map.map_settings import AGENT_COLORS, PLAYER_COLOR
+from strategyRLEnv.map.MapPosition import MapPosition
 
 
 def get_visible_mask(agent_id: int, map_v):

@@ -3,11 +3,11 @@ import pickle
 
 import numpy as np
 
-from rl_env.map.map_agent import Map_Agent
-from rl_env.map.map_settings import LandType, max_agent_id
-from rl_env.map.map_square import Map_Square
-from rl_env.map.MapPosition import MapPosition
-from rl_env.Agent import Agent
+from strategyRLEnv.map.map_agent import Map_Agent
+from strategyRLEnv.map.map_settings import LandType, max_agent_id
+from strategyRLEnv.map.map_square import Map_Square
+from strategyRLEnv.map.MapPosition import MapPosition
+from strategyRLEnv.Agent import Agent
 
 
 def check_valid_agent_id(agent_id: int) -> bool:

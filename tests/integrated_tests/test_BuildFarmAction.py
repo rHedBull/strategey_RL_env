@@ -2,10 +2,10 @@ import json
 
 import pytest
 
-from rl_env.environment import MapEnvironment
-from rl_env.map.map_settings import LandType
-from rl_env.map.MapPosition import MapPosition
-from rl_env.objects.Building import BuildingType
+from strategyRLEnv.environment import MapEnvironment
+from strategyRLEnv.map.map_settings import LandType
+from strategyRLEnv.map.MapPosition import MapPosition
+from strategyRLEnv.objects.Building import BuildingType
 
 
 @pytest.fixture

@@ -1,9 +1,9 @@
-from rl_env.actions.BuildAction import BuildAction
-from rl_env.map.map_settings import OWNER_DEFAULT_TILE
-from rl_env.map.MapPosition import MapPosition
-from rl_env.objects.Building import BuildingType
-from rl_env.objects.City import City
-from rl_env.Agent import Agent
+from strategyRLEnv.actions.BuildAction import BuildAction
+from strategyRLEnv.map.map_settings import OWNER_DEFAULT_TILE
+from strategyRLEnv.map.MapPosition import MapPosition
+from strategyRLEnv.objects.Building import BuildingType
+from strategyRLEnv.objects.City import City
+from strategyRLEnv.Agent import Agent
 
 
 class BuildCityAction(BuildAction):
