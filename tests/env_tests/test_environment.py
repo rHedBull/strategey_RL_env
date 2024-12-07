@@ -33,6 +33,11 @@ def test_reset(env):
         agent_observation, np.ndarray
     ), "Reset should return an map_observation of type np.ndarray"
 
+    # call with invalid input should raise exception
+    with pytest.raises(ValueError):
+        env.reset(seed="invalid")
+
+
 
 def test_step(env):
     # Test step function
@@ -52,9 +57,6 @@ def test_step(env):
     observation, reward, terminated, truncated, info = env.step(
         [agent_0_random_actions, agent_1_random_actions]
     )
-    observation, reward, terminated, truncated, info = env.step(
-        [agent_2_random_actions]
-    )
 
     map_observation = observation["map"]
     agent_observation = observation["agents"]
@@ -67,11 +69,13 @@ def test_step(env):
         agent_observation, np.ndarray
     ), "Reset should return an map_observation of type np.ndarray"
     assert isinstance(reward, np.ndarray), "Reward should be a numpy array"
-    assert isinstance(terminated, bool), "Terminated flag should be a boolean"
-    assert isinstance(truncated, bool), "Truncated flag should be a boolean"
+    assert isinstance(terminated, list), "Terminated flag should be a boolean"
+    assert isinstance(terminated[0], bool), "Terminated should be list of bools"
+    assert isinstance(truncated, list), "Truncated flag should be a boolean"
+    assert isinstance(truncated[0], bool), "truncated should be list of bools"
     assert isinstance(info, dict), "Info should be a dictionary"
 
-    observation, reward, terminated, truncated, info = env.step([agent_invalid_action])
+    observation, reward, terminated, truncated, info = env.step([agent_0_random_actions])
     assert isinstance(
         map_observation, np.ndarray
     ), "Reset should return an map_observation of type np.ndarray"
@@ -80,9 +84,19 @@ def test_step(env):
         agent_observation, np.ndarray
     ), "Reset should return an map_observation of type np.ndarray"
     assert isinstance(reward, np.ndarray), "Reward should be a numpy array"
-    assert isinstance(terminated, bool), "Terminated flag should be a boolean"
-    assert isinstance(truncated, bool), "Truncated flag should be a boolean"
+    assert isinstance(terminated, list), "Terminated flag should be a boolean"
+    assert isinstance(terminated[0], bool), "Terminated should be list of bools"
+    assert isinstance(truncated, list), "Truncated flag should be a boolean"
+    assert isinstance(truncated[0], bool), "truncated should be list of bools"
     assert isinstance(info, dict), "Info should be a dictionary"
+
+    with pytest.raises(ValueError):
+        actions = [[[0, 0]]]
+        observation, reward, terminated, truncated, info = env.step(actions)
+
+    with pytest.raises(ValueError):
+        action_set = set()
+        observation, reward, terminated, truncated, info = env.step(action_set)
 
 
 def test_action_space(env):

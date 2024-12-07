@@ -65,6 +65,17 @@ class MapEnvironment(gym.Env):
     ):
         super(MapEnvironment, self).__init__()
 
+        if not isinstance(env_settings, Dict):
+            raise ValueError("env_settings should be a dictionary")
+        if not isinstance(num_agents, int):
+            raise ValueError("num_agents should be an integer")
+        if render_mode not in ["human", "rgb_array"]:
+            raise ValueError("render_mode should be either 'human' or 'rgb_array'")
+        if seed is not None:
+            if not isinstance(seed, int):
+                raise ValueError("seed should be an integer")
+
+
         self.env_settings = env_settings
 
         self.num_agents = num_agents
@@ -93,6 +104,11 @@ class MapEnvironment(gym.Env):
         """
         Resets the environment to an initial state and returns an initial observation.
         """
+
+        if seed is not None:
+            if not isinstance(seed, int):
+                raise ValueError("seed should be an integer")
+
         super().reset(seed=seed)
         self.map.reset()
         for agent in self.agents:
@@ -101,13 +117,22 @@ class MapEnvironment(gym.Env):
         info = {"info": "no info here"}
         return observations, info
 
-    def step(self, actions: Any):
+    def step(self, actions: List[List[List[int]]]):
         """
         Executes the actions for all agents and updates the environment state.
 
         Args:
-            actions (List[Dict[str, int]]): A list of action dictionaries for each agent.
+            actions is a 3D list of integers,
+            dimension 1 : list of agents,
+            dimension 2 : list of agents per action,
+            dimension 3 : ndarray of action parameters
         """
+        # input validation
+        if (not isinstance(actions, list)) or (not isinstance(actions[0], list)):
+            raise ValueError("actions should be a 3D list of integers")
+        if not len(actions[0][0]) == 3:
+            raise ValueError("each individual action is should be defined by 3 integers, [action_id, x, y]")
+
         info = {}
 
         rewards, dones = self.action_manager.apply_actions(actions)
@@ -116,8 +141,9 @@ class MapEnvironment(gym.Env):
 
         observations = self._get_observation()
 
-        truncated = False
-        return observations, rewards, False, truncated, info
+        truncated = [False for _ in range(self.num_agents)]
+        dones = [False for _ in range(self.num_agents)]
+        return observations, rewards, dones, truncated, info
 
     def render(self):
         """
