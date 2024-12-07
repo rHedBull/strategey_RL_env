@@ -20,17 +20,12 @@ class BuildAction(Action, ABC):
             return False
 
         if not fit_building_to_land_type(env, self.position, self.building_type):
-            print(f"Agent {self.agent.id}: Tile at {self.position} is not buildable")
             return False
 
         if not env.map.is_visible(self.position, self.agent.id):
-            print(f"Agent {self.agent.id}: Tile at {self.position} is not visible")
             return False
 
         if env.map.get_tile(self.position).has_any_building():
-            print(
-                f"Agent {self.agent.id}: Tile at {self.position} already has a building"
-            )
             return False
 
         return True
@@ -39,9 +34,6 @@ class BuildAction(Action, ABC):
         self.perform_build(env)
         self.agent.money -= self.get_cost(env)
         reward = self.get_reward(env)
-        print(
-            f"Agent {self.agent.id}: Built {self.building_type.value} at {self.position}. Reward: {reward}"
-        )
         return reward
 
     @abstractmethod

@@ -26,15 +26,9 @@ class Action(ABC):
         """
         action_cost = self.get_cost(env)
         if self.agent.money < action_cost:
-            print(f"Agent {self.agent.id}: Not enough money to do action.")
             return False
 
-        # right now all actions have a position
-        # might have to adapt this later
         if not env.map.check_position_on_map(self.position):
-            print(
-                f"Agent {self.agent.id}: position for action {self.position} is out of bounds."
-            )
             return False
 
         return True

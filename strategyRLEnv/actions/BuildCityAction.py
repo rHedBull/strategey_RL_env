@@ -19,13 +19,11 @@ class BuildCityAction(BuildAction):
 
         if tile_owner_id == self.agent.id:
             if tile.has_any_building():
-                print(f"Tile{self.position} already has a Building.")
                 return False
             else:
                 return True
 
         if tile_owner_id != OWNER_DEFAULT_TILE:
-            print(f"Tile{self.position} is already owned by an agent.")
             return False
 
         return True

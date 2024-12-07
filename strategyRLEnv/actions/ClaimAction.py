@@ -15,12 +15,10 @@ class ClaimAction(Action):
             return False
 
         if env.map.get_tile(self.position).get_owner() != OWNER_DEFAULT_TILE:
-            print(f"Tile{self.position} is already owned by an agent.")
             return False
 
         # check if visible for agent
         if not env.map.is_visible(self.position, self.agent.id):
-            print(f"Tile{self.position} is not visible for agent.")
             return False
 
         # surrounding tiles
@@ -33,7 +31,6 @@ class ClaimAction(Action):
                 break
 
         if not adjacent_claimed:
-            print(f"Tile{self.position} is not adjacent to any claimed tile.")
             return False
 
         return True
@@ -45,9 +42,6 @@ class ClaimAction(Action):
 
         self.agent.money -= env.action_manager.actions_definition["claim"]["cost"]
         reward = env.action_manager.actions_definition["claim"]["reward"]
-        print(
-            f"Agent {self.agent.id}: Claimed tile at {self.position}. Reward: {reward}"
-        )
         return reward
 
 

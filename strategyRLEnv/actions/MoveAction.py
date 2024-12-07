@@ -43,7 +43,4 @@ class MoveAction(Action):
         self.agent.position = self.position
         self.agent.money -= env.action_manager.actions_definition["move"]["cost"]
         reward = env.action_manager.actions_definition["move"]["reward"]
-        print(
-            f"Agent {self.agent.id}: Moved to {self.agent.position}. Reward: {reward}"
-        )
         return reward

@@ -18,7 +18,6 @@ class BuildFarmAction(BuildAction):
 
         if tile_owner_id == self.agent.id:
             if tile.has_any_building():
-                print(f"Tile{self.position} already has a Building.")
                 return False
             else:
                 return True
