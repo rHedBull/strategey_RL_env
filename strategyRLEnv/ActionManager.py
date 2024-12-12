@@ -10,9 +10,6 @@ from strategyRLEnv.actions.ClaimAction import ClaimAction
 from strategyRLEnv.map.MapPosition import MapPosition
 from strategyRLEnv.Agent import Agent
 
-invalid_action_penalty = -10
-
-
 def create_action(agent: Agent, action_type, position: MapPosition):
     if action_type == "claim":
         return ClaimAction(agent, position)
@@ -42,6 +39,7 @@ class ActionManager:
         self.env = env
 
         self.actions_definition = self.env.env_settings.get("actions")
+        self.invalid_action_penalty = self.actions_definition.get("invalid_action_penalty")
 
         # Define a structured array with the fields 'action' and 'agent_id'.
         self.conflict_map = {}
@@ -60,9 +58,7 @@ class ActionManager:
         """
 
         agents = self.env.agents
-        rewards = np.zeros(
-            len(agents), dtype=float
-        )  # TODO: init with invalid action penalty
+        rewards = np.full(len(agents), self.invalid_action_penalty, dtype=float)
         dones = np.zeros(len(agents), dtype=bool)
 
         for agent, agent_actions in zip(agents, actions):

@@ -261,6 +261,8 @@ class MapEnvironment(gym.Env):
         enabled_actions = []
 
         for action_name, action_properties in actions.items():
+            if action_name == "invalid_action_penalty":
+                continue
             # Check if the action is enabled (cost is not -1)
             if action_properties.get("cost", -1) >= 0:
                 enabled_actions.append(action_name)
