@@ -25,8 +25,9 @@ def calculate_reward(agent):
 
 
 def setup_screen(render_mode: str):
-    if render_mode != "human":
-        return
+    default_screen_size_x = 1000
+    default_screen_size_y = 1000
+    pygame.init()
 
     screen = pygame.display.set_mode((default_screen_size_x, default_screen_size_y))
     pygame.display.set_caption("Agent-based Strategy RL")
@@ -39,8 +40,7 @@ def capture_game_state_as_image():
     return np.transpose(pygame.surfarray.array3d(screen_capture), axes=[1, 0, 2])
 
 
-default_screen_size_x = 1000
-default_screen_size_y = 1000
+
 
 
 class MapEnvironment(gym.Env):
@@ -155,12 +155,11 @@ class MapEnvironment(gym.Env):
         Returns:
             Optional[np.ndarray]: The rendered image array if mode is 'rgb_array', else None.
         """
+        self.map.draw(self.screen, 1, 0, 0)
+        for agent in self.agents:
+            agent.draw(self.map.tile_size, 0, 0, 0)
 
         if self.render_mode == "human":
-            # Implement rendering logic using Pygame or another library
-            self.map.draw(self.screen, 1, 0, 0)
-            for agent in self.agents:
-                agent.draw(self.map.tile_size, 0, 0, 0)
             # Update the display
             pygame.display.flip()
 
@@ -307,3 +306,13 @@ class MapEnvironment(gym.Env):
         # agent_info = np.array([])
 
         return {"map": map_observation, "agents": agent_observations}
+
+# # setup a main
+# if __name__ == "__main__":
+#     default_screen_size_x = 1000
+#     default_screen_size_y = 1000
+#     pygame.init()
+#
+#     screen = pygame.display.set_mode((default_screen_size_x, default_screen_size_y))
+#     pygame.display.set_caption("Agent-based Strategy RL")
+#     screen.fill((0, 0, 0))  # Fill the screen with black color
