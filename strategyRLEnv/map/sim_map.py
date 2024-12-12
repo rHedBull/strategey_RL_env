@@ -77,14 +77,11 @@ class Map:
 
         self.tiles = self.height * self.width
 
-        if self.env.render_mode == "human":
-            if self.height > self.width:
-                self.tile_size = int(self.env.screen.get_height() / self.height)
-            else:
-                self.tile_size = int(self.env.screen.get_width() / self.width)
-            self.tile_size = max(1, self.tile_size)
+        if self.height > self.width:
+            self.tile_size = int(self.env.screen.get_height() / self.height)
         else:
-            self.tile_size = -1  # not needed if no rendering
+            self.tile_size = int(self.env.screen.get_width() / self.width)
+        self.tile_size = max(1, self.tile_size)
 
         self.continuous_map = settings.get("continuous_map")
 

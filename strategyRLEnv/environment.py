@@ -168,6 +168,7 @@ class MapEnvironment(gym.Env):
 
         elif self.render_mode == "rgb_array":
             # Return an RGB array of the current frame
+            pygame.display.flip()
             screen_capture = capture_game_state_as_image()
             return screen_capture
         else:
