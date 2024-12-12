@@ -29,7 +29,10 @@ def setup_screen(render_mode: str):
     default_screen_size_y = 1000
     pygame.init()
 
-    screen = pygame.display.set_mode((default_screen_size_x, default_screen_size_y))
+    if render_mode != "human":
+        screen = pygame.display.set_mode((default_screen_size_x, default_screen_size_y), pygame.HIDDEN)
+    else:
+        screen = pygame.display.set_mode((default_screen_size_x, default_screen_size_y))
     pygame.display.set_caption("Agent-based Strategy RL")
     screen.fill((0, 0, 0))  # Fill the screen with black color
     return screen
@@ -306,13 +309,3 @@ class MapEnvironment(gym.Env):
         # agent_info = np.array([])
 
         return {"map": map_observation, "agents": agent_observations}
-
-# # setup a main
-# if __name__ == "__main__":
-#     default_screen_size_x = 1000
-#     default_screen_size_y = 1000
-#     pygame.init()
-#
-#     screen = pygame.display.set_mode((default_screen_size_x, default_screen_size_y))
-#     pygame.display.set_caption("Agent-based Strategy RL")
-#     screen.fill((0, 0, 0))  # Fill the screen with black color
