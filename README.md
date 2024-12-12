@@ -1,3 +1,10 @@
+# setup
+
+if both repos are only local
+```bash
+pip install -e /path/to/other/repo
+```
+
 # Civ Sim
 
 ## Game Rules
@@ -11,21 +18,21 @@
 #### Roads
 - must be placed on an already self claimed tile
 - or next to another building including roads and bridges
-- only placable on: normal Land, Dessert and Marsh
+- only placeable on: normal Land, Dessert and Marsh
 
 #### Bridge
 - must be placed on an already self claimed tile
 - or next to another building including roads and bridges
-- - only placable on: normal Ocean and River
+  - only placeable on: normal Ocean and River
 
 #### City
 - can only be placed on a visible or already self claimed tiles
 - placing a city claims the tile
-- only placable on: normal Land, Dessert and Marsh
+- only placeable on: normal Land, Dessert and Marsh
 
 #### Farm
 - can only be placed on an already self claimed tile
-- only placable on: normal Land and Marsh
+- only placeable on: normal Land and Marsh
 
 # RL considerations
 
@@ -95,13 +102,9 @@ python -m memory_profiler your_script.py
 
 # TODO
 
-- [ ] adapt more stringly to openAI gym interface
-- [ ] pygame should only be needed to handle here
-
 ## RL Setup
 - [ ] Integrartion with PufferLib
 - [ ] Optimized for RL, Cython?, JAX?
-- [ ] restructure project setup
 
 
 ## Utils
@@ -123,10 +126,10 @@ python -m memory_profiler your_script.py
 - enable actual biomes
 - make height relevant for water and mountain
 - map seperated from env, first create env, then function to create map, enable generating maps, loading maps into env
+- [ ] optimized multi map generation, save and load topology map as tensor, to be able to generate maps faster
 
 ## RL
 
-- [ ] calculate just execution time for different map sizes and agent counts on hardware
 - [ ] make some kind of run setup to run on the different maps of different settings and logg
 
 ### Observation
@@ -134,22 +137,24 @@ python -m memory_profiler your_script.py
 - [ ] adjust height, biomes and other min and max values in obs space
   - [ ] add option for continuos map
   - differentiate between tiles seen and claimed and how it influences where actions can happen
-
+- [ ] define when done or truncated 
 ### Rewards
 - [ ] calculate rewards better, decide what rewards to give
 
 
 ### Actions
-- [ ] !! adjust action space
 - [ ] account for continuous maps in action checks
 - [ ] add Mine with resource extraction
+        # right now all actions have a position
+        # might have to adapt this later
 
 ## UI
 - [ ] zooming, moving?
 - [ ] Better Game termination log, why did it terminate?, which round?
-- [ ] round counter in ui
+
 - [ ] better logging for other agents, what actions they choose
 - [ ] City ID connected to city owner?
+
 
 ## Dev Ops
 - [ ] move stuff to cython
@@ -158,7 +163,7 @@ python -m memory_profiler your_script.py
 - [ ] add more tests, increase coverage
 - [ ] add more scenario tests
 - [ ] scaling tests, on predefined test map, small and large scale, by map size and agent count
-
+- [ ] documentation!!
 
 ## Far fetched
 - [ ] tech tree, some actions only possible if reached a level
@@ -219,3 +224,9 @@ graph LR
 ## coding tools
 
 * https://neptune.ai/blog/tensorboard-tutorial
+
+# Bugs
+
+- [ ] if bug with pyopengl for rendering you might need to do this: https://programmersought.com/article/82837518484/
+- [ ] if error with rendering accessing the libGL error MESA-LOADER  failed to open iris driver try this command 'conda install -c conda-forge libstdcxx-ng', more info here: https://stackoverflow.com/questions/72110384/libgl-error-mesa-loader-failed-to-open-iris
+- 
