@@ -137,7 +137,8 @@
             "money_gain_per_turn": 20,
             "maintenance_cost_per_turn": 5,
             "max_level": 3
-        }
+        },
+        "invalid_action_penalty": -10
     },
     "map_features": [
         {

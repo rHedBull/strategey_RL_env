@@ -70,8 +70,8 @@ class ActionManager:
                 action_type = self.env.action_mapping.get(action[0])
                 if action_type is None:
                     # Handle unknown action type
-                    rewards[agent.id] += invalid_action_penalty
-                    continue
+                    raise ValueError(f"Unknown action type: {action[0]}")
+
                 x = action[1]
                 y = action[2]
                 position = MapPosition(x, y)
