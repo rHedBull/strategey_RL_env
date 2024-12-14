@@ -84,9 +84,12 @@ class MapEnvironment(gym.Env):
         for agent in self.agents:
             agent.reset()
 
-    def reset(self, seed=None):
+    def reset(self, seed=None, map_file=None):
         """
-        Resets the environment to an initial state and returns an initial observation. Generates a new map with the same map settings.
+        Resets the environment to an initial state and returns an initial observation.
+        Args:
+            seed: The seed for the environment's random number generator.
+            map_file: if defined, the map will be created from the topology defined in the file
         """
 
         if seed is not None:
@@ -94,7 +97,7 @@ class MapEnvironment(gym.Env):
                 raise ValueError("seed should be an integer")
 
         super().reset(seed=seed)
-        self.map = generate_finished_map(self, self.env_settings)
+        self.map = generate_finished_map(self, self.env_settings, map_file)
         for agent in self.agents:
             agent.reset()
         observations = self._get_observation()
@@ -293,13 +296,3 @@ class MapEnvironment(gym.Env):
         # agent_info = np.array([])
 
         return {"map": map_observation, "agents": agent_observations}
-
-    def generate_maps(self, num_maps: int, seed= None, out_dir= None, new_map_settings: Optional[Dict[str, Any]] = None):
-        """
-        Generates a set of maps for the environment to use.
-
-        Args:
-            num_maps (int): The number of maps to generate.
-        """
-        maps = generate_maps(num_maps, new_map_settings, out_dir)
-        return maps

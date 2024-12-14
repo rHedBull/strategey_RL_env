@@ -34,16 +34,26 @@ def topology_to_map(topology_array):
 
     return created_map
 
-def generate_finished_map(connected_env, map_settings):
-    width = map_settings.get("map_width", 100)
-    height = map_settings.get("map_height", 100)
+def generate_finished_map(connected_env, map_settings=None, path_to_map_file=None):
 
-    water_percentage = map_settings.get("water_budget_per_agent", 0.3)
-    mountain_percentage = map_settings.get("mountain_budget_per_agent", 0.1)
-    dessert_percentage = map_settings.get("dessert_budget_per_agent", 0.1)
+    if path_to_map_file:
+        with open(path_to_map_file, "rb") as file:
+            map_array = pickle.load(file)
+        height = len(map_array)
+        width = len(map_array[0])
+        finished_map = topology_to_map(map_array)
+    else:
+        if not map_settings:
+            raise ValueError("No map settings or path to map file provided")
+        width = map_settings.get("map_width", 100)
+        height = map_settings.get("map_height", 100)
 
-    topology_array = create_topologies(1, width, height, water_percentage, mountain_percentage, dessert_percentage)
-    finished_map = topology_to_map(topology_array[0])
+        water_percentage = map_settings.get("water_budget_per_agent", 0.3)
+        mountain_percentage = map_settings.get("mountain_budget_per_agent", 0.1)
+        dessert_percentage = map_settings.get("dessert_budget_per_agent", 0.1)
+
+        topology_array = create_topologies(1, width, height, water_percentage, mountain_percentage, dessert_percentage)
+        finished_map = topology_to_map(topology_array[0])
 
     finished_map.env = connected_env
 
@@ -55,7 +65,22 @@ def generate_finished_map(connected_env, map_settings):
 
     return finished_map
 
-def generate_map_topologies(numb, map_settings, path=None):
+def generate_map_topologies(numb, map_settings, seed=None, path=None):
+    """
+    Generate map topologies and save them to files.
+    Args:
+        numb: number of maps to generate
+        map_settings: dictionary with settings for the map generation
+        seed: seed for random number generation
+        path: path to save the maps to
+
+    Returns:
+
+    """
+
+    if seed:
+        raise NotImplementedError("Seed is not implemented yet")
+
     # Ensure output directory exists
     os.makedirs(path, exist_ok=True)
     print("Generating {} maps. Output directory: {}".format(numb, path))
@@ -69,6 +94,7 @@ def generate_map_topologies(numb, map_settings, path=None):
 
     # Generate maps using settings and save to file
     map_arrays = create_topologies(numb, width, height, water_percentage, mountain_percentage, dessert_percentage)
+
     for i in range(numb):
         map_array = map_arrays[i]
         map_name = generate_map_name(width, height, water_percentage, mountain_percentage, dessert_percentage, i)
@@ -80,51 +106,64 @@ def generate_map_topologies(numb, map_settings, path=None):
             print(f"Failed to save map to {map_file_path}: {e}")
     print(f"{numb} maps generated and saved to {path}")
 
-def let_map_agent_run(map_array, land_type_percentage, tiles, LAND_TYPE_VALUE):
+def let_map_agent_run(map_arrays, land_type_percentage, tiles, LAND_TYPE_VALUE):
     if land_type_percentage < 0:
         return
 
-    map_copy = map_array.copy()
+    map_copy = map_arrays.copy()
     total_tile_budget = tiles * land_type_percentage
-    numb_agents = int(min(10, (tiles * 0.01) + 1))
-    tile_budget_per_agent = int((total_tile_budget / numb_agents))
+    numb_agents_per_map = int(min(10, (tiles * 0.01) + 1))
+    tile_budget_per_agent = int((total_tile_budget / numb_agents_per_map))
+    map_count = len(map_arrays)
 
-    if (numb_agents * tile_budget_per_agent) > 0:
-        agents = [
-            Map_Agent(
-                random.randint(0, int(math.sqrt(tiles) - 1)),
-                random.randint(0, int(math.sqrt(tiles) - 1)),
-                tile_budget_per_agent,
-            )
-            for i in range(numb_agents)
-        ]
+
+    if (numb_agents_per_map * tile_budget_per_agent) > 0:
+
+        for m in range(map_count):
+            agents = [
+                Map_Agent(
+                    random.randint(0, int(math.sqrt(tiles) - 1)),
+                    random.randint(0, int(math.sqrt(tiles) - 1)),
+                    m,
+                    tile_budget_per_agent,
+                )
+                for i in range(numb_agents_per_map)
+            ]
+
 
         running = True
+        # make random walk decision for all agents at once
+
         while running:
-            for agent in agents:
-                agent.random_walk(map_copy, tiles, LAND_TYPE_VALUE)
+            left_agents = len(agents)
+            walks = np.random.randint(0, 8, size=(left_agents, 1))
+            agents_copy = agents.copy()
+            for i in range(len(agents_copy)):
+                agent = agents_copy[i]
+                walk = walks[i]
+                agent.step(map_copy, tiles, walk, LAND_TYPE_VALUE)
                 if agent.tile_budget == 0:
                     agents.remove(agent)
                 if len(agents) == 0:
                     running = False
+
     return map_copy
 
 def create_topologies(num, width, height, water_percentage, mountain_percentage, dessert_percentage):
     # Initialize the 2D list with the appropriate dimensions
-    map_arrays = []
-    for i in range(num):
-        map_array = np.zeros((width, height), dtype=np.int64)
-        total_tiles = width * height
 
-        # mountain agents
-        map_array = let_map_agent_run(map_array, mountain_percentage, total_tiles, LandType.MOUNTAIN)
 
-        # dessert agents
-        map_array = let_map_agent_run(map_array, dessert_percentage, total_tiles, LandType.DESERT)
+    map_arrays = [np.zeros((width, height), dtype=np.int64) for _ in range(num)]
+    total_tiles = width * height
 
-        # water agents
-        map_array = let_map_agent_run(map_array, water_percentage, total_tiles, LandType.OCEAN)
-        map_arrays.append(map_array)
+    # mountain agents
+    map_arrays = let_map_agent_run(map_arrays, mountain_percentage, total_tiles, LandType.MOUNTAIN)
+
+    # dessert agents
+    map_arrays = let_map_agent_run(map_arrays, dessert_percentage, total_tiles, LandType.DESERT)
+
+    # water agents
+    map_arrays = let_map_agent_run(map_arrays, water_percentage, total_tiles, LandType.OCEAN)
 
 
     # post processing is done together
@@ -166,31 +205,12 @@ def generate_map_name(width, height, water_percentage, mountain_percentage, dess
     map_name = f"map_{settings_values}_{unique_id}"
     return map_name
 
-def load_topography_to_Map(file_path):
-    """Load the map topography and resources from a pickle file."""
+def generate_maps(num_maps: int, map_settings= None, seed= None, out_dir= None):
+    """
+    Generates a set of maps for the environment to use.
+    Args:
+        num_maps (int): The number of maps to generate.
+    """
+    maps = generate_map_topologies(num_maps, map_settings, seed, out_dir)
 
-    with open(file_path, "rb") as file:
-        map_array = pickle.load(file)
-
-    # Reconstruct the map object
-    height = len(map_array)
-    width = len(map_array[0])
-    tiles = height * width
-    created_map = topology_to_map(map_array)
-    return created_map
-
-if __name__ == "__main__":
-    # Generate maps
-    map_settings = {
-        "map_width": 100,
-        "map_height": 100,
-        "water_budget_per_agent": 0.3,
-        "mountain_budget_per_agent": 0.1,
-        "dessert_budget_per_agent": 0.1,
-    }
-    generate_map_topologies(1, map_settings, path="maps")
-    print("Maps generated")
-    # Load maps
-    map_file_path = "maps/map_100_100_0.3_0.1_0.1_0_d06f76f5-20ac-4bfc-94ca-dbfeed365503.pickle"
-    loaded_map = load_topography_to_Map(map_file_path)
-    print("Map loaded")
+    return maps
