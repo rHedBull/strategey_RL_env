@@ -14,14 +14,11 @@ class Map_Agent:
 
     def random_walk(self, world_map:[[]], tiles_in_map, land_type: LandType):
         # Random walk step
-        step_x = random.choice([-1, 1])
-        step_y = random.choice([-1, 1])
-        if random.choice(
-            [True, False]
-        ):  # Randomly decide to move horizontally or vertically
-            self.x += step_x
-        else:
-            self.y += step_y
+        step = random.choice([(1,-1),(1,0), (1,1), (0,-1), (0,1), (-1,-1), (-1,0), (-1,1)])
+        step_x = step[0]
+        step_y = step[1]
+        self.x += step_x
+        self.y += step_y
 
         # Keep the agent within bounds of the world
         self.x = max(0, min(self.x, int(math.sqrt(tiles_in_map)) - 1))
