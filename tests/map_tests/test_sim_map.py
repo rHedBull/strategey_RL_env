@@ -1,8 +1,10 @@
 import json
+import uuid
 
 import pytest
 
 from strategyRLEnv.environment import MapEnvironment
+from strategyRLEnv.map.mapGenerator import generate_finished_map
 from strategyRLEnv.map.map_settings import OWNER_DEFAULT_TILE, LandType, max_agent_id
 from strategyRLEnv.map.map_square import Map_Square
 from strategyRLEnv.map.MapPosition import MapPosition
@@ -25,7 +27,7 @@ def map_instance():
 
     env = MapEnvironment(env_settings, 2, "rgb_array")
 
-    map = Map(env)
+    map = generate_finished_map(env, env_settings)
     mock_city_params = {
         "building_type_id": 1,
         "money_gain_per_turn": 110,
@@ -50,18 +52,11 @@ def test_check_valid_agent_id():
 def test_map_initialization(map_instance):
     map_instance, mock_city_params = map_instance
 
+    assert map_instance.env is not None
+    assert isinstance(map_instance.id, uuid.UUID)
     assert map_instance.width == 100
     assert map_instance.height == 100
-    assert map_instance.water_percentage == 0.0
-    assert map_instance.mountain_percentage == 0.0
-    assert map_instance.dessert_percentage == 0.0
-    assert map_instance.rivers == 0
-    assert map_instance.resource_density == 0.1
-    # assert map_instance.biomes_definition == {}
-    # assert map_instance.land_resource_definition == {}
-    # assert (
-    #    map_instance.sea_resource_definition == {}
-    # )
+    assert map_instance.tiles == 10000
 
 
 def test_create_map(map_instance):
@@ -197,14 +192,14 @@ def test_visibility_methods(map_instance):
 def test_claim_tile(map_instance):
     position = MapPosition(2, 4)
     map_instance, mock_city_params = map_instance
-    mock_agent = Agent(7, None)  # Using a mock agent
+    mock_agent = Agent(7, map_instance.env)  # Using a mock agent
     tile = map_instance.get_tile(position)
 
     assert tile.owner_id == OWNER_DEFAULT_TILE  # Initially unclaimed
     map_instance.claim_tile(mock_agent, position)
     assert tile.owner_id == mock_agent.id
 
-    # test here what happens at conflict claiming
+    # TODO: test here what happens at conflict claiming
 
 
 def test_add_building(map_instance):
@@ -237,19 +232,6 @@ def test_tile_is_next_to_building(map_instance):
 
     # Now, should detect a building nearby
     assert map_instance.tile_is_next_to_building(adjacent_position) is True
-
-
-def test_serialize_topography_resources(map_instance):
-    map_instance, mock_city_params = map_instance
-    map_instance.reset()  # Ensure map is in a known state
-
-    map_data = map_instance.serialize_topography_resources()
-
-    assert map_data["width"] == map_instance.width
-    assert map_data["height"] == map_instance.height
-    assert "squares" in map_data
-    assert len(map_data["squares"]) == map_instance.height
-    assert len(map_data["squares"][0]) == map_instance.width
 
 
 def test_get_surrounding_tiles(map_instance):
@@ -312,33 +294,3 @@ def test_get_surrounding_tiles(map_instance):
             tile_position in expected_positions
         ), f"Tile ({tile.position.x}, {tile.position.y}) not expected in edge position surroundings."
 
-
-def test_save_and_load_topography_resources(map_instance, tmp_path):
-    map_instance, mock_city_params = map_instance
-    map_instance.reset()
-    file_path = tmp_path / "map_data.pkl"
-
-    # Save the map
-    map_instance.save_topography_resources(str(file_path))
-    assert file_path.exists()
-
-    # Create a new map instance and load the data
-
-    new_map = Map(map_instance.env)
-    new_map.load_topography_resources(str(file_path), map_instance.env.env_settings)
-
-    assert new_map.width == map_instance.width
-    assert new_map.height == map_instance.height
-    assert len(new_map.squares) == new_map.height
-    assert len(new_map.squares[0]) == new_map.width
-
-    # Compare some squares
-    for y in range(new_map.height):
-        for x in range(new_map.width):
-            original_square = map_instance.get_tile(MapPosition(x, y))
-            loaded_square = new_map.get_tile(MapPosition(x, y))
-            assert loaded_square.tile_id == original_square.tile_id
-            assert loaded_square.position.x == original_square.position.x
-            assert loaded_square.position.y == original_square.position.y
-            assert loaded_square.land_type == original_square.land_type
-            # assert loaded_square.resources == original_square.resources

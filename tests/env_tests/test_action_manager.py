@@ -82,7 +82,7 @@ def test_apply_actions_no_conflicts(env):
     agent_2_random_actions = []  # test empty action
     agent_invalid_action = [[-1, 0, 0]]  # invalid action id
 
-    reward, dones = env.action_manager.apply_actions([agent_0_random_actions])
+    reward, dones = env.action_manager.apply_actions([agent_0_random_actions, agent_1_random_actions])
     assert isinstance(reward, np.ndarray), "Reward should be a numpy array"
     assert isinstance(dones, np.ndarray), "Terminated flag should be an array of bools"
 
@@ -96,9 +96,8 @@ def test_apply_actions_no_conflicts(env):
     assert isinstance(reward, np.ndarray), "Reward should be a numpy array"
     assert isinstance(dones, np.ndarray), "Terminated flag should be an array of bools"
 
-    reward, dones = env.action_manager.apply_actions([agent_invalid_action])
-    assert isinstance(reward, np.ndarray), "Reward should be a numpy array"
-    assert isinstance(dones, np.ndarray), "Terminated flag should be an array of bools"
+    with pytest.raises(ValueError):
+        reward, dones = env.action_manager.apply_actions([agent_invalid_action])
 
 
 def test_apply_actions_with_conflict(env):

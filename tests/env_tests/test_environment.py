@@ -20,7 +20,12 @@ def env():
 
 def test_reset(env):
     # Test reset function
+    old_map = env.map.id
+
     observation, info = env.reset()
+    new_map = env.map.id
+    # compare uuids
+    assert not old_map == new_map, "Reset should create a new map"
 
     map_observation = observation["map"]
     agent_observation = observation["agents"]

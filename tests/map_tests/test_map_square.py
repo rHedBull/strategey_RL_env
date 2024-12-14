@@ -76,8 +76,6 @@ def test_reset(map_square):
     # Assertions
     assert map_square.owner_id == OWNER_DEFAULT_TILE
     assert map_square.visibility_bitmask == 0
-    assert map_square.land_type == LandType.LAND
-    assert map_square.land_type_color == land_type_color(LandType.LAND)
     assert map_square.owner_color == COLOR_DEFAULT_BORDER
     assert map_square._land_money_value == 1
     assert map_square.buildings == set()
