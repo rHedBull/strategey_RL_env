@@ -12,10 +12,10 @@ class Map_Agent:
         self.y = y
         self.tile_budget = tile_budget  # Total amount of tiles to create
 
-    def random_walk(self, world_map, tiles_in_map, land_type: LandType):
+    def random_walk(self, world_map:[[]], tiles_in_map, land_type: LandType):
         # Random walk step
-        step_x = random.choice([-1, 0, 1])
-        step_y = random.choice([-1, 0, 1])
+        step_x = random.choice([-1, 1])
+        step_y = random.choice([-1, 1])
         if random.choice(
             [True, False]
         ):  # Randomly decide to move horizontally or vertically

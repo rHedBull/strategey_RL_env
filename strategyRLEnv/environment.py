@@ -6,7 +6,7 @@ import pygame
 from gymnasium import spaces
 
 from strategyRLEnv.ActionManager import ActionManager
-from strategyRLEnv.map.sim_map import Map
+from strategyRLEnv.map.mapGenerator import generate_finished_map
 from strategyRLEnv.Agent import Agent
 
 def setup_screen(render_mode: str):
@@ -62,14 +62,13 @@ class MapEnvironment(gym.Env):
 
 
         self.env_settings = env_settings
-
         self.num_agents = num_agents
-        self.render_mode = render_mode
 
+        self.render_mode = render_mode
         self.screen = setup_screen(self.render_mode)
 
         # Initialize the map
-        self.map = Map(self)
+        self.map = generate_finished_map(self, self.env_settings)
 
         # Initialize agents
         self.agents: List[Agent] = [Agent(i, self) for i in range(self.num_agents)]
@@ -87,7 +86,7 @@ class MapEnvironment(gym.Env):
 
     def reset(self, seed=None):
         """
-        Resets the environment to an initial state and returns an initial observation.
+        Resets the environment to an initial state and returns an initial observation. Generates a new map with the same map settings.
         """
 
         if seed is not None:
@@ -95,7 +94,7 @@ class MapEnvironment(gym.Env):
                 raise ValueError("seed should be an integer")
 
         super().reset(seed=seed)
-        self.map.reset()
+        self.map = generate_finished_map(self, self.env_settings)
         for agent in self.agents:
             agent.reset()
         observations = self._get_observation()
@@ -294,3 +293,13 @@ class MapEnvironment(gym.Env):
         # agent_info = np.array([])
 
         return {"map": map_observation, "agents": agent_observations}
+
+    def generate_maps(self, num_maps: int, seed= None, out_dir= None, new_map_settings: Optional[Dict[str, Any]] = None):
+        """
+        Generates a set of maps for the environment to use.
+
+        Args:
+            num_maps (int): The number of maps to generate.
+        """
+        maps = generate_maps(num_maps, new_map_settings, out_dir)
+        return maps
