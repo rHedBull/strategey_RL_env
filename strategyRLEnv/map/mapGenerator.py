@@ -7,10 +7,10 @@ import random
 import numpy as np
 
 from strategyRLEnv.map.MapPosition import MapPosition
-from strategyRLEnv.map.map_agent import Map_Agent
+from strategyRLEnv.map.MapAgent import Map_Agent
 from strategyRLEnv.map.map_settings import LandType
-from strategyRLEnv.map.map_square import Map_Square
-from strategyRLEnv.map.sim_map import Map
+from strategyRLEnv.map.MapSquare import Map_Square
+from strategyRLEnv.map.Map import Map
 
 def topology_to_map(topology_array):
     # Convert the topology array to a map

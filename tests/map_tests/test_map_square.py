@@ -4,7 +4,7 @@ import pytest
 
 from strategyRLEnv.map.map_settings import (COLOR_DEFAULT_BORDER, OWNER_DEFAULT_TILE,
                                             LandType, land_type_color)
-from strategyRLEnv.map.map_square import Map_Square
+from strategyRLEnv.map.MapSquare import Map_Square
 from strategyRLEnv.map.MapPosition import MapPosition
 from strategyRLEnv.objects.Building import BuildingType
 from strategyRLEnv.objects.City import City

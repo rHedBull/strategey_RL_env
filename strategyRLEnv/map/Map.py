@@ -3,7 +3,7 @@ import uuid
 import numpy as np
 
 from strategyRLEnv.map.map_settings import max_agent_id
-from strategyRLEnv.map.map_square import Map_Square
+from strategyRLEnv.map.MapSquare import Map_Square
 from strategyRLEnv.map.MapPosition import MapPosition
 from strategyRLEnv.Agent import Agent
 
