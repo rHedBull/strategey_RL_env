@@ -39,6 +39,9 @@ def calculate_new_position(
     # No move if move_direction is 0 or unrecognized
     return MapPosition(x, y)
 
+class AgentState(Enum):
+    ACTIVE = 0
+    DONE = 1
 
 class Agent:
     """
@@ -46,9 +49,8 @@ class Agent:
 
     Attributes:
         id (int): Unique identifier for the agent.
-        position (Tuple[int, int]): Current position of the agent.
-        reward (float): Accumulated reward for the agent.
-        done (bool): Whether the agent has completed its task.
+        position MapPosition(): Start position of the agent.
+        state (AgentState): The state of the agent.
     """
 
     def __init__(self, agent_id: int, env):
@@ -56,8 +58,7 @@ class Agent:
         self.env = env
 
         self.position = MapPosition(-1, -1)
-
-        self.state = "active"
+        self.state = None
 
         # exclude player color id 0
         c = self.id
@@ -70,9 +71,6 @@ class Agent:
 
         # resources
         self._claimed_tiles = set()
-        # we only need the positions of the tiles
-        # we keep track of the buildings via the tiles we onw, because buildings can only be placed on claimed tiles
-        # self.claimable_tiles = set()
 
         self.money = None
         self.last_money_pl = None
@@ -80,26 +78,20 @@ class Agent:
         self.all_visible = False
         self.visibility_range = 1
 
-        self.reward = 0.0
-        self.done = False
+        self.reset()
 
     def reset(self):
         """
-        Resets the agent to the initial state.
-        Args:
-            env_settings (Dict[str, Any]): Environment settings.
+        Resets the agent to the initial state as defined in the environment settings.
         """
-        max_x = self.env.env_settings.get("map_width")
-        max_y = self.env.env_settings.get("map_height")
 
-        self.position.x = np.random.randint(0, max_x)
-        self.position.y = np.random.randint(0, max_y)
+        self.position = self.env.map.get_random_position_on_map()
 
         self._claimed_tiles.clear()
         self._claimed_tiles.add(self.position)  # initial spawn is a claimed tile
         self.update_local_visibility(self.position)
 
-        self.state = "active"
+        self.state = AgentState.ACTIVE
 
         initial_money = self.env.env_settings.get("agent_initial_budget")
         distribution_mode = self.env.env_settings.get(
@@ -117,8 +109,6 @@ class Agent:
         self.all_visible = False
         self.visibility_range = 3
 
-        self.reward = 0.0
-        self.done = False
 
     def update(self):
         round_money = 0
@@ -141,14 +131,6 @@ class Agent:
             ),
             radius,
         )
-
-    # def get_possible_actions(self):
-    #     if self.state == "Done":
-    #         possible_actions = []
-    #     else:
-    #         possible_actions = self.claimable_tiles  # for now only claimable intersting
-    #
-    #     return possible_actions
 
     def get_observation(self):
         agent_observation = np.zeros((len(self.env.agent_features)), dtype=np.float32)
@@ -196,44 +178,3 @@ class Agent:
 
     def get_claimed_tiles(self):
         return self._claimed_tiles
-
-    # def update_claimable_tiles(self, new_claimed_tile: MapPosition):
-    #     """
-    #     Updates the agent's set of claimable tiles by adding new adjacent tiles
-    #     to the newly claimed tile. Limits the number of additions to 3 (or 5 if diagonals are allowed).
-    #
-    #     :param agent: The agent who claimed the new tile.
-    #     :param new_claimed_tile: The position of the newly claimed tile.
-    #     """
-    #     x = new_claimed_tile.x
-    #     y = new_claimed_tile.y
-    #
-    #     new_possible = [
-    #         (x, y - 1),  # Up
-    #         (x, y + 1),  # Down
-    #         (x - 1, y),  # Left
-    #         (x + 1, y),  # Right
-    #     ]
-    #
-    #     # if allow_diagonal:
-    #     # diagonal_positions = [
-    #     #         #     (x - 1, y - 1),
-    #     #         #     (x + 1, y - 1),
-    #     #         #     (x - 1, y + 1),
-    #     #         #     (x + 1, y + 1)
-    #     #         # ]
-    #     claimed_copy = self._claimed_tiles.copy()
-    #     #claimable_copy = self.claimable_tiles.copy()
-    #
-    #     new_claimable = []
-    #     for pos in new_possible:
-    #         # Check if the position is valid and not already listed as claimed or claimable
-    #         if (
-    #             self.env.map.check_position_on_map(pos)
-    #             and pos not in claimed_copy
-    #             and pos not in claimable_copy
-    #         ):
-    #             new_claimable.append(pos)
-    #
-    #     self.claimable_tiles.update(new_claimable)
-    #     self.update_local_visibility(new_claimed_tile)
