@@ -9,21 +9,6 @@ from strategyRLEnv.ActionManager import ActionManager
 from strategyRLEnv.map.sim_map import Map
 from strategyRLEnv.Agent import Agent
 
-
-def check_done(agent):
-    if agent.state == "Done":
-        return True
-    else:
-        return False
-
-
-def calculate_reward(agent):
-    if check_done(agent):
-        return agent.money + 1000
-    else:
-        return agent.money
-
-
 def setup_screen(render_mode: str):
     default_screen_size_x = 1000
     default_screen_size_y = 1000
@@ -41,9 +26,6 @@ def setup_screen(render_mode: str):
 def capture_game_state_as_image():
     screen_capture = pygame.display.get_surface()
     return np.transpose(pygame.surfarray.array3d(screen_capture), axes=[1, 0, 2])
-
-
-
 
 
 class MapEnvironment(gym.Env):

@@ -83,8 +83,6 @@ class Map_Square:
 
         self.visibility_bitmask = 0
 
-        self.land_type = LandType.LAND
-        self.land_type_color = land_type_color(LandType.LAND)
         self.owner_color = COLOR_DEFAULT_BORDER
 
         self._land_money_value = 1
