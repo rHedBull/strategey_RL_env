@@ -141,6 +141,8 @@ class MapEnvironment(gym.Env):
             # Update the display
             pygame.display.flip()
 
+            print(f"Player 0: Money: {self.agents[0].money}, Last Money PL: {self.agents[0].last_money_pl}")
+
         elif self.render_mode == "rgb_array":
             # Return an RGB array of the current frame
             pygame.display.flip()
