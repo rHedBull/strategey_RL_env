@@ -6,10 +6,8 @@ import pygame
 from gymnasium import spaces
 
 from strategyRLEnv.ActionManager import ActionManager
-from strategyRLEnv.map.mapGenerator import generate_finished_map
 from strategyRLEnv.Agent import Agent
-
-
+from strategyRLEnv.map.mapGenerator import generate_finished_map
 
 
 def capture_game_state_as_image():
@@ -48,7 +46,6 @@ class MapEnvironment(gym.Env):
         if seed is not None:
             if not isinstance(seed, int):
                 raise ValueError("seed should be an integer")
-
 
         self.env_settings = env_settings
         self.num_agents = num_agents
@@ -109,7 +106,9 @@ class MapEnvironment(gym.Env):
         if (not isinstance(actions, list)) or (not isinstance(actions[0], list)):
             raise ValueError("actions should be a 3D list of integers")
         if not len(actions[0][0]) == 3:
-            raise ValueError("each individual action is should be defined by 3 integers, [action_id, x, y]")
+            raise ValueError(
+                "each individual action is should be defined by 3 integers, [action_id, x, y]"
+            )
 
         info = {}
 
@@ -141,7 +140,10 @@ class MapEnvironment(gym.Env):
             # Update the display
             pygame.display.flip()
 
-            print(f"Player 0: Money: {self.agents[0].money}, Last Money PL: {self.agents[0].last_money_pl}")
+            print(
+                f"Player: Money: {self.agents[0].money}, Last Money PL: {self.agents[0].last_money_pl}"
+            )
+            print("")
 
         elif self.render_mode == "rgb_array":
             # Return an RGB array of the current frame
@@ -291,11 +293,12 @@ class MapEnvironment(gym.Env):
         return {"map": map_observation, "agents": agent_observations}
 
     def setup_screen(self):
-
         pygame.init()
 
         if self.render_mode != "human":
-            screen = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.HIDDEN)
+            screen = pygame.display.set_mode(
+                (self.screen_width, self.screen_height), pygame.HIDDEN
+            )
         else:
             screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         pygame.display.set_caption("Agent-based Strategy RL")

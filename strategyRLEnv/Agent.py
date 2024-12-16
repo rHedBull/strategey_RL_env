@@ -41,9 +41,11 @@ def calculate_new_position(
     # No move if move_direction is 0 or unrecognized
     return MapPosition(x, y)
 
+
 class AgentState(Enum):
     ACTIVE = 0
     DONE = 1
+
 
 class Agent:
     """
@@ -114,7 +116,6 @@ class Agent:
 
         self.all_visible = False
         self.visibility_range = 3
-
 
     def update(self):
         round_money = 0

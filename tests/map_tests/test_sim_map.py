@@ -3,14 +3,15 @@ import uuid
 
 import pytest
 
-from strategyRLEnv.environment import MapEnvironment
-from strategyRLEnv.map.mapGenerator import generate_finished_map
-from strategyRLEnv.map.map_settings import OWNER_DEFAULT_TILE, LandType, max_agent_id
-from strategyRLEnv.map.MapSquare import Map_Square
-from strategyRLEnv.map.MapPosition import MapPosition
-from strategyRLEnv.map.Map import Map, check_valid_agent_id
-from strategyRLEnv.objects.City import City
 from strategyRLEnv.Agent import Agent
+from strategyRLEnv.environment import MapEnvironment
+from strategyRLEnv.map.Map import check_valid_agent_id
+from strategyRLEnv.map.map_settings import (OWNER_DEFAULT_TILE, LandType,
+                                            max_agent_id)
+from strategyRLEnv.map.mapGenerator import generate_finished_map
+from strategyRLEnv.map.MapPosition import MapPosition
+from strategyRLEnv.map.MapSquare import Map_Square
+from strategyRLEnv.objects.City import City
 
 
 class MockAgent:
@@ -293,4 +294,3 @@ def test_get_surrounding_tiles(map_instance):
         assert (
             tile_position in expected_positions
         ), f"Tile ({tile.position.x}, {tile.position.y}) not expected in edge position surroundings."
-

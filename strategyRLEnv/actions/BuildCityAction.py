@@ -5,7 +5,6 @@ from strategyRLEnv.objects.Building import BuildingType
 from strategyRLEnv.objects.City import City
 
 
-
 class BuildCityAction(BuildAction):
     def __init__(self, agent, position: MapPosition):
         super().__init__(agent, position, BuildingType.CITY)

@@ -1,9 +1,9 @@
 from typing import Tuple
 
 from strategyRLEnv.actions.Action import Action, ActionType
+from strategyRLEnv.Agent import Agent
 from strategyRLEnv.map.map_settings import OWNER_DEFAULT_TILE
 from strategyRLEnv.map.MapPosition import MapPosition
-from strategyRLEnv.Agent import Agent
 
 
 class ClaimAction(Action):

@@ -2,10 +2,10 @@ import uuid
 
 import numpy as np
 
-from strategyRLEnv.map.map_settings import max_agent_id
-from strategyRLEnv.map.MapSquare import Map_Square
-from strategyRLEnv.map.MapPosition import MapPosition
 from strategyRLEnv.Agent import Agent
+from strategyRLEnv.map.map_settings import max_agent_id
+from strategyRLEnv.map.MapPosition import MapPosition
+from strategyRLEnv.map.MapSquare import Map_Square
 
 
 def check_valid_agent_id(agent_id: int) -> bool:

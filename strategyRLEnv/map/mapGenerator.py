@@ -1,16 +1,17 @@
 import math
 import os
 import pickle
-import uuid
 import random
+import uuid
 
 import numpy as np
 
-from strategyRLEnv.map.MapPosition import MapPosition
-from strategyRLEnv.map.MapAgent import Map_Agent
-from strategyRLEnv.map.map_settings import LandType
-from strategyRLEnv.map.MapSquare import Map_Square
 from strategyRLEnv.map.Map import Map
+from strategyRLEnv.map.map_settings import LandType
+from strategyRLEnv.map.MapAgent import Map_Agent
+from strategyRLEnv.map.MapPosition import MapPosition
+from strategyRLEnv.map.MapSquare import Map_Square
+
 
 def topology_to_map(topology_array):
     # Convert the topology array to a map
@@ -20,12 +21,16 @@ def topology_to_map(topology_array):
     created_map.height = len(topology_array)
     created_map.tiles = created_map.height * created_map.width
 
-    squares = [[None for _ in range(created_map.height)] for _ in range(created_map.width)]
+    squares = [
+        [None for _ in range(created_map.height)] for _ in range(created_map.width)
+    ]
 
     # Create map squares
     for x_index in range(created_map.width):
         for y_index in range(created_map.height):
-            square = Map_Square(y_index * created_map.width + x_index, MapPosition(x_index, y_index))
+            square = Map_Square(
+                y_index * created_map.width + x_index, MapPosition(x_index, y_index)
+            )
             square.set_land_type(LandType(topology_array[y_index][x_index]))
             squares[x_index][y_index] = square
 
@@ -34,8 +39,8 @@ def topology_to_map(topology_array):
 
     return created_map
 
-def generate_finished_map(connected_env, map_settings=None, path_to_map_file=None):
 
+def generate_finished_map(connected_env, map_settings=None, path_to_map_file=None):
     if path_to_map_file:
         with open(path_to_map_file, "rb") as file:
             map_array = pickle.load(file)
@@ -52,7 +57,9 @@ def generate_finished_map(connected_env, map_settings=None, path_to_map_file=Non
         mountain_percentage = map_settings.get("mountain_budget_per_agent", 0.1)
         dessert_percentage = map_settings.get("dessert_budget_per_agent", 0.1)
 
-        topology_array = create_topologies(1, width, height, water_percentage, mountain_percentage, dessert_percentage)
+        topology_array = create_topologies(
+            1, width, height, water_percentage, mountain_percentage, dessert_percentage
+        )
         finished_map = topology_to_map(topology_array[0])
 
     finished_map.env = connected_env
@@ -64,6 +71,7 @@ def generate_finished_map(connected_env, map_settings=None, path_to_map_file=Non
     finished_map.tile_size = max(1, finished_map.tile_size)
 
     return finished_map
+
 
 def generate_map_topologies(numb, map_settings, seed=None, path=None):
     """
@@ -93,11 +101,15 @@ def generate_map_topologies(numb, map_settings, seed=None, path=None):
     dessert_percentage = map_settings.get("dessert_budget_per_agent", 0.1)
 
     # Generate maps using settings and save to file
-    map_arrays = create_topologies(numb, width, height, water_percentage, mountain_percentage, dessert_percentage)
+    map_arrays = create_topologies(
+        numb, width, height, water_percentage, mountain_percentage, dessert_percentage
+    )
 
     for i in range(numb):
         map_array = map_arrays[i]
-        map_name = generate_map_name(width, height, water_percentage, mountain_percentage, dessert_percentage, i)
+        map_name = generate_map_name(
+            width, height, water_percentage, mountain_percentage, dessert_percentage, i
+        )
         map_file_path = os.path.join(path, f"{map_name}.pickle")
         try:
             with open(map_file_path, "wb") as file:
@@ -105,6 +117,7 @@ def generate_map_topologies(numb, map_settings, seed=None, path=None):
         except IOError as e:
             print(f"Failed to save map to {map_file_path}: {e}")
     print(f"{numb} maps generated and saved to {path}")
+
 
 def let_map_agent_run(map_arrays, land_type_percentage, tiles, LAND_TYPE_VALUE):
     if land_type_percentage < 0:
@@ -116,9 +129,7 @@ def let_map_agent_run(map_arrays, land_type_percentage, tiles, LAND_TYPE_VALUE):
     tile_budget_per_agent = int((total_tile_budget / numb_agents_per_map))
     map_count = len(map_arrays)
 
-
     if (numb_agents_per_map * tile_budget_per_agent) > 0:
-
         for m in range(map_count):
             agents = [
                 Map_Agent(
@@ -129,7 +140,6 @@ def let_map_agent_run(map_arrays, land_type_percentage, tiles, LAND_TYPE_VALUE):
                 )
                 for i in range(numb_agents_per_map)
             ]
-
 
         running = True
         # make random walk decision for all agents at once
@@ -149,22 +159,29 @@ def let_map_agent_run(map_arrays, land_type_percentage, tiles, LAND_TYPE_VALUE):
 
     return map_copy
 
-def create_topologies(num, width, height, water_percentage, mountain_percentage, dessert_percentage):
-    # Initialize the 2D list with the appropriate dimensions
 
+def create_topologies(
+    num, width, height, water_percentage, mountain_percentage, dessert_percentage
+):
+    # Initialize the 2D list with the appropriate dimensions
 
     map_arrays = [np.zeros((width, height), dtype=np.int64) for _ in range(num)]
     total_tiles = width * height
 
     # mountain agents
-    map_arrays = let_map_agent_run(map_arrays, mountain_percentage, total_tiles, LandType.MOUNTAIN)
+    map_arrays = let_map_agent_run(
+        map_arrays, mountain_percentage, total_tiles, LandType.MOUNTAIN
+    )
 
     # dessert agents
-    map_arrays = let_map_agent_run(map_arrays, dessert_percentage, total_tiles, LandType.DESERT)
+    map_arrays = let_map_agent_run(
+        map_arrays, dessert_percentage, total_tiles, LandType.DESERT
+    )
 
     # water agents
-    map_arrays = let_map_agent_run(map_arrays, water_percentage, total_tiles, LandType.OCEAN)
-
+    map_arrays = let_map_agent_run(
+        map_arrays, water_percentage, total_tiles, LandType.OCEAN
+    )
 
     # post processing is done together
     for m in range(num):
@@ -179,6 +196,7 @@ def create_topologies(num, width, height, water_percentage, mountain_percentage,
 
     return map_arrays
 
+
 def is_adjacent_to_ocean(x, y, width, height, array):
     """
     Helper function to check if a square at position (x, y) is adjacent to an ocean.
@@ -187,7 +205,7 @@ def is_adjacent_to_ocean(x, y, width, height, array):
     if x > 0 and array[x - 1][y] == LandType.OCEAN.value:
         return True
     # Check right neighbor
-    if x < width - 1 and array[x + 1][y]== LandType.OCEAN.value:
+    if x < width - 1 and array[x + 1][y] == LandType.OCEAN.value:
         return True
     # Check top neighbor
     if y > 0 and array[x][y - 1] == LandType.OCEAN.value:
@@ -197,15 +215,22 @@ def is_adjacent_to_ocean(x, y, width, height, array):
         return True
     return False
 
-def generate_map_name(width, height, water_percentage, mountain_percentage, dessert_percentage, resource_density):
-    settings_values = (
-        f"{width}_{height}_{water_percentage}_{mountain_percentage}_{dessert_percentage}_{resource_density}"
-    )
+
+def generate_map_name(
+    width,
+    height,
+    water_percentage,
+    mountain_percentage,
+    dessert_percentage,
+    resource_density,
+):
+    settings_values = f"{width}_{height}_{water_percentage}_{mountain_percentage}_{dessert_percentage}_{resource_density}"
     unique_id = uuid.uuid4()
     map_name = f"map_{settings_values}_{unique_id}"
     return map_name
 
-def generate_maps(num_maps: int, map_settings= None, seed= None, out_dir= None):
+
+def generate_maps(num_maps: int, map_settings=None, seed=None, out_dir=None):
     """
     Generates a set of maps for the environment to use.
     Args:

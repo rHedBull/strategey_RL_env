@@ -6,7 +6,8 @@ import pytest
 from strategyRLEnv.ActionManager import create_action
 from strategyRLEnv.actions.BuildCityAction import BuildCityAction
 from strategyRLEnv.actions.BuildFarmAction import BuildFarmAction
-from strategyRLEnv.actions.BuildRoadAction import BuildBridgeAction, BuildRoadAction
+from strategyRLEnv.actions.BuildRoadAction import (BuildBridgeAction,
+                                                   BuildRoadAction)
 from strategyRLEnv.actions.ClaimAction import ClaimAction
 from strategyRLEnv.environment import MapEnvironment
 
@@ -82,7 +83,9 @@ def test_apply_actions_no_conflicts(env):
     agent_2_random_actions = []  # test empty action
     agent_invalid_action = [[-1, 0, 0]]  # invalid action id
 
-    reward, dones = env.action_manager.apply_actions([agent_0_random_actions, agent_1_random_actions])
+    reward, dones = env.action_manager.apply_actions(
+        [agent_0_random_actions, agent_1_random_actions]
+    )
     assert isinstance(reward, np.ndarray), "Reward should be a numpy array"
     assert isinstance(dones, np.ndarray), "Terminated flag should be an array of bools"
 

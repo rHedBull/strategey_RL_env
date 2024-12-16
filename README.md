@@ -45,7 +45,7 @@ pip install -e /path/to/other/repo
 
 ## Utils
 - [ ] write profiler script for memory and time for different map sizes and agent counts-> write to a file/ table, maybe markdown?
-- [ ] map previewer
+- [ ] map previewer for a map topology file, with matplotlib
 
 ## Map
 - [ ] extend map generator script to create maps of different settings
@@ -61,8 +61,9 @@ pip install -e /path/to/other/repo
 - add river water adjacent type, based on perlin noise with meandering
 - enable actual biomes
 - make height relevant for water and mountain
-- map seperated from env, first create env, then function to create map, enable generating maps, loading maps into env
-- [ ] optimized multi map generation, save and load topology map as tensor, to be able to generate maps faster
+- loading maps into env
+- mindest distance between cities
+
 
 ## RL
 
@@ -73,7 +74,7 @@ pip install -e /path/to/other/repo
 - [ ] adjust height, biomes and other min and max values in obs space
   - [ ] add option for continuos map
   - differentiate between tiles seen and claimed and how it influences where actions can happen
-- [ ] define when done or truncated 
+- [ ] define when done or truncated
 ### Rewards
 - [ ] calculate rewards better, decide what rewards to give
 
@@ -94,12 +95,12 @@ pip install -e /path/to/other/repo
 
 ## Dev Ops
 - [ ] move stuff to cython
-- [ ] connect to pufferlib
 - [ ] optimize for GPU, cuda
 - [ ] add more tests, increase coverage
 - [ ] add more scenario tests
 - [ ] scaling tests, on predefined test map, small and large scale, by map size and agent count
 - [ ] documentation!!
+- [ ] think about package API access, which attributes of env and which methods, funcitons, objects should be accessible
 
 ## Far fetched
 - [ ] tech tree, some actions only possible if reached a level
@@ -164,4 +165,4 @@ graph LR
 
 - [ ] if bug with pyopengl for rendering you might need to do this: https://programmersought.com/article/82837518484/
 - [ ] if error with rendering accessing the libGL error MESA-LOADER  failed to open iris driver try this command 'conda install -c conda-forge libstdcxx-ng', more info here: https://stackoverflow.com/questions/72110384/libgl-error-mesa-loader-failed-to-open-iris
-- 
+-

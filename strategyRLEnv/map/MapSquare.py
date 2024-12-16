@@ -2,8 +2,9 @@ from typing import Tuple
 
 import pygame
 
-from strategyRLEnv.map.map_settings import (COLOR_DEFAULT_BORDER, OWNER_DEFAULT_TILE,
-                                            LandType, land_type_color)
+from strategyRLEnv.map.map_settings import (COLOR_DEFAULT_BORDER,
+                                            OWNER_DEFAULT_TILE, LandType,
+                                            land_type_color)
 from strategyRLEnv.map.MapPosition import MapPosition
 from strategyRLEnv.objects.Building import Building, BuildingType
 

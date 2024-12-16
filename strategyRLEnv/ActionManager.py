@@ -1,14 +1,16 @@
 import random
-from typing import Any, List, Tuple
+from typing import Any, List
 
 import numpy as np
 
 from strategyRLEnv.actions.BuildCityAction import BuildCityAction
 from strategyRLEnv.actions.BuildFarmAction import BuildFarmAction
-from strategyRLEnv.actions.BuildRoadAction import BuildBridgeAction, BuildRoadAction
+from strategyRLEnv.actions.BuildRoadAction import (BuildBridgeAction,
+                                                   BuildRoadAction)
 from strategyRLEnv.actions.ClaimAction import ClaimAction
-from strategyRLEnv.map.MapPosition import MapPosition
 from strategyRLEnv.Agent import Agent
+from strategyRLEnv.map.MapPosition import MapPosition
+
 
 def create_action(agent: Agent, action_type, position: MapPosition):
     if action_type == "claim":
@@ -39,7 +41,9 @@ class ActionManager:
         self.env = env
 
         self.actions_definition = self.env.env_settings.get("actions")
-        self.invalid_action_penalty = self.actions_definition.get("invalid_action_penalty")
+        self.invalid_action_penalty = self.actions_definition.get(
+            "invalid_action_penalty"
+        )
 
         # Define a structured array with the fields 'action' and 'agent_id'.
         self.conflict_map = {}

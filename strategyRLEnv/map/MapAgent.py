@@ -1,5 +1,4 @@
 import math
-import random
 
 from strategyRLEnv.map.map_settings import LandType
 
@@ -13,9 +12,18 @@ class Map_Agent:
         self.map_id = map_id
         self.tile_budget = tile_budget  # Total amount of tiles to create
 
-    def step(self, world_map:[[]], tiles_in_map, walk, land_type: LandType):
+    def step(self, world_map: [[]], tiles_in_map, walk, land_type: LandType):
         # Random walk step
-        possible_steps = [(1, -1), (1, 0), (1, 1), (0, -1), (0, 1), (-1, -1), (-1, 0), (-1, 1)]
+        possible_steps = [
+            (1, -1),
+            (1, 0),
+            (1, 1),
+            (0, -1),
+            (0, 1),
+            (-1, -1),
+            (-1, 0),
+            (-1, 1),
+        ]
         selected_step = possible_steps[walk[0]]
         step_x = selected_step[0]
         step_y = selected_step[1]

@@ -13,4 +13,3 @@ name = "strategyRLEnv"
 version = "0.1.0"
 description = "A reinforcement learning environment based on simple game mechanics similar to Civilization"
 dependencies = []
-

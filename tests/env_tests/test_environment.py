@@ -43,7 +43,6 @@ def test_reset(env):
         env.reset(seed="invalid")
 
 
-
 def test_step(env):
     # Test step function
     env.reset()
@@ -80,7 +79,9 @@ def test_step(env):
     assert isinstance(truncated[0], bool), "truncated should be list of bools"
     assert isinstance(info, dict), "Info should be a dictionary"
 
-    observation, reward, terminated, truncated, info = env.step([agent_0_random_actions])
+    observation, reward, terminated, truncated, info = env.step(
+        [agent_0_random_actions]
+    )
     assert isinstance(
         map_observation, np.ndarray
     ), "Reset should return an map_observation of type np.ndarray"
@@ -138,7 +139,9 @@ def test_render(env):
     # Test render function in different modes
     with open("test_env_settings.json", "r") as f:
         env_settings = json.load(f)
-    env_human = MapEnvironment(env_settings, 2, "human") # human mode causes trouble with numpy versions while testing
+    env_human = MapEnvironment(
+        env_settings, 2, "human"
+    )  # human mode causes trouble with numpy versions while testing
     env_human.reset()
 
     # Test render in 'human' mode (already specified when creating the environment)

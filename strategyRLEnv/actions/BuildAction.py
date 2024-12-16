@@ -8,9 +8,7 @@ from strategyRLEnv.objects.Building import BuildingType
 
 
 class BuildAction(Action, ABC):
-    def __init__(
-        self, agent, position: MapPosition, building_type: BuildingType
-    ):
+    def __init__(self, agent, position: MapPosition, building_type: BuildingType):
         super().__init__(agent, position, ActionType.BUILD)
         self.building_type = building_type
 
