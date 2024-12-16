@@ -3,11 +3,11 @@ from strategyRLEnv.map.map_settings import OWNER_DEFAULT_TILE
 from strategyRLEnv.map.MapPosition import MapPosition
 from strategyRLEnv.objects.Building import BuildingType
 from strategyRLEnv.objects.City import City
-from strategyRLEnv.Agent import Agent
+
 
 
 class BuildCityAction(BuildAction):
-    def __init__(self, agent: Agent, position: MapPosition):
+    def __init__(self, agent, position: MapPosition):
         super().__init__(agent, position, BuildingType.CITY)
 
     def validate(self, env) -> bool:
@@ -32,7 +32,6 @@ class BuildCityAction(BuildAction):
         params = self.get_building_parameters(env)
         city = City(self.agent.id, self.position, params)
         env.map.add_building(city, self.position)
-        # TODO: add city to agent's list of buildings
 
         env.map.claim_tile(self.agent, self.position)
         self.agent.add_claimed_tile(self.position)

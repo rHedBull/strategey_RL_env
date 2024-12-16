@@ -5,12 +5,11 @@ from strategyRLEnv.actions.Action import Action, ActionType
 from strategyRLEnv.map.map_settings import ALLOWED_BUILDING_PLACEMENTS
 from strategyRLEnv.map.MapPosition import MapPosition
 from strategyRLEnv.objects.Building import BuildingType
-from strategyRLEnv.Agent import Agent
 
 
 class BuildAction(Action, ABC):
     def __init__(
-        self, agent: Agent, position: MapPosition, building_type: BuildingType
+        self, agent, position: MapPosition, building_type: BuildingType
     ):
         super().__init__(agent, position, ActionType.BUILD)
         self.building_type = building_type

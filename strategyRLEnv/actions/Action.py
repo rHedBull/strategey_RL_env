@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 from enum import Enum, auto
 
 from strategyRLEnv.map import MapPosition
-from strategyRLEnv.Agent import Agent
 
 
 class ActionType(Enum):
@@ -12,7 +11,7 @@ class ActionType(Enum):
 
 
 class Action(ABC):
-    def __init__(self, agent: Agent, position: MapPosition, action_type: ActionType):
+    def __init__(self, agent, position: MapPosition, action_type: ActionType):
         self.agent = agent
 
         if position is None:

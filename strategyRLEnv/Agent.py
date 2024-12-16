@@ -4,6 +4,7 @@ from typing import Tuple
 import numpy as np
 import pygame
 
+from strategyRLEnv.actions.BuildCityAction import BuildCityAction
 from strategyRLEnv.map.map_settings import AGENT_COLORS, PLAYER_COLOR
 from strategyRLEnv.map.MapPosition import MapPosition
 
@@ -55,6 +56,7 @@ class Agent:
     """
 
     def __init__(self, agent_id: int, env):
+        self.capital = None
         self.id = agent_id
         self.env = env
 
@@ -90,7 +92,10 @@ class Agent:
 
         self._claimed_tiles.clear()
         self._claimed_tiles.add(self.position)  # initial spawn is a claimed tile
-        self.update_local_visibility(self.position)
+
+        # create capital
+        action = BuildCityAction(self, self.position)
+        action.perform_build(self.env)
 
         self.state = AgentState.ACTIVE
 
