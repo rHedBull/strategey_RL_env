@@ -9,18 +9,7 @@ from strategyRLEnv.ActionManager import ActionManager
 from strategyRLEnv.map.mapGenerator import generate_finished_map
 from strategyRLEnv.Agent import Agent
 
-def setup_screen(render_mode: str):
-    default_screen_size_x = 1000
-    default_screen_size_y = 1000
-    pygame.init()
 
-    if render_mode != "human":
-        screen = pygame.display.set_mode((default_screen_size_x, default_screen_size_y), pygame.HIDDEN)
-    else:
-        screen = pygame.display.set_mode((default_screen_size_x, default_screen_size_y))
-    pygame.display.set_caption("Agent-based Strategy RL")
-    screen.fill((0, 0, 0))  # Fill the screen with black color
-    return screen
 
 
 def capture_game_state_as_image():
@@ -65,7 +54,9 @@ class MapEnvironment(gym.Env):
         self.num_agents = num_agents
 
         self.render_mode = render_mode
-        self.screen = setup_screen(self.render_mode)
+        self.screen_width = 1000
+        self.screen_height = 1000
+        self.screen = self.setup_screen()
 
         # Initialize the map
         self.map = generate_finished_map(self, self.env_settings)
@@ -296,3 +287,15 @@ class MapEnvironment(gym.Env):
         # agent_info = np.array([])
 
         return {"map": map_observation, "agents": agent_observations}
+
+    def setup_screen(self):
+
+        pygame.init()
+
+        if self.render_mode != "human":
+            screen = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.HIDDEN)
+        else:
+            screen = pygame.display.set_mode((self.screen_width, self.screen_height))
+        pygame.display.set_caption("Agent-based Strategy RL")
+        screen.fill((0, 0, 0))  # Fill the screen with black color
+        return screen
