@@ -16,6 +16,8 @@ def setup():
         env_settings["map_width"] = 10
         env_settings["map_height"] = 10
         env_settings["mountain_budget_per_agent"] = 1.0
+        env_settings["water_budget_per_agent"] = 0.0
+        env_settings["dessert_budget_per_agent"] = 0.0
     env_settings["actions"]["build_road"]["cost"] = 10  # allow building road
     env = MapEnvironment(env_settings, 2, "rgb_array")
 
@@ -71,7 +73,7 @@ def test_build_simple_mine(setup):
     # check that the building is still the same!!
 
 
-def test_building_farm_on_water_mountain_desert(setup):
+def test_building_mine_on_water_mountain_desert(setup):
     env, agent_id, position_1, position_2 = setup
     build_mine_action = [5, position_1.x, position_1.y]
 
@@ -79,8 +81,8 @@ def test_building_farm_on_water_mountain_desert(setup):
     with open("test_env_settings.json", "r") as f:
         env_settings = json.load(f)
 
-    env_settings["map_width"] = 10
-    env_settings["map_height"] = 10
+    env_settings["map_width"] = 100
+    env_settings["map_height"] = 100
     env_settings["actions"]["build_road"]["cost"] = 10  # allow building road
 
     special_env = MapEnvironment(env_settings, 2, "rgb_array")

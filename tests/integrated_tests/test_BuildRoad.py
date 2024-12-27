@@ -14,8 +14,8 @@ def setup():
     # open settings file
     with open("test_env_settings.json", "r") as f:
         env_settings = json.load(f)
-        env_settings["map_width"] = 10
-        env_settings["map_height"] = 10
+        env_settings["map_width"] = 100
+        env_settings["map_height"] = 100
     env_settings["actions"]["build_road"]["cost"] = 10  # allow building road
     env = MapEnvironment(env_settings, 2, "rgb_array")
 
@@ -42,6 +42,7 @@ def test_build_simple_road(setup):
 
     env.reset()
     tile1 = env.map.get_tile(position_1)
+    tile1.set_land_type(LandType.LAND)
 
     # not visible, should not work
     observation, reward, terminated, truncated, info = env.step([[build_road_action]])
@@ -194,6 +195,7 @@ def test_build_simple_bridge(setup):
     tile2.buildings = set()
     tile2.building_int = 0
     tile2.owner_id = OWNER_DEFAULT_TILE
+    tile2.set_land_type(LandType.LAND)
     assert tile2.has_any_building() is False
 
     # test building road next to bridge

@@ -14,6 +14,8 @@ def setup():
     # open settings file
     with open("test_env_settings.json", "r") as f:
         env_settings = json.load(f)
+        env_settings["map_width"] = 100
+        env_settings["map_height"] = 100
 
     env = MapEnvironment(env_settings, 2, "rgb_array")
     agent_id = 0
@@ -35,6 +37,7 @@ def test_build_simple_city(setup):
     agent_id = 0
     build_city_action = [1, position_1.x, position_1.y]
     tile1 = env.map.get_tile(position_1)
+    tile1.set_land_type(LandType.LAND)
 
     # no visibility, should not work
     observation, reward, terminated, truncated, info = env.step([[build_city_action]])
