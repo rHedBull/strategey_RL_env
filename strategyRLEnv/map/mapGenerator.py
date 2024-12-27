@@ -7,7 +7,7 @@ import uuid
 import numpy as np
 
 from strategyRLEnv.map.Map import Map
-from strategyRLEnv.map.map_settings import LandType
+from strategyRLEnv.map.map_settings import LandType, ResourceType
 from strategyRLEnv.map.MapAgent import Map_Agent
 from strategyRLEnv.map.MapPosition import MapPosition
 from strategyRLEnv.map.MapSquare import Map_Square
@@ -31,7 +31,8 @@ def topology_to_map(topology_array):
             square = Map_Square(
                 y_index * created_map.width + x_index, MapPosition(x_index, y_index)
             )
-            square.set_land_type(LandType(topology_array[y_index][x_index]))
+            square.set_land_type(LandType(topology_array[y_index][x_index][0]))
+            square.add_resource(ResourceType(topology_array[y_index][x_index][1]))
             squares[x_index][y_index] = square
 
     created_map.squares = squares
@@ -165,23 +166,29 @@ def create_topologies(
 ):
     # Initialize the 2D list with the appropriate dimensions
 
-    map_arrays = [np.zeros((width, height), dtype=np.int64) for _ in range(num)]
+    topology_arrays = [np.zeros((width, height, 1), dtype=np.int64) for _ in range(num)]
+    resource_arr = [np.zeros((width, height, 1), dtype=np.int64) for _ in range(num)]
     total_tiles = width * height
 
     # mountain agents
-    map_arrays = let_map_agent_run(
-        map_arrays, mountain_percentage, total_tiles, LandType.MOUNTAIN
+    topology_arrays = let_map_agent_run(
+        topology_arrays, mountain_percentage, total_tiles, LandType.MOUNTAIN
     )
 
     # dessert agents
-    map_arrays = let_map_agent_run(
-        map_arrays, dessert_percentage, total_tiles, LandType.DESERT
+    topology_arrays = let_map_agent_run(
+        topology_arrays, dessert_percentage, total_tiles, LandType.DESERT
     )
 
     # water agents
-    map_arrays = let_map_agent_run(
-        map_arrays, water_percentage, total_tiles, LandType.OCEAN
+    topology_arrays = let_map_agent_run(
+        topology_arrays, water_percentage, total_tiles, LandType.OCEAN
     )
+
+    # expand topology arrays unsqueeze
+    map_arrays = np.concatenate((topology_arrays, resource_arr), axis=3)
+
+    base_resource_density = 0.1
 
     # post processing is done together
     for m in range(num):
@@ -189,10 +196,19 @@ def create_topologies(
             for col in range(width):
                 map_arr = map_arrays[m]
                 tile = map_arr[row][col]
+                land = tile[0]
                 # check if water around
-                if tile != LandType.OCEAN.value:
+                if land != LandType.OCEAN.value:
                     if is_adjacent_to_ocean(row, col, width, height, map_arr):
-                        map_arr[row][col] = LandType.MARSH.value
+                        map_arr[row][col][0] = LandType.MARSH.value
+
+                if land == LandType.LAND.value:
+                    if random.random() < base_resource_density:
+                        map_arr[row][col][1] = ResourceType.GRAIN.value
+
+                if land == LandType.MOUNTAIN.value:
+                    if random.random() < base_resource_density:
+                        map_arr[row][col][1] = ResourceType.METAL.value
 
     return map_arrays
 
@@ -202,16 +218,16 @@ def is_adjacent_to_ocean(x, y, width, height, array):
     Helper function to check if a square at position (x, y) is adjacent to an ocean.
     """
     # Check left neighbor
-    if x > 0 and array[x - 1][y] == LandType.OCEAN.value:
+    if x > 0 and array[x - 1][y][0] == LandType.OCEAN.value:
         return True
     # Check right neighbor
-    if x < width - 1 and array[x + 1][y] == LandType.OCEAN.value:
+    if x < width - 1 and array[x + 1][y][0] == LandType.OCEAN.value:
         return True
     # Check top neighbor
-    if y > 0 and array[x][y - 1] == LandType.OCEAN.value:
+    if y > 0 and array[x][y - 1][0] == LandType.OCEAN.value:
         return True
     # Check bottom neighbor
-    if y < height - 1 and array[x][y + 1] == LandType.OCEAN.value:
+    if y < height - 1 and array[x][y + 1][0] == LandType.OCEAN.value:
         return True
     return False
 

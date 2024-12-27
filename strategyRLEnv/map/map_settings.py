@@ -40,6 +40,12 @@ class LandType(Enum):
     DESERT = 5  # if you change this you need to change observation space
 
 
+class ResourceType(Enum):
+    GRAIN = 2
+    METAL = 1
+    NONE = 0
+
+
 def land_type_color(land_type: LandType):
     if land_type == LandType.LAND:
         return COLOR_DEFAULT_LAND

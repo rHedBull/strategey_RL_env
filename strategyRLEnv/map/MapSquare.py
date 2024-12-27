@@ -4,7 +4,7 @@ import pygame
 
 from strategyRLEnv.map.map_settings import (COLOR_DEFAULT_BORDER,
                                             OWNER_DEFAULT_TILE, LandType,
-                                            land_type_color)
+                                            ResourceType, land_type_color)
 from strategyRLEnv.map.MapPosition import MapPosition
 from strategyRLEnv.objects.Building import Building, BuildingType
 
@@ -51,6 +51,7 @@ class Map_Square:
 
         # land properties
         self.land_type = LandType.LAND
+        self.resource = ResourceType.NONE
         self.height = 0  # height as indicator for water, or ocean tiles
         self.precepitation = 0  # for biomes
         self.temperature = 0  # for biomes
@@ -113,8 +114,8 @@ class Map_Square:
     def get_biome(self):
         return self.biome
 
-    def add_resource(self, resource_value):
-        self.resources.append(resource_value)
+    def add_resource(self, resource_type: ResourceType):
+        self.resource = resource_type
 
     def get_resources(self):
         return self.resources
@@ -220,6 +221,40 @@ class Map_Square:
                 square_size,
             ),
         )
+        grain_color = (255, 255, 0)
+        metal_color = (192, 192, 192)
+        if self.resource != ResourceType.NONE:
+            if self.resource == ResourceType.GRAIN:
+                resource_color = grain_color
+
+            elif self.resource == ResourceType.METAL:
+                resource_color = metal_color
+
+            pygame.draw.line(
+                screen,
+                resource_color,
+                (
+                    self.position.x * square_size + square_size * 0.3,
+                    self.position.y * square_size + square_size,
+                ),
+                (
+                    self.position.x * square_size + square_size * 0.3,
+                    self.position.y * square_size + square_size / 2,
+                ),
+            )
+
+            pygame.draw.line(
+                screen,
+                resource_color,
+                (
+                    self.position.x * square_size + square_size * 0.6,
+                    self.position.y * square_size,
+                ),
+                (
+                    self.position.x * square_size + square_size * 0.6,
+                    self.position.y * square_size + square_size / 2,
+                ),
+            )
 
         if self.owner_color != COLOR_DEFAULT_BORDER:
             pygame.draw.rect(
