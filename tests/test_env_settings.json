@@ -1,9 +1,9 @@
 {
     "map_width": 100,
     "map_height": 100,
-    "water_budget_per_agent": 0.0,
-    "mountain_budget_per_agent": 0.0,
-    "dessert_budget_per_agent": 0.0,
+    "water_budget_per_agent": 0.2,
+    "mountain_budget_per_agent": 0.2,
+    "dessert_budget_per_agent": 0.1,
     "numb_rivers": 0,
     "resource_density": 0.1,
     "biomes": [
@@ -161,6 +161,22 @@
         {
             "name": "tile_ownership",
             "select": false
+        },
+        {
+            "name": "buildings",
+            "select": false,
+            "values": {
+                "min": 0,
+                "max": 10000000000
+            }
+        },
+        {
+            "name": "visibility",
+            "select": false,
+            "values": {
+                "min": 0,
+                "max": 10000000000
+            }
         },
         {
             "name": "land_money_value",

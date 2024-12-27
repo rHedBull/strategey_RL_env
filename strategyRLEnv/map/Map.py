@@ -79,18 +79,20 @@ class Map:
                     name = feature["name"]
 
                     if name == "tile_ownership":
-                        square_array[i] = square.get_owner_id()
+                        square_array[i] = square.get_owner()
                     elif name == "tile_ownership":
                         square_array[i] = square.get_land_type()
                     elif name == "land_money_value":
                         square_array[i] = square.get_land_money_value()
                     elif name == "resources":
                         square_array[i] = square.get_land_type()
+                    elif name == "buildings":
+                        square_array[i] = square.building_int
 
                     map_info[square.position.x][square.position.y] = square_array
                     i += 1
 
-        return map_info
+        return map_info, self.visibility_map
 
     def claim_tile(self, agent: Agent, position: MapPosition) -> None:
         """

@@ -230,6 +230,20 @@ class MapEnvironment(gym.Env):
             dtype=np.float32,
         )
 
+        # define visibility map observation space
+        visibility_map_low = np.zeros((self.map.width, self.map.height), dtype=np.int64)
+        visibility_map_high = np.zeros(
+            (self.map.width, self.map.height), dtype=np.int64
+        )
+        highest_value = 2**63 - 1
+        visibility_map_high.fill(highest_value)
+        visibility_map_observation_space = spaces.Box(
+            low=visibility_map_low,
+            high=visibility_map_high,
+            shape=(self.map.width, self.map.height),
+            dtype=np.int64,
+        )
+
         return spaces.Dict(
             {"map": map_observation_space, "agents": agents_observation_space}
         )
