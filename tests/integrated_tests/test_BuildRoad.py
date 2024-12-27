@@ -86,11 +86,43 @@ def test_build_simple_road(setup):
     observation, reward, terminated, truncated, info = env.step([[build_road_action]])
     assert tile1.has_any_building() is False
 
-    # add a city next to it
+    # add a opponent city next to it
     env.map.get_tile(position_2).add_building(city)
+    tile2 = env.map.get_tile(position_2)
+    tile2.owner_id = 7
+    # next to a hostile city should not work
+    observation, reward, terminated, truncated, info = env.step([[build_road_action]])
+    assert tile1.has_any_building() is False
+
+    # next to a friendly city should work
+    tile2.owner_id = agent_id
     observation, reward, terminated, truncated, info = env.step([[build_road_action]])
     assert tile1.has_any_building() is True
     assert tile1.has_building(BuildingType.ROAD) is True
+
+    # removing city on tile 2
+    tile2.buildings = set()
+    tile2.building_int = 0
+    tile2.owner_id = OWNER_DEFAULT_TILE
+    tile2.set_land_type(LandType.OCEAN)
+    assert tile2.has_any_building() is False
+
+    # test building bridge next to bridge
+    observation, reward, terminated, truncated, info = env.step(
+        [[[3, position_2.x, position_2.y]]]
+    )
+    assert tile2.has_any_building() is True
+    assert tile2.has_building(BuildingType.BRIDGE) is True
+
+    # test building bridge next to bridge
+    tile2.buildings = set()
+    tile2.building_int = 0
+    tile2.set_land_type(LandType.LAND)
+    observation, reward, terminated, truncated, info = env.step(
+        [[[2, position_2.x, position_2.y]]]
+    )
+    assert tile2.has_any_building() is True
+    assert tile2.has_building(BuildingType.ROAD) is True
 
 
 def test_build_simple_bridge(setup):
@@ -144,11 +176,42 @@ def test_build_simple_bridge(setup):
     observation, reward, terminated, truncated, info = env.step([[build_bridge_action]])
     assert tile1.has_any_building() is False
 
-    # add a city next to it
+    # add a opponent city next to it
     env.map.get_tile(position_2).add_building(city)
+    tile2 = env.map.get_tile(position_2)
+    tile2.owner_id = 7
+    # next to a hostile city should not work
+    observation, reward, terminated, truncated, info = env.step([[build_bridge_action]])
+    assert tile1.has_any_building() is False
+
+    # next to a friendly city should work
+    tile2.owner_id = agent_id
     observation, reward, terminated, truncated, info = env.step([[build_bridge_action]])
     assert tile1.has_any_building() is True
     assert tile1.has_building(BuildingType.BRIDGE) is True
+
+    # removing city on tile 2
+    tile2.buildings = set()
+    tile2.building_int = 0
+    tile2.owner_id = OWNER_DEFAULT_TILE
+    assert tile2.has_any_building() is False
+
+    # test building road next to bridge
+    observation, reward, terminated, truncated, info = env.step(
+        [[[2, position_2.x, position_2.y]]]
+    )
+    assert tile2.has_any_building() is True
+    assert tile2.has_building(BuildingType.ROAD) is True
+
+    # test building bridge next to bridge
+    tile2.buildings = set()
+    tile2.building_int = 0
+    tile2.set_land_type(LandType.OCEAN)
+    observation, reward, terminated, truncated, info = env.step(
+        [[[3, position_2.x, position_2.y]]]
+    )
+    assert tile2.has_any_building() is True
+    assert tile2.has_building(BuildingType.BRIDGE) is True
 
 
 def test_building_road_on_water_mountain_desert(setup):
@@ -171,7 +234,9 @@ def test_building_road_on_water_mountain_desert(setup):
     # set visible
     special_env.map.set_visible(position_1, agent_id)
     # set city next to it
-    special_env.map.get_tile(position_2).add_building(city)
+    tile2 = special_env.map.get_tile(position_2)
+    tile2.add_building(city)
+    tile2.owner_id = agent_id
 
     # should not work on ocean
     tile1.set_land_type(LandType.OCEAN)
@@ -231,7 +296,9 @@ def test_building_bridge_on_water_mountain_desert(setup):
     # set visible
     special_env.map.set_visible(position_1, agent_id)
     # set city next to it
-    special_env.map.get_tile(position_2).add_building(city)
+    tile2 = special_env.map.get_tile(position_2)
+    tile2.add_building(city)
+    tile2.owner_id = agent_id
     special_env.map.set_visible(position_1, agent_id)
 
     # should not work on mountain

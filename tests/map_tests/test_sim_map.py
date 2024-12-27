@@ -226,13 +226,18 @@ def test_tile_is_next_to_building(map_instance):
     map_instance, mock_city_params = map_instance
 
     # Initially, no buildings nearby
-    assert map_instance.tile_is_next_to_building(adjacent_position) is False
+    bool_value, return_tile = map_instance.tile_is_next_to_building(adjacent_position)
+    assert bool_value is False
+    assert return_tile is None
 
     building_object = City(1, position, mock_city_params)
     map_instance.add_building(building_object, position)
 
     # Now, should detect a building nearby
-    assert map_instance.tile_is_next_to_building(adjacent_position) is True
+    tile = map_instance.get_tile(position)
+    bool_value, return_tile = map_instance.tile_is_next_to_building(adjacent_position)
+    assert bool_value is True
+    assert return_tile == tile
 
 
 def test_get_surrounding_tiles(map_instance):
@@ -241,7 +246,7 @@ def test_get_surrounding_tiles(map_instance):
 
     # Test Case 1: Middle position
     middle_position = MapPosition(2, 2)
-    surrounding_tiles = map_instance.get_surrounding_tiles(middle_position)
+    surrounding_tiles = map_instance.get_surrounding_tiles(middle_position, 1)
     assert (
         len(surrounding_tiles) == 8
     ), "Middle position should have 8 surrounding tiles."
@@ -267,7 +272,7 @@ def test_get_surrounding_tiles(map_instance):
 
     # Test Case 2: Corner position
     corner_position = MapPosition(0, 0)
-    surrounding_tiles = map_instance.get_surrounding_tiles(corner_position)
+    surrounding_tiles = map_instance.get_surrounding_tiles(corner_position, 1)
     assert (
         len(surrounding_tiles) == 3
     ), "Corner position should have 3 surrounding tiles (some may be out of bounds)."
@@ -282,7 +287,7 @@ def test_get_surrounding_tiles(map_instance):
 
     # Test Case 3: Edge position
     edge_position = MapPosition(2, 0)
-    surrounding_tiles = map_instance.get_surrounding_tiles(edge_position)
+    surrounding_tiles = map_instance.get_surrounding_tiles(edge_position, 1)
     assert (
         len(surrounding_tiles) == 5
     ), "Edge position should have 5 surrounding tiles (some may be out of bounds)."

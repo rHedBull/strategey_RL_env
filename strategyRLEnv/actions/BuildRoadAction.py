@@ -5,6 +5,14 @@ from strategyRLEnv.objects.Building import BuildingType
 from strategyRLEnv.objects.Road import Bridge, Road, update_road_bridge_shape
 
 
+def next_to_road_or_bridge(map, position):
+    surroundings = map.get_surrounding_tiles(position, 1)
+    for tile in surroundings:
+        if tile.has_road() or tile.has_bridge():
+            return True
+    return False
+
+
 class BuildRoadAction(BuildAction):
     def __init__(self, agent: Agent, position: MapPosition):
         super().__init__(agent, position, BuildingType.ROAD)
@@ -14,10 +22,13 @@ class BuildRoadAction(BuildAction):
             return False
 
         if self.agent.id == env.map.get_tile(self.position).get_owner():
-            # tile is onwed by agent
+            # tile is owned by agent
             return True
 
-        if env.map.tile_is_next_to_building(self.position):
+        if env.map.tile_is_next_to_own_building(self.position, self.agent.id):
+            return True
+
+        if next_to_road_or_bridge(env.map, self.position):
             return True
 
         return False
@@ -44,7 +55,10 @@ class BuildBridgeAction(BuildAction):
             # tile is onwed by agent
             return True
 
-        if env.map.tile_is_next_to_building(self.position):
+        if env.map.tile_is_next_to_own_building(self.position, self.agent.id):
+            return True
+
+        if next_to_road_or_bridge(env.map, self.position):
             return True
 
         return False
