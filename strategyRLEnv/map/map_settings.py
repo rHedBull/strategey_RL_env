@@ -70,6 +70,7 @@ ALLOWED_BUILDING_PLACEMENTS = {
     },
     BuildingType.BRIDGE: {LandType.RIVER, LandType.OCEAN},
     BuildingType.FARM: {LandType.LAND, LandType.MARSH},
+    BuildingType.MINE: {LandType.MOUNTAIN},
     # Add mappings for other building types
 }
 

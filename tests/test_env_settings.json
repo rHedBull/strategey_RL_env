@@ -138,7 +138,16 @@
             "maintenance_cost_per_turn": 5,
             "max_level": 3
         },
-        "invalid_action_penalty": -10
+        "build_mine": {
+            "action_id": 5,
+            "cost": 8,
+            "reward": 5,
+            "build_type_id": 16,
+            "money_gain_per_turn": 20,
+            "maintenance_cost_per_turn": 5,
+            "max_level": 3
+        },
+        "invalid_action_penalty": -1000
     },
     "map_features": [
         {

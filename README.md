@@ -34,6 +34,10 @@ pip install -e /path/to/other/repo
 - can only be placed on an already self claimed tile
 - only placeable on: normal Land and Marsh
 
+#### Mine
+- can only be placed on an already self claimed tile
+- only placable on Mountain or resource
+
 
 # TODO
 
@@ -62,7 +66,6 @@ pip install -e /path/to/other/repo
 - enable actual biomes
 - make height relevant for water and mountain
 - loading maps into env
-- mindest distance between cities
 
 
 ## RL
@@ -73,8 +76,8 @@ pip install -e /path/to/other/repo
 - [ ] different types of observability for different agents
 - [ ] adjust height, biomes and other min and max values in obs space
   - [ ] add option for continuos map
-  - differentiate between tiles seen and claimed and how it influences where actions can happen
-- [ ] define when done or truncated
+- [ ]!! define when done or truncated
+
 ### Rewards
 - [ ] calculate rewards better, decide what rewards to give
 

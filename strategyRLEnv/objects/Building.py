@@ -13,6 +13,7 @@ class BuildingType(Enum):
     ROAD = "build_road"
     BRIDGE = "build_bridge"
     FARM = "build_farm"
+    MINE = "build_mine"
 
 
 class Building(ABC):

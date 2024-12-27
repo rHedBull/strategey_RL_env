@@ -170,6 +170,8 @@ class Map_Square:
             building_id = 4  # 2^2
         elif building_type == BuildingType.FARM:
             building_id = 8  # 2^3
+        elif building_type == BuildingType.MINE:
+            building_id = 16
         else:
             building_id = 0  # Undefined building type
 
