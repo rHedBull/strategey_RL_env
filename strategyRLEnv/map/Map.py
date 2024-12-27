@@ -130,7 +130,7 @@ class Map:
             return self.squares[position.x][position.y]
         return None
 
-    def tile_is_next_to_building(self, position: MapPosition) -> bool:
+    def tile_is_next_to_building(self, position: MapPosition):
         # check if any of the neighbouring tiles has a building
         # TODO: switch to just up, down, left, right
         x = position.x
@@ -140,8 +140,16 @@ class Map:
                 tmp_pos = MapPosition(x + i, y + j)
                 tile = self.get_tile(tmp_pos)
                 if tile and tile.has_any_building():
-                    return True
-        return False
+                    return True, tile
+        return False, None
+
+    def tile_is_next_to_own_building(
+        self, position: MapPosition, agent_id: int
+    ) -> bool:
+        tile_is_next_to_building, tile = self.tile_is_next_to_building(position)
+        if tile_is_next_to_building:
+            if tile.get_owner() == agent_id:
+                return True
 
     def check_position_on_map(self, position: MapPosition) -> bool:
         """
@@ -155,13 +163,17 @@ class Map:
             return True
         return False
 
-    def get_surrounding_tiles(self, position: MapPosition):
+    def get_surrounding_tiles(self, position: MapPosition, radius: int):
         x = position.x
         y = position.y
         surrounding_tiles = []
-        for i in range(-1, 2):
-            for j in range(-1, 2):
+        for i in range(-radius, radius + 1):
+            for j in range(-radius, radius + 1):
+                # Skip the center tile
                 if i == 0 and j == 0:
+                    continue
+                # Check Chebyshev distance: max(abs(i), abs(j)) <= radius
+                if max(abs(i), abs(j)) > radius:
                     continue
                 tmp_pos = MapPosition(x + i, y + j)
                 if self.check_position_on_map(tmp_pos):
