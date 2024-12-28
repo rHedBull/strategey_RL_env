@@ -37,7 +37,7 @@ def test_build_simple_mine(setup):
 
     # all tiles should be mountain
     other_agent_id = 3
-    build_mine_action = [5, position_1.x, position_1.y]
+    build_mine_action = [6, position_1.x, position_1.y]
     tile1 = env.map.get_tile(position_1)
 
     assert tile1.land_type == LandType.MOUNTAIN
@@ -75,7 +75,7 @@ def test_build_simple_mine(setup):
 
 def test_building_mine_on_water_mountain_desert(setup):
     env, agent_id, position_1, position_2 = setup
-    build_mine_action = [5, position_1.x, position_1.y]
+    build_mine_action = [6, position_1.x, position_1.y]
 
     # test all water
     with open("test_env_settings.json", "r") as f:

@@ -113,7 +113,7 @@ def test_action_space(env):
 
     # assumption on test_env_settings.json with map size 100x100
     assert action_space == gym.spaces.MultiDiscrete(
-        [5, 100, 100]
+        [6, 100, 100]
     ), "Action space should be a MultiDiscrete space with 3 dimensions"
 
     random_action = action_space.sample()

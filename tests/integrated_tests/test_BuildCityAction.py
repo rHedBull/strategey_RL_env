@@ -35,7 +35,7 @@ def test_build_simple_city(setup):
     other_agent_id = 3
 
     agent_id = 0
-    build_city_action = [1, position_1.x, position_1.y]
+    build_city_action = [2, position_1.x, position_1.y]
     tile1 = env.map.get_tile(position_1)
     tile1.set_land_type(LandType.LAND)
 
@@ -77,7 +77,7 @@ def test_build_simple_city(setup):
 def test_building_city_on_water_mountain_desert(setup):
     env, agent_id, position_1, position_2 = setup
 
-    build_city_action = [1, position_1.x, position_1.y]
+    build_city_action = [2, position_1.x, position_1.y]
 
     # test all water
     with open("test_env_settings.json", "r") as f:

@@ -45,7 +45,7 @@ def test_simple_claim(setup):
     road = Road(position_2, mock_road_params)
     bridge = Bridge(position_2, mock_bridge_params)
 
-    claim_action = [0, position_1.x, position_1.y]
+    claim_action = [1, position_1.x, position_1.y]
     tile1 = env.map.get_tile(position_1)
     tile2 = env.map.get_tile(position_2)
 
@@ -94,7 +94,7 @@ def test_simple_claim(setup):
 def test_claiming_with_agent_conflicts(setup):
     env, city, agent_id, position_1, position_2 = setup
     other_agent_id = 3
-    claim_action = [0, position_1.x, position_1.y]
+    claim_action = [1, position_1.x, position_1.y]
     tile1 = env.map.get_tile(position_1)
     tile2 = env.map.get_tile(position_2)
 

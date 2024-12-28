@@ -75,6 +75,9 @@ class ActionManager:
                     continue
 
                 action_type = self.env.action_mapping.get(action[0])
+                if action_type  == 'wait':
+                    continue
+
                 if action_type is None:
                     # Handle unknown action type
                     raise ValueError(f"Unknown action type: {action[0]}")

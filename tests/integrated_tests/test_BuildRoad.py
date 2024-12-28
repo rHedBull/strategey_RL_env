@@ -38,7 +38,7 @@ def setup():
 
 def test_build_simple_road(setup):
     env, city, agent_id, position_1, position_2 = setup
-    build_road_action = [2, position_1.x, position_1.y]
+    build_road_action = [3, position_1.x, position_1.y]
 
     env.reset()
     tile1 = env.map.get_tile(position_1)
@@ -110,7 +110,7 @@ def test_build_simple_road(setup):
 
     # test building bridge next to bridge
     observation, reward, terminated, truncated, info = env.step(
-        [[[3, position_2.x, position_2.y]]]
+        [[[4, position_2.x, position_2.y]]]
     )
     assert tile2.has_any_building() is True
     assert tile2.has_building(BuildingType.BRIDGE) is True
@@ -120,7 +120,7 @@ def test_build_simple_road(setup):
     tile2.building_int = 0
     tile2.set_land_type(LandType.LAND)
     observation, reward, terminated, truncated, info = env.step(
-        [[[2, position_2.x, position_2.y]]]
+        [[[3, position_2.x, position_2.y]]]
     )
     assert tile2.has_any_building() is True
     assert tile2.has_building(BuildingType.ROAD) is True
@@ -130,7 +130,7 @@ def test_build_simple_bridge(setup):
     env, city, agent_id, position_1, position_2 = setup
     env.reset()
 
-    build_bridge_action = [3, position_1.x, position_1.y]
+    build_bridge_action = [4, position_1.x, position_1.y]
     tile1 = env.map.get_tile(position_1)
 
     tile1.set_land_type(LandType.OCEAN)
@@ -200,7 +200,7 @@ def test_build_simple_bridge(setup):
 
     # test building road next to bridge
     observation, reward, terminated, truncated, info = env.step(
-        [[[2, position_2.x, position_2.y]]]
+        [[[3, position_2.x, position_2.y]]]
     )
     assert tile2.has_any_building() is True
     assert tile2.has_building(BuildingType.ROAD) is True
@@ -210,7 +210,7 @@ def test_build_simple_bridge(setup):
     tile2.building_int = 0
     tile2.set_land_type(LandType.OCEAN)
     observation, reward, terminated, truncated, info = env.step(
-        [[[3, position_2.x, position_2.y]]]
+        [[[4, position_2.x, position_2.y]]]
     )
     assert tile2.has_any_building() is True
     assert tile2.has_building(BuildingType.BRIDGE) is True
@@ -218,7 +218,7 @@ def test_build_simple_bridge(setup):
 
 def test_building_road_on_water_mountain_desert(setup):
     env, city, agent_id, position_1, position_2 = setup
-    build_road_action = [2, position_1.x, position_1.y]
+    build_road_action = [3, position_1.x, position_1.y]
 
     # test all water
     with open("test_env_settings.json", "r") as f:
@@ -281,7 +281,7 @@ def test_building_road_on_water_mountain_desert(setup):
 def test_building_bridge_on_water_mountain_desert(setup):
     env, city, agent_id, position_1, position_2 = setup
 
-    build_bridge_action = [3, position_1.x, position_1.y]
+    build_bridge_action = [4, position_1.x, position_1.y]
 
     # test all water
     with open("test_env_settings.json", "r") as f:

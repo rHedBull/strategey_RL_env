@@ -96,9 +96,9 @@
     "agent_initial_budget": 10000,
     "agent_initial_budget_distribution": "equal",
     "actions": {
-        "move": {
+        "wait": {
             "action_id": 0,
-            "cost": -1,
+            "cost": 0,
             "reward": 0
         },
         "claim": {
@@ -139,7 +139,7 @@
             "max_level": 3
         },
         "build_mine": {
-            "action_id": 5,
+            "action_id": 6,
             "cost": 8,
             "reward": 5,
             "build_type_id": 16,
