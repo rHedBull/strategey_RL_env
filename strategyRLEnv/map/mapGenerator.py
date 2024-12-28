@@ -57,9 +57,10 @@ def generate_finished_map(connected_env, map_settings=None, path_to_map_file=Non
         water_percentage = map_settings.get("water_budget_per_agent", 0.3)
         mountain_percentage = map_settings.get("mountain_budget_per_agent", 0.1)
         dessert_percentage = map_settings.get("dessert_budget_per_agent", 0.1)
+        resource_density = map_settings.get("resource_density", 0.05)
 
         topology_array = create_topologies(
-            1, width, height, water_percentage, mountain_percentage, dessert_percentage
+            1, width, height, water_percentage, mountain_percentage, dessert_percentage, resource_density
         )
         finished_map = topology_to_map(topology_array[0])
 
@@ -100,10 +101,11 @@ def generate_map_topologies(numb, map_settings, seed=None, path=None):
     water_percentage = map_settings.get("water_budget_per_agent", 0.3)
     mountain_percentage = map_settings.get("mountain_budget_per_agent", 0.1)
     dessert_percentage = map_settings.get("dessert_budget_per_agent", 0.1)
+    resource_density = map_settings.get("resource_density", 0.05)
 
     # Generate maps using settings and save to file
     map_arrays = create_topologies(
-        numb, width, height, water_percentage, mountain_percentage, dessert_percentage
+        numb, width, height, water_percentage, mountain_percentage, dessert_percentage, resource_density
     )
 
     for i in range(numb):
@@ -162,7 +164,7 @@ def let_map_agent_run(map_arrays, land_type_percentage, tiles, LAND_TYPE_VALUE):
 
 
 def create_topologies(
-    num, width, height, water_percentage, mountain_percentage, dessert_percentage
+    num, width, height, water_percentage, mountain_percentage, dessert_percentage, resource_density=0.05
 ):
     # Initialize the 2D list with the appropriate dimensions
 
@@ -188,7 +190,7 @@ def create_topologies(
     # expand topology arrays unsqueeze
     map_arrays = np.concatenate((topology_arrays, resource_arr), axis=3)
 
-    base_resource_density = 0.1
+
 
     # post processing is done together
     for m in range(num):
@@ -203,11 +205,11 @@ def create_topologies(
                         map_arr[row][col][0] = LandType.MARSH.value
 
                 if land == LandType.LAND.value:
-                    if random.random() < base_resource_density:
+                    if random.random() < resource_density:
                         map_arr[row][col][1] = ResourceType.GRAIN.value
 
                 if land == LandType.MOUNTAIN.value:
-                    if random.random() < base_resource_density:
+                    if random.random() < resource_density:
                         map_arr[row][col][1] = ResourceType.METAL.value
 
     return map_arrays

@@ -10,7 +10,7 @@ from strategyRLEnv.objects.Ownable import Ownable
 class Mine(Building, Ownable):
     def __init__(self, agent_id: int, position: MapPosition, building_parameters: Dict):
         Ownable.__init__(self, agent_id)
-        Building.__init__(self, position, BuildingType.FARM, building_parameters)
+        Building.__init__(self, position, BuildingType.MINE, building_parameters)
 
     def draw(self, screen: pygame.Surface, square_size: int, colors: dict):
         """
