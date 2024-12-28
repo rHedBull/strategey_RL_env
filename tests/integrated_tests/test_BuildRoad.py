@@ -247,12 +247,7 @@ def test_building_road_on_water_mountain_desert(setup):
     )
     assert tile1.has_any_building() is False
 
-    # should not work on mountain
-    tile1.set_land_type(LandType.MOUNTAIN)
-    observation, reward, terminated, truncated, info = special_env.step(
-        [[build_road_action]]
-    )
-    assert tile1.has_any_building() is False
+
 
     # should work on dessert
     tile1.set_land_type(LandType.DESERT)
@@ -271,6 +266,17 @@ def test_building_road_on_water_mountain_desert(setup):
     special_env.map.set_visible(
         MapPosition(position_1.x + 1, position_1.y + 1), agent_id
     )
+    observation, reward, terminated, truncated, info = special_env.step(
+        [[build_road_action]]
+    )
+    assert tile1.has_any_building() is True
+    assert tile1.has_building(BuildingType.ROAD) is True
+
+    tile1.building_int = 0
+    tile1.buildings = set()
+
+    # should work on mountain
+    tile1.set_land_type(LandType.MOUNTAIN)
     observation, reward, terminated, truncated, info = special_env.step(
         [[build_road_action]]
     )

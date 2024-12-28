@@ -1,6 +1,7 @@
 from strategyRLEnv.actions.BuildAction import BuildAction
 from strategyRLEnv.Agent import Agent
 from strategyRLEnv.map import MapPosition
+from strategyRLEnv.map.map_settings import LandType
 from strategyRLEnv.objects.Building import BuildingType
 from strategyRLEnv.objects.Road import Bridge, Road, update_road_bridge_shape
 
@@ -16,6 +17,14 @@ def next_to_road_or_bridge(map, position):
 class BuildRoadAction(BuildAction):
     def __init__(self, agent: Agent, position: MapPosition):
         super().__init__(agent, position, BuildingType.ROAD)
+
+    def get_cost(self, env) -> float:
+        """Return the cost of the action."""
+        cost = super().get_cost(env)
+        if env.map.get_tile(self.position).land_type == LandType.MOUNTAIN:
+            cost *= 2
+        return cost
+
 
     def validate(self, env) -> bool:
         if not super().validate(env):
