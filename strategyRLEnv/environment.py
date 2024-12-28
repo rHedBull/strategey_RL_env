@@ -245,7 +245,11 @@ class MapEnvironment(gym.Env):
         )
 
         return spaces.Dict(
-            {"map": map_observation_space, "agents": agents_observation_space}
+            {
+                "map": map_observation_space,
+                "visibility_map": visibility_map_observation_space,
+                "agents": agents_observation_space,
+            }
         )
 
     def _define_action_space(self):
@@ -293,7 +297,7 @@ class MapEnvironment(gym.Env):
         # for agent in self.agents:
         #     all_visible_masks.append(get_visible_mask(agent.id, self.map))
 
-        map_observation = self.map.get_observation()
+        map_observation, visibility_map = self.map.get_observation()
         agent_observations = np.zeros(
             (self.num_agents, len(self.agent_features)), dtype=np.float32
         )
@@ -304,7 +308,11 @@ class MapEnvironment(gym.Env):
         # np_all_visible_masks = np.array(all_visible_masks)
         # agent_info = np.array([])
 
-        return {"map": map_observation, "agents": agent_observations}
+        return {
+            "map": map_observation,
+            "visibility_map": visibility_map,
+            "agents": agent_observations,
+        }
 
     def setup_screen(self):
         pygame.init()
