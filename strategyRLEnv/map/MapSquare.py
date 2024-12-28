@@ -160,7 +160,9 @@ class Map_Square:
         Add a building to the square.
         """
         self.buildings.add(building)
-        self.building_int |= building.building_type_id
+        building_id = building.get_building_type_id()
+        bit_mask = 2 ** (building_id - 1)
+        self.building_int |= bit_mask
 
     def has_building(self, building_type: BuildingType):
         if building_type == BuildingType.CITY:
@@ -168,13 +170,16 @@ class Map_Square:
         elif building_type == BuildingType.ROAD:
             building_id = 2  # 2^1
         elif building_type == BuildingType.BRIDGE:
-            building_id = 4  # 2^2
+            building_id = 3  # 2^2
         elif building_type == BuildingType.FARM:
-            building_id = 8  # 2^3
+            building_id = 4  # 2^3
         elif building_type == BuildingType.MINE:
-            building_id = 16
+            building_id = 5
         else:
             building_id = 0  # Undefined building type
+
+        # convert to 2 potenz
+        building_id = int(2 ** (building_id - 1 ))
 
             # Perform bitwise AND to check if the building is present
         return (self.building_int & building_id) != 0
@@ -195,7 +200,9 @@ class Map_Square:
         """
         if building in self.buildings:
             self.buildings.remove(building)
-            self.building_int &= ~building.get_building_type_id()
+            building_id = building.get_building_type_id()
+            bit_mask = 2 ** (building_id - 1)
+            self.building_int &= ~bit_mask
 
     # drawing stuff #
     def draw(

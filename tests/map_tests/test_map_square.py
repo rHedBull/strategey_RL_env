@@ -267,8 +267,8 @@ def test_has_road_and_bridge(map_square):
     mock_city_params, map_square = map_square
 
     mock_road_params = {"building_type_id": 2, "max_level": 3}
-    mock_bridge_params = {"building_type_id": 4, "max_level": 3}
-    mock_farm_params = {"building_type_id": 8, "max_level": 3}
+    mock_bridge_params = {"building_type_id": 3, "max_level": 3}
+    mock_farm_params = {"building_type_id": 4, "max_level": 3}
     road = Road(map_square.position, mock_road_params)
     bridge = Bridge(map_square.position, mock_bridge_params)
     farm = Farm(0, map_square.position, mock_farm_params)
