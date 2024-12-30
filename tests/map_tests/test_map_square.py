@@ -10,6 +10,7 @@ from strategyRLEnv.map.MapSquare import Map_Square
 from strategyRLEnv.objects.Building import BuildingType
 from strategyRLEnv.objects.City import City
 from strategyRLEnv.objects.Farm import Farm
+from strategyRLEnv.objects.Mine import Mine
 from strategyRLEnv.objects.Road import Bridge, Road
 
 
@@ -169,6 +170,7 @@ def test_has_building(map_square):
 
     assert map_square.has_building(BuildingType.CITY) is False
     assert map_square.has_building(BuildingType.ROAD) is False
+    assert map_square.has_building(BuildingType.MINE) is False
 
     map_square.add_building(city)
     assert map_square.has_building(BuildingType.CITY) is True
@@ -178,7 +180,12 @@ def test_has_building(map_square):
     map_square.add_building(road)
     assert map_square.has_building(BuildingType.ROAD) is True
     assert map_square.has_building(BuildingType.CITY) is False
+    map_square.remove_building(road)
 
+    mine = Mine(1, map_square, {"building_type_id": 5, "max_level": 3})
+    map_square.add_building(mine)
+    assert map_square.has_building(BuildingType.MINE) is True
+    assert map_square.has_building(BuildingType.CITY) is False
     # Test undefined building type
     assert map_square.has_building("UNKNOWN_BUILDING") is False
 
