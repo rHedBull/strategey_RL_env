@@ -125,6 +125,9 @@ class Agent:
         self.money += round_money
         self.last_money_pl = round_money
 
+        if self.money < 0 or len(self._claimed_tiles) == 0:
+            self.state = AgentState.DONE
+
     def draw(self, square_size, zoom_level, pan_x, pan_y):
         radius = square_size / 2
         # get a color modulo the number of colors

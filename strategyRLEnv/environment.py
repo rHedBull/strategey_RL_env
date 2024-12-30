@@ -6,7 +6,7 @@ import pygame
 from gymnasium import spaces
 
 from strategyRLEnv.ActionManager import ActionManager
-from strategyRLEnv.Agent import Agent
+from strategyRLEnv.Agent import Agent, AgentState
 from strategyRLEnv.map.mapGenerator import generate_finished_map
 
 
@@ -118,8 +118,12 @@ class MapEnvironment(gym.Env):
 
         observations = self._get_observation()
 
-        truncated = [False for _ in range(self.num_agents)]
+        truncated = [False for _ in range(self.num_agents)] # always False for now
         dones = [False for _ in range(self.num_agents)]
+
+        for i, agent in enumerate(self.agents):
+            if agent.state == AgentState.DONE:
+                dones[i] = True
         return observations, rewards, dones, truncated, info
 
     def render(self):
