@@ -9,6 +9,10 @@ pip install -e /path/to/other/repo
 
 ## Game Rules
 
+## Winning and Loosing
+- there is NO win condition
+- an Agent looses/ dies if its money is less than 0 or if it holds 0 claimed tiles
+
 ### Claiming tiles
 - a tile can only be claimed if it is visible
 - a tile can only be claimed if it is not already claimed
@@ -16,27 +20,32 @@ pip install -e /path/to/other/repo
 
 ### Buildings
 #### Roads
-- must be placed on an already self claimed tile
-- or next to another building including roads and bridges
-- only placeable on: normal Land, Dessert and Marsh
+- can be placed next to an self owned city
+- can be placed next to another road or bridge, which does not have to be self owned/ build
+- only placeable on: normal Land, Dessert, Mountain and Marsh
+- placement on Mountain costs twice as much
 
 #### Bridge
-- must be placed on an already self claimed tile
-- or next to another building including roads and bridges
-  - only placeable on: normal Ocean and River
+- can be placed next to an self owned city
+- can be placed next to another road or bridge, which does not have to be self owned/ build
+- only placeable on: normal Ocean and River
 
 #### City
 - can only be placed on a visible or already self claimed tiles
+- placement must keep clear of the city_clearance_distance from the next city
 - placing a city claims the tile
 - only placeable on: normal Land, Dessert and Marsh
 
 #### Farm
 - can only be placed on an already self claimed tile
 - only placeable on: normal Land and Marsh
+- placement on a tile with the resource Grain doubles the output of the mine
 
 #### Mine
 - can only be placed on an already self claimed tile
-- only placable on Mountain or resource
+- only placeable on Mountain tile with or without a resource
+- placement on a Mountain tile with the resource Metall doubles the output of the mine
+
 
 ### Land Types
 - normal Land
@@ -119,8 +128,8 @@ Returns:
 - Tuple[observations, rewards, dones, truncated, info]:
 - observations: Updated observations for all agents.
 - rewards: Rewards received by each agent.
-- dones: Flags indicating whether each agent has finished.
-- truncated: Flags indicating whether each agent's episode was truncated.
+- dones: Flags indicating whether each agent died
+- truncated: Flags indicating whether each agent's episode was truncated.(currently always False)
 - info (Dict): Additional information (currently empty).
 
 Raises:
@@ -188,24 +197,20 @@ Behavior:
 - [ ] different types of observability for different agents
 - [ ] adjust height, biomes and other min and max values in obs space
   - [ ] add option for continuos map
-- [ ]!! define when done or truncated
+
 
 ### Rewards
 - [ ] calculate rewards better, decide what rewards to give
-- [ ] money for farm and mine on standard field or on resource
 - [ ] setup reward structure around 0 with standard deviation of 1, is supposed to be better for learning
 
 
 ### Actions
 - [ ] account for continuous maps in action checks
-- [ ] roads on mountain possible but expensive
+- [ ] roads and bridges can only be placed next to an own city or another road or bridge, ensures roads connect to cities, !!
+- [ ] destroy action
 
 ## UI
 - [ ] zooming, moving?
-- [ ] Better Game termination log, why did it terminate?, which round?
-
-- [ ] better logging for other agents, what actions they choose
-- [ ] City ID connected to city owner?
 
 
 ## Dev Ops
@@ -214,7 +219,8 @@ Behavior:
 - [ ] add more tests, increase coverage
 - [ ] add more scenario tests
 - [ ] scaling tests, on predefined test map, small and large scale, by map size and agent count
-- [ ] documentation!!
+- [ ] setup guide, game example
+- [ ] simplify to single action per step
 - [ ] think about package API access, which attributes of env and which methods, funcitons, objects should be accessible
 
 ## Far fetched
@@ -223,7 +229,7 @@ Behavior:
 - [ ] Tech tree
 - [ ] Units
 - [ ] Diplomacy
-- [ ] Combat
+- [ ] Combat 
 
 # Mind Map
 
