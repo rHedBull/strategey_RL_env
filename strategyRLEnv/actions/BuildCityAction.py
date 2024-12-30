@@ -13,6 +13,14 @@ class BuildCityAction(BuildAction):
         if not super().validate(env):
             return False
 
+        city_clearance_radius = env.env_settings.get("city_clearance_radius", 2)
+
+        too_close_to_city, _ = env.map.tile_is_next_to_building_type(
+            self.position, BuildingType.CITY, radius=city_clearance_radius
+        )
+        if too_close_to_city:
+            return False
+
         tile = env.map.get_tile(self.position)
         tile_owner_id = tile.get_owner()
 
@@ -24,15 +32,6 @@ class BuildCityAction(BuildAction):
 
         if tile_owner_id != OWNER_DEFAULT_TILE:
             return False
-
-        city_space_radius = 3
-        # Check if there is a city in the surrounding tiles
-        surrounding_tiles = env.map.get_surrounding_tiles(
-            self.position, city_space_radius
-        )
-        for tile in surrounding_tiles:
-            if tile.has_building(BuildingType.CITY):
-                return False
 
         return True
 

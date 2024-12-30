@@ -6,6 +6,7 @@
     "dessert_budget_per_agent": 0.1,
     "numb_rivers": 0,
     "resource_density": 0.1,
+    "city_clearance_radius": 2,
     "biomes": [
         {
             "name": "Tundra"
