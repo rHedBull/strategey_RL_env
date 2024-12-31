@@ -241,13 +241,16 @@ def test_add_building(map_instance):
 #     assert bool_value is True
 #     assert return_tile == tile
 
+
 def test_tile_is_next_to_building_type(map_instance):
     position = MapPosition(3, 5)
     adjacent_position = MapPosition(4, 5)
     map_instance, mock_city_params = map_instance
 
     # Initially, no buildings nearby
-    bool_value, return_tile = map_instance.tile_is_next_to_building_type(adjacent_position, BuildingType.CITY)
+    bool_value, return_tile = map_instance.tile_is_next_to_building_type(
+        adjacent_position, BuildingType.CITY
+    )
     assert bool_value is False
     assert return_tile is None
 
@@ -256,7 +259,9 @@ def test_tile_is_next_to_building_type(map_instance):
     map_instance.add_building(building_object, position)
 
     # check for a mine, should return false
-    bool_value, return_tile = map_instance.tile_is_next_to_building_type(adjacent_position, BuildingType.MINE)
+    bool_value, return_tile = map_instance.tile_is_next_to_building_type(
+        adjacent_position, BuildingType.MINE
+    )
     assert bool_value is False
     assert return_tile is None
 
@@ -274,7 +279,9 @@ def test_tile_is_next_to_any_building(map_instance):
     map_instance, mock_city_params = map_instance
 
     # Initially, no buildings nearby
-    bool_value, return_tile = map_instance.tile_is_next_to_any_building(adjacent_position)
+    bool_value, return_tile = map_instance.tile_is_next_to_any_building(
+        adjacent_position
+    )
     assert bool_value is False
     assert return_tile is None
 
@@ -292,8 +299,11 @@ def test_tile_is_next_to_any_building(map_instance):
     tile3 = map_instance.get_tile(position3)
     map_instance.add_building(building_2, position3)
     # should still return true
-    bool_value, return_tile = map_instance.tile_is_next_to_any_building(adjacent_position)
+    bool_value, return_tile = map_instance.tile_is_next_to_any_building(
+        adjacent_position
+    )
     assert bool_value is True
+
 
 def test_tile_is_next_to_own_tile(map_instance):
     position = MapPosition(3, 5)
@@ -302,7 +312,9 @@ def test_tile_is_next_to_own_tile(map_instance):
     map_instance, mock_city_params = map_instance
 
     # Initially all unclaimed, should return false
-    bool_value, return_tile = map_instance.tile_is_next_to_own_tile(adjacent_position, agent_id=1)
+    bool_value, return_tile = map_instance.tile_is_next_to_own_tile(
+        adjacent_position, agent_id=1
+    )
     assert bool_value is False
     assert return_tile is None
 
@@ -311,26 +323,32 @@ def test_tile_is_next_to_own_tile(map_instance):
     tile1.owner_id = 3
 
     # check if tile is next to own tile, should return false
-    bool_value, return_tile = map_instance.tile_is_next_to_own_tile(adjacent_position, agent_id=1)
+    bool_value, return_tile = map_instance.tile_is_next_to_own_tile(
+        adjacent_position, agent_id=1
+    )
 
     tile1.owner_id = 1
     # now should return true
-    bool_value, return_tile = map_instance.tile_is_next_to_own_tile(adjacent_position, agent_id=1)
+    bool_value, return_tile = map_instance.tile_is_next_to_own_tile(
+        adjacent_position, agent_id=1
+    )
     assert bool_value is True
     assert return_tile == tile1
 
     tile3 = map_instance.get_tile(position3)
     tile3.owner_id = 4
     # should still return true
-    bool_value, return_tile = map_instance.tile_is_next_to_own_tile(adjacent_position, agent_id=1)
+    bool_value, return_tile = map_instance.tile_is_next_to_own_tile(
+        adjacent_position, agent_id=1
+    )
     assert bool_value is True
     assert return_tile == tile1
     # and also for 4
-    bool_value, return_tile = map_instance.tile_is_next_to_own_tile(adjacent_position, agent_id=4)
+    bool_value, return_tile = map_instance.tile_is_next_to_own_tile(
+        adjacent_position, agent_id=4
+    )
     assert bool_value is True
     assert return_tile == tile3
-
-
 
 
 def test_get_surrounding_tiles(map_instance):
@@ -350,8 +368,8 @@ def test_get_surrounding_tiles(map_instance):
         (3, 3),
     ]
     surrounding_tiles = map_instance.get_surrounding_tiles(middle_position, 1)
-    assert (
-        len(surrounding_tiles) == len(expected_positions)
+    assert len(surrounding_tiles) == len(
+        expected_positions
     ), "Middle position should have 8 surrounding tiles."
     for tile in surrounding_tiles:
         tile_position = (tile.position.x, tile.position.y)
@@ -367,29 +385,29 @@ def test_get_surrounding_tiles(map_instance):
         (3, 0),
         (4, 0),
         (0, 1),
-        (1,1),
-        (2,1),
-        (3,1),
-        (4,1),
-        (0,2),
-        (1,2),
-        (3,2),
-        (4,2),
-        (0,3),
-        (1,3),
-        (2,3),
-        (3,3),
-        (4,3),
-        (0,4),
-        (1,4),
-        (2,4),
-        (3,4),
-        (4,4)
+        (1, 1),
+        (2, 1),
+        (3, 1),
+        (4, 1),
+        (0, 2),
+        (1, 2),
+        (3, 2),
+        (4, 2),
+        (0, 3),
+        (1, 3),
+        (2, 3),
+        (3, 3),
+        (4, 3),
+        (0, 4),
+        (1, 4),
+        (2, 4),
+        (3, 4),
+        (4, 4),
     ]
 
     surrounding_tiles = map_instance.get_surrounding_tiles(middle_position, 2)
-    assert (
-        len(surrounding_tiles) == len(expected_positions2)
+    assert len(surrounding_tiles) == len(
+        expected_positions2
     ), "Middle position should have 24 surrounding tiles."
     for tile in surrounding_tiles:
         tile_position = (tile.position.x, tile.position.y)
@@ -397,23 +415,25 @@ def test_get_surrounding_tiles(map_instance):
             tile_position in expected_positions2
         ), f"Tile:({tile.position.x}, {tile.position.y}) not expected in middle position surroundings."
 
-    expected_positions1_no_diagonal = [(2,1), (3,2), (2,3), (1,2)]
-    surrounding_tiles = map_instance.get_surrounding_tiles(middle_position, 1, diagonal=False)
-    assert (
-            len(surrounding_tiles) == len(expected_positions1_no_diagonal)
+    expected_positions1_no_diagonal = [(2, 1), (3, 2), (2, 3), (1, 2)]
+    surrounding_tiles = map_instance.get_surrounding_tiles(
+        middle_position, 1, diagonal=False
+    )
+    assert len(surrounding_tiles) == len(
+        expected_positions1_no_diagonal
     ), "Middle position should have 24 surrounding tiles."
     for tile in surrounding_tiles:
         tile_position = (tile.position.x, tile.position.y)
         assert (
-                tile_position in expected_positions1_no_diagonal
+            tile_position in expected_positions1_no_diagonal
         ), f"Tile:({tile.position.x}, {tile.position.y}) not expected in middle position surroundings."
 
     # Test Case 2: Corner position
     corner_position = MapPosition(0, 0)
     expected_positions = [(1, 0), (0, 1), (1, 1)]
     surrounding_tiles = map_instance.get_surrounding_tiles(corner_position, 1)
-    assert (
-        len(surrounding_tiles) == len(expected_positions)
+    assert len(surrounding_tiles) == len(
+        expected_positions
     ), "Corner position should have 3 surrounding tiles (some may be out of bounds)."
     for tile in surrounding_tiles:
         tile_position = (tile.position.x, tile.position.y)
@@ -421,22 +441,32 @@ def test_get_surrounding_tiles(map_instance):
             tile_position in expected_positions
         ), f"Tile ({tile.position.x}, {tile.position.y}) not expected in corner position surroundings."
 
-
-    expected_positions2 = [(1, 0), (2, 0), (0, 1), (1, 1), (2, 1), (0, 2), (1, 2), (2, 2)]
+    expected_positions2 = [
+        (1, 0),
+        (2, 0),
+        (0, 1),
+        (1, 1),
+        (2, 1),
+        (0, 2),
+        (1, 2),
+        (2, 2),
+    ]
     surrounding_tiles = map_instance.get_surrounding_tiles(corner_position, 2)
-    assert (
-            len(surrounding_tiles) == len(expected_positions2)
+    assert len(surrounding_tiles) == len(
+        expected_positions2
     ), "Corner position should have 8 surrounding tiles."
     for tile in surrounding_tiles:
         tile_position = (tile.position.x, tile.position.y)
         assert (
-                tile_position in expected_positions2
+            tile_position in expected_positions2
         ), f"Tile ({tile.position.x}, {tile.position.y}) not expected in corner position surroundings."
 
-    surrounding_tiles = map_instance.get_surrounding_tiles(corner_position, 2, diagonal=False)
+    surrounding_tiles = map_instance.get_surrounding_tiles(
+        corner_position, 2, diagonal=False
+    )
     expected_positions2_no_diagonal = [(1, 0), (2, 0), (0, 1), (0, 2)]
-    assert (
-            len(surrounding_tiles) == len(expected_positions2_no_diagonal)
+    assert len(surrounding_tiles) == len(
+        expected_positions2_no_diagonal
     ), "Corner position should have 4 surrounding tiles."
     for tile in surrounding_tiles:
         tile_position = (tile.position.x, tile.position.y)
@@ -444,13 +474,12 @@ def test_get_surrounding_tiles(map_instance):
             tile_position in expected_positions2_no_diagonal
         ), f"Tile ({tile.position.x}, {tile.position.y}) not expected in corner position surroundings."
 
-
     # Test Case 3: Edge position
     edge_position = MapPosition(2, 0)
     surrounding_tiles = map_instance.get_surrounding_tiles(edge_position, 1)
     expected_positions = [(1, 0), (3, 0), (1, 1), (2, 1), (3, 1)]
-    assert (
-        len(surrounding_tiles) == len(expected_positions)
+    assert len(surrounding_tiles) == len(
+        expected_positions
     ), "Edge position should have 5 surrounding tiles (some may be out of bounds)."
     for tile in surrounding_tiles:
         tile_position = (tile.position.x, tile.position.y)
@@ -459,13 +488,14 @@ def test_get_surrounding_tiles(map_instance):
         ), f"Tile ({tile.position.x}, {tile.position.y}) not expected in edge position surroundings."
 
     expected_positions1_no_diagonal = [(1, 0), (3, 0), (2, 1)]
-    surrounding_tiles = map_instance.get_surrounding_tiles(edge_position, 1, diagonal=False)
-    assert (
-        len(surrounding_tiles) == len(expected_positions1_no_diagonal)
+    surrounding_tiles = map_instance.get_surrounding_tiles(
+        edge_position, 1, diagonal=False
+    )
+    assert len(surrounding_tiles) == len(
+        expected_positions1_no_diagonal
     ), "Edge position without diagonals should have 3 surrounding tiles (some may be out of bounds)."
     for tile in surrounding_tiles:
         tile_position = (tile.position.x, tile.position.y)
         assert (
             tile_position in expected_positions1_no_diagonal
         ), f"Tile ({tile.position.x}, {tile.position.y}) not expected in edge position surroundings."
-

@@ -73,7 +73,7 @@ ALLOWED_BUILDING_PLACEMENTS = {
         LandType.LAND,
         LandType.DESERT,
         LandType.MARSH,
-        LandType.MOUNTAIN
+        LandType.MOUNTAIN,
     },
     BuildingType.BRIDGE: {LandType.RIVER, LandType.OCEAN},
     BuildingType.FARM: {LandType.LAND, LandType.MARSH},

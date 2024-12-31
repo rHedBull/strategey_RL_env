@@ -25,19 +25,26 @@ class BuildRoadAction(BuildAction):
             cost *= 2
         return cost
 
-
     def validate(self, env) -> bool:
         if not super().validate(env):
             return False
 
-        if self.agent.id == env.map.get_tile(self.position).get_owner():
-            # tile is owned by agent
+        next_to_road, _ = env.map.tile_is_next_to_building_type(
+            self.position, BuildingType.ROAD
+        )
+        if next_to_road:
             return True
 
-        if env.map.tile_is_next_to_own_building(self.position, self.agent.id):
+        next_to_road, _ = env.map.tile_is_next_to_building_type(
+            self.position, BuildingType.BRIDGE
+        )
+        if next_to_road:
             return True
 
-        if next_to_road_or_bridge(env.map, self.position):
+        next_to_city, tile = env.map.tile_is_next_to_building_type(
+            self.position, BuildingType.CITY
+        )
+        if next_to_city and tile.get_owner() == self.agent.id:
             return True
 
         return False
@@ -60,14 +67,22 @@ class BuildBridgeAction(BuildAction):
         if not super().validate(env):
             return False
 
-        if self.agent.id == env.map.get_tile(self.position).get_owner():
-            # tile is onwed by agent
+        next_to_road, _ = env.map.tile_is_next_to_building_type(
+            self.position, BuildingType.ROAD
+        )
+        if next_to_road:
             return True
 
-        if env.map.tile_is_next_to_own_building(self.position, self.agent.id):
+        next_to_road, _ = env.map.tile_is_next_to_building_type(
+            self.position, BuildingType.BRIDGE
+        )
+        if next_to_road:
             return True
 
-        if next_to_road_or_bridge(env.map, self.position):
+        next_to_city, tile = env.map.tile_is_next_to_building_type(
+            self.position, BuildingType.CITY
+        )
+        if next_to_city and tile.get_owner() == self.agent.id:
             return True
 
         return False

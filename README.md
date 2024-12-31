@@ -153,7 +153,7 @@ Optional[np.ndarray]: The RGB array if render_mode is 'rgb_array', otherwise Non
 Raises:
 - NotImplementedError: If an unknown render_mode is specified.
 
- 
+
 ### `close()`
 Closes the environment and performs necessary cleanup.
 
@@ -192,6 +192,7 @@ Behavior:
 
 ## RL
 - [ ] make some kind of run setup to run on the different maps of different settings and logg
+- [ ] better Game dynamic structure, if one tile changes, trigger updates for surrounding tiles
 
 ### Observation
 - [ ] different types of observability for different agents
@@ -229,7 +230,7 @@ Behavior:
 - [ ] Tech tree
 - [ ] Units
 - [ ] Diplomacy
-- [ ] Combat 
+- [ ] Combat
 
 # Mind Map
 

@@ -118,7 +118,7 @@ class MapEnvironment(gym.Env):
 
         observations = self._get_observation()
 
-        truncated = [False for _ in range(self.num_agents)] # always False for now
+        truncated = [False for _ in range(self.num_agents)]  # always False for now
         dones = [False for _ in range(self.num_agents)]
 
         for i, agent in enumerate(self.agents):

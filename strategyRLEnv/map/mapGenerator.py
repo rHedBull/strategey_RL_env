@@ -60,7 +60,13 @@ def generate_finished_map(connected_env, map_settings=None, path_to_map_file=Non
         resource_density = map_settings.get("resource_density", 0.05)
 
         topology_array = create_topologies(
-            1, width, height, water_percentage, mountain_percentage, dessert_percentage, resource_density
+            1,
+            width,
+            height,
+            water_percentage,
+            mountain_percentage,
+            dessert_percentage,
+            resource_density,
         )
         finished_map = topology_to_map(topology_array[0])
 
@@ -105,7 +111,13 @@ def generate_map_topologies(numb, map_settings, seed=None, path=None):
 
     # Generate maps using settings and save to file
     map_arrays = create_topologies(
-        numb, width, height, water_percentage, mountain_percentage, dessert_percentage, resource_density
+        numb,
+        width,
+        height,
+        water_percentage,
+        mountain_percentage,
+        dessert_percentage,
+        resource_density,
     )
 
     for i in range(numb):
@@ -164,7 +176,13 @@ def let_map_agent_run(map_arrays, land_type_percentage, tiles, LAND_TYPE_VALUE):
 
 
 def create_topologies(
-    num, width, height, water_percentage, mountain_percentage, dessert_percentage, resource_density=0.05
+    num,
+    width,
+    height,
+    water_percentage,
+    mountain_percentage,
+    dessert_percentage,
+    resource_density=0.05,
 ):
     # Initialize the 2D list with the appropriate dimensions
 
@@ -189,8 +207,6 @@ def create_topologies(
 
     # expand topology arrays unsqueeze
     map_arrays = np.concatenate((topology_arrays, resource_arr), axis=3)
-
-
 
     # post processing is done together
     for m in range(num):

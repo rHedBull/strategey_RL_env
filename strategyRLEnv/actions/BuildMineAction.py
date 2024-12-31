@@ -33,7 +33,6 @@ class BuildMineAction(BuildAction):
         if tile.get_resources() != ResourceType.NONE:
             mine.income_per_turn = 2 * mine.get_income()
 
-
         env.map.claim_tile(self.agent, self.position)
         self.agent.add_claimed_tile(self.position)
         self.agent.update_local_visibility(self.position)

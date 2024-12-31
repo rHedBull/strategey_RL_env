@@ -179,9 +179,9 @@ class Map_Square:
             building_id = 0  # Undefined building type
 
         # convert to 2 potenz
-        building_id = int(2 ** (building_id - 1 ))
+        building_id = int(2 ** (building_id - 1))
 
-            # Perform bitwise AND to check if the building is present
+        # Perform bitwise AND to check if the building is present
         return (self.building_int & building_id) != 0
 
     def get_building(self, building_type: BuildingType):

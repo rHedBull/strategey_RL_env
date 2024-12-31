@@ -146,15 +146,25 @@ class Map:
         return False, None
 
     def tile_is_next_to_own_tile(
-        self, position: MapPosition, agent_id: int, radius: int = 1, diagonal: bool = True
+        self,
+        position: MapPosition,
+        agent_id: int,
+        radius: int = 1,
+        diagonal: bool = True,
     ):
-        surrounding_tiles = self.get_surrounding_tiles(position, radius, diagonal=True)
+        surrounding_tiles = self.get_surrounding_tiles(position, radius, diagonal)
         for tile in surrounding_tiles:
             if tile.get_owner() == agent_id:
                 return True, tile
         return False, None
 
-    def tile_is_next_to_building_type(self, position: MapPosition,  building_type, radius:int = 1, diagonal:bool = True):
+    def tile_is_next_to_building_type(
+        self,
+        position: MapPosition,
+        building_type,
+        radius: int = 1,
+        diagonal: bool = True,
+    ):
         # check if any of the neighbouring tiles in radius have a building of the given type
         surroundings = self.get_surrounding_tiles(position, radius, diagonal)
 
@@ -163,12 +173,14 @@ class Map:
                 return True, tile
         return False, None
 
-    def tile_is_next_to_any_building(self, position: MapPosition, radius:int = 1, diagonal:bool = True):
+    def tile_is_next_to_any_building(
+        self, position: MapPosition, radius: int = 1, diagonal: bool = True
+    ):
         # check if any of the neighbouring tiles in radius have a building of the given type
         surroundings = self.get_surrounding_tiles(position, radius, diagonal)
         for tile in surroundings:
-                if tile.has_any_building():
-                    return True, tile
+            if tile.has_any_building():
+                return True, tile
         return False, None
 
     def check_position_on_map(self, position: MapPosition) -> bool:
@@ -183,7 +195,9 @@ class Map:
             return True
         return False
 
-    def get_surrounding_tiles(self, position: MapPosition, radius: int, diagonal: bool = True):
+    def get_surrounding_tiles(
+        self, position: MapPosition, radius: int, diagonal: bool = True
+    ):
         if radius < 1:
             return []
 
@@ -200,7 +214,7 @@ class Map:
 
             for j in range(-radius, radius + 1):
                 if j != 0:
-                    tmp_pos = MapPosition(x , y + j)
+                    tmp_pos = MapPosition(x, y + j)
                     if self.check_position_on_map(tmp_pos):
                         surrounding_tiles.append(self.get_tile(tmp_pos))
         else:

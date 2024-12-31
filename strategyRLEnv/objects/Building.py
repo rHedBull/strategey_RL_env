@@ -71,7 +71,7 @@ class Building(ABC):
         self.calculate_income()
 
     def calculate_income(self):
-        self.income_per_turn = self.money_gain_per_turn - self.maintenance_cost_per_turn
+        self.income_per_turn = self.base_money_income - self.maintenance_cost_per_turn
 
     def get_income(self):
         return self.income_per_turn
