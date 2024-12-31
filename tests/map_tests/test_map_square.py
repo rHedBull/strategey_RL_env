@@ -38,10 +38,6 @@ def test_initialization(map_square):
     assert map_square.position.x == 5
     assert map_square.position.y == 10
     assert map_square.land_type == LandType.LAND
-    assert map_square.height == 0
-    assert map_square.precepitation == 0
-    assert map_square.temperature == 0
-    assert map_square.biome == 0
     assert map_square.resources == []
     assert map_square.owner_id == OWNER_DEFAULT_TILE
     assert map_square.visibility_bitmask == 0

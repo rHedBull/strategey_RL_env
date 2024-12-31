@@ -8,36 +8,6 @@ from strategyRLEnv.map.map_settings import (COLOR_DEFAULT_BORDER,
 from strategyRLEnv.map.MapPosition import MapPosition
 from strategyRLEnv.objects.Building import Building, BuildingType
 
-# TODO: zooming, moving?
-
-
-def calculate_whitaker_biome(precipitation, temperature):
-    if temperature <= 0:
-        return 0  # Tundra
-    elif temperature < 0:
-        if precipitation < 25:
-            return 6  # cold dessert
-        elif precipitation < 50:
-            return 5  # woodlands
-        else:
-            return 1  # boreal forest
-    elif temperature < 20:
-        if precipitation < 25:
-            return 6  # cold dessert
-        elif precipitation < 100:
-            return 5  # woodlands
-        elif precipitation < 200:
-            return 4  # temperate forest
-        else:
-            return 2  # temperate rainforest
-    else:
-        if precipitation < 75:
-            return 7  # subtropical desert
-        elif precipitation < 225:
-            return 8  # tropical forest
-        else:
-            return 3  # tropical rainforest
-
 
 class Map_Square:
     """
@@ -52,12 +22,7 @@ class Map_Square:
         # land properties
         self.land_type = LandType.LAND
         self.resource = ResourceType.NONE
-        self.height = 0  # height as indicator for water, or ocean tiles
-        self.precepitation = 0  # for biomes
-        self.temperature = 0  # for biomes
-        self.biome = 0  # for biomes
         self.resources = []
-        # self.land_type = self.calculate_land_money_value()
 
         if land_value is not None:
             self.set_land_type(land_value)
@@ -101,18 +66,6 @@ class Map_Square:
 
     def get_owner(self):
         return self.owner_id
-
-    def set_height(self, height_value):
-        self.height = height_value
-
-    def get_height(self):
-        return self.height
-
-    def set_biome(self, biome_value):
-        self.biome = biome_value
-
-    def get_biome(self):
-        return self.biome
 
     def add_resource(self, resource_type: ResourceType):
         self.resource = resource_type
@@ -282,15 +235,7 @@ class Map_Square:
     # observation stuff #
     def get_full_info(self):
         # these are the features the agent can observe
-        state = [
-            # self.height,
-            # self.biome,
-            # self.resources,
-            self.land_type.value,
-            self.owner_id,
-            self.building_int
-            # self.land_money_value,
-        ]
+        state = [self.land_type.value, self.owner_id, self.building_int]
         return state
 
     def get_observation_state(self):
