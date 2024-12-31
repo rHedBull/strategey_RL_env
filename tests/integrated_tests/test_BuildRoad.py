@@ -7,6 +7,8 @@ from strategyRLEnv.map.map_settings import OWNER_DEFAULT_TILE, LandType
 from strategyRLEnv.map.MapPosition import MapPosition
 from strategyRLEnv.objects.Building import BuildingType
 from strategyRLEnv.objects.City import City
+from strategyRLEnv.objects.Farm import Farm
+from strategyRLEnv.objects.Mine import Mine
 
 
 @pytest.fixture
@@ -59,20 +61,14 @@ def test_build_simple_road(setup):
     # set tile unclaimed,
     tile1.owner_id = agent_id
 
-    # claimed and visible, should work
+    # claimed and visible, should not work
     observation, reward, terminated, truncated, info = env.step([[build_road_action]])
-    assert tile1.has_any_building() is True
-    assert (
-        tile1.has_building(BuildingType.ROAD) is True
-    ), "Road should be built on visible and self claimed tile"
-    assert (
-        tile1.get_owner() != OWNER_DEFAULT_TILE
-    ), "Bulding a road should not claim the tile"
+    assert tile1.has_any_building() is False
 
-    # test build on top of existing building, should not work
-    observation, reward, terminated, truncated, info = env.step([[build_road_action]])
-    assert tile1.has_any_building() is True
-    assert tile1.has_building(BuildingType.ROAD) is True
+    # # test build on top of existing building, should not work
+    # observation, reward, terminated, truncated, info = env.step([[build_road_action]])
+    # assert tile1.has_any_building() is True
+    # assert tile1.has_building(BuildingType.ROAD) is True
     # check that the building is still the same!!
 
     # remove the road
@@ -125,6 +121,19 @@ def test_build_simple_road(setup):
     assert tile2.has_any_building() is True
     assert tile2.has_building(BuildingType.ROAD) is True
 
+    # removing roads on tile 2
+    tile2.buildings = set()
+    tile2.building_int = 0
+    tile1.buildings = set()
+    tile1.building_int = 0
+    # place owned mine on tile 2
+    mine = Farm(agent_id, position_2, {"building_type_id": 4})
+    tile2.add_building(mine)
+    tile2.owner_id = agent_id
+    # next to self owned mine should not work
+    observation, reward, terminated, truncated, info = env.step([[build_road_action]])
+    assert tile1.has_any_building() is False
+
 
 def test_build_simple_bridge(setup):
     env, city, agent_id, position_1, position_2 = setup
@@ -149,20 +158,14 @@ def test_build_simple_bridge(setup):
     # set tile claimed,
     tile1.owner_id = agent_id
 
-    # claimed and visible should work
+    # claimed and visible should not work
     observation, reward, terminated, truncated, info = env.step([[build_bridge_action]])
-    assert tile1.has_any_building() is True
-    assert (
-        tile1.has_building(BuildingType.BRIDGE) is True
-    ), "Bridge should be built on visible and self claimed tile"
-    assert (
-        tile1.get_owner() != OWNER_DEFAULT_TILE
-    ), "Building a Bridge should not claim the tile"
+    assert tile1.has_any_building() is False
 
     # test build on top of existing building, should not work
-    observation, reward, terminated, truncated, info = env.step([[build_bridge_action]])
-    assert tile1.has_any_building() is True
-    assert tile1.has_building(BuildingType.BRIDGE) is True
+    # observation, reward, terminated, truncated, info = env.step([[build_bridge_action]])
+    # assert tile1.has_any_building() is True
+    # assert tile1.has_building(BuildingType.BRIDGE) is True
     # check that the building is still the same!!
 
     # remove the road
@@ -177,7 +180,7 @@ def test_build_simple_bridge(setup):
     observation, reward, terminated, truncated, info = env.step([[build_bridge_action]])
     assert tile1.has_any_building() is False
 
-    # add a opponent city next to it
+    # add an opponent city next to it
     env.map.get_tile(position_2).add_building(city)
     tile2 = env.map.get_tile(position_2)
     tile2.owner_id = 7
@@ -215,6 +218,72 @@ def test_build_simple_bridge(setup):
     assert tile2.has_any_building() is True
     assert tile2.has_building(BuildingType.BRIDGE) is True
 
+    # removing roads on tile 2
+    tile2.buildings = set()
+    tile2.building_int = 0
+    tile1.buildings = set()
+    tile1.building_int = 0
+    # place owned mine on tile 2
+    mine = Mine(agent_id, position_2, {"building_type_id": 5})
+    tile2.add_building(mine)
+    tile2.owner_id = agent_id
+    # next to self owned mine should not work
+    observation, reward, terminated, truncated, info = env.step([[build_bridge_action]])
+    assert tile1.has_any_building() is False
+
+
+def test_road_bridge_multiplier(setup):
+    env, city, agent_id, position_1, position_2 = setup
+
+    mine = Mine(
+        agent_id, position_2, {"building_type_id": 5, "money_gain_per_turn": 100}
+    )
+    income = mine.get_income()
+    tile2 = env.map.get_tile(position_2)
+    tile2.add_building(mine)
+    tile2.owner_id = agent_id
+    build_road_action = [3, position_1.x, position_1.y]
+    build_bridge_action = [4, position_1.x, position_1.y]
+    tile1 = env.map.get_tile(position_1)
+    position_3 = MapPosition(position_1.x, position_1.y + 1)
+    tile3 = env.map.get_tile(position_3)
+    tile3.add_building(city)
+    tile3.owner_id = agent_id
+
+    assert tile2.has_building(BuildingType.MINE) is True
+    # build road next to mine
+    env.map.set_visible(position_1, agent_id)
+    observation, reward, terminated, truncated, info = env.step([[build_road_action]])
+    assert mine.get_income() > income
+
+    # remove road
+    tile1.buildings = set()
+    tile1.building_int = 0
+    assert mine.get_income() == income
+
+    # build bridge next to mine
+    observation, reward, terminated, truncated, info = env.step([[build_bridge_action]])
+    assert mine.get_income() > income
+
+    # same for farm
+    tile2.buildings = set()
+    tile2.building_int = 0
+    farm = Farm(agent_id, position_2, {"building_type_id": 4})
+    farm_income = farm.get_income()
+
+    # build road next to farm
+    observation, reward, terminated, truncated, info = env.step([[build_road_action]])
+    assert farm.get_income() > farm_income
+
+    # remove road
+    tile1.buildings = set()
+    tile1.building_int = 0
+    assert farm.get_income() == farm_income
+
+    # build bridge next to farm
+    observation, reward, terminated, truncated, info = env.step([[build_bridge_action]])
+    assert farm.get_income() > farm_income
+
 
 def test_building_road_on_water_mountain_desert(setup):
     env, city, agent_id, position_1, position_2 = setup
@@ -246,8 +315,6 @@ def test_building_road_on_water_mountain_desert(setup):
         [[build_road_action]]
     )
     assert tile1.has_any_building() is False
-
-
 
     # should work on dessert
     tile1.set_land_type(LandType.DESERT)
@@ -282,6 +349,7 @@ def test_building_road_on_water_mountain_desert(setup):
     )
     assert tile1.has_any_building() is True
     assert tile1.has_building(BuildingType.ROAD) is True
+    env.close()
 
 
 def test_building_bridge_on_water_mountain_desert(setup):
@@ -338,3 +406,4 @@ def test_building_bridge_on_water_mountain_desert(setup):
     )
     assert tile1.has_any_building() is True
     assert tile1.has_building(BuildingType.BRIDGE) is True
+    env.close()
