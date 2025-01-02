@@ -4,9 +4,9 @@ import pygame
 
 from strategyRLEnv.map.map_settings import (COLOR_DEFAULT_BORDER,
                                             OWNER_DEFAULT_TILE, LandType,
-                                            ResourceType, land_type_color)
+                                            ResourceType, land_type_color, BuildingType)
 from strategyRLEnv.map.MapPosition import MapPosition
-from strategyRLEnv.objects.Building import Building, BuildingType
+from strategyRLEnv.objects.Building import Building
 
 
 class Map_Square:

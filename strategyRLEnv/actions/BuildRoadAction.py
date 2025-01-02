@@ -1,8 +1,7 @@
 from strategyRLEnv.actions.BuildAction import BuildAction
 from strategyRLEnv.Agent import Agent
 from strategyRLEnv.map import MapPosition
-from strategyRLEnv.map.map_settings import LandType
-from strategyRLEnv.objects.Building import BuildingType
+from strategyRLEnv.map.map_settings import LandType, BuildingType
 from strategyRLEnv.objects.Road import Bridge, Road, update_road_bridge_shape
 
 

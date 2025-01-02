@@ -1,8 +1,7 @@
 from strategyRLEnv.actions.BuildAction import BuildAction
 from strategyRLEnv.Agent import Agent
 from strategyRLEnv.map import MapPosition
-from strategyRLEnv.map.map_settings import ResourceType
-from strategyRLEnv.objects.Building import BuildingType
+from strategyRLEnv.map.map_settings import ResourceType, BuildingType
 from strategyRLEnv.objects.Farm import Farm
 
 

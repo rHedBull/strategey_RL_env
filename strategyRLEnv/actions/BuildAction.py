@@ -2,9 +2,8 @@ from abc import ABC, abstractmethod
 from typing import Dict
 
 from strategyRLEnv.actions.Action import Action, ActionType
-from strategyRLEnv.map.map_settings import ALLOWED_BUILDING_PLACEMENTS
+from strategyRLEnv.map.map_settings import ALLOWED_BUILDING_PLACEMENTS, BuildingType
 from strategyRLEnv.map.MapPosition import MapPosition
-from strategyRLEnv.objects.Building import BuildingType
 
 
 class BuildAction(Action, ABC):

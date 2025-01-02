@@ -3,7 +3,8 @@ from typing import Dict, Tuple
 import pygame
 
 from strategyRLEnv.map.MapPosition import MapPosition
-from strategyRLEnv.objects.Building import Building, BuildingType
+from strategyRLEnv.objects.Building import Building
+from strategyRLEnv.map.map_settings import BuildingType
 
 road_color = (128, 128, 128)
 

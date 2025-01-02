@@ -1,7 +1,5 @@
 # land specific colors
-from enum import Enum, auto
-
-from strategyRLEnv.objects.Building import BuildingType
+from enum import Enum
 
 COLOR_DEFAULT_LAND = (34, 139, 34)
 COLOR_DEFAULT_RIVER = (0, 255, 255)
@@ -45,6 +43,12 @@ class ResourceType(Enum):
     METAL = 1
     NONE = 0
 
+class BuildingType(Enum):
+    CITY = "build_city"
+    ROAD = "build_road"
+    BRIDGE = "build_bridge"
+    FARM = "build_farm"
+    MINE = "build_mine"
 
 def land_type_color(land_type: LandType):
     if land_type == LandType.LAND:

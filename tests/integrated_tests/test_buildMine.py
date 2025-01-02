@@ -3,9 +3,8 @@ import json
 import pytest
 
 from strategyRLEnv.environment import MapEnvironment
-from strategyRLEnv.map.map_settings import LandType
+from strategyRLEnv.map.map_settings import LandType, BuildingType
 from strategyRLEnv.map.MapPosition import MapPosition
-from strategyRLEnv.objects.Building import BuildingType
 
 
 @pytest.fixture

@@ -3,9 +3,8 @@ import json
 import pytest
 
 from strategyRLEnv.environment import MapEnvironment
-from strategyRLEnv.map.map_settings import OWNER_DEFAULT_TILE, LandType
+from strategyRLEnv.map.map_settings import OWNER_DEFAULT_TILE, LandType, BuildingType
 from strategyRLEnv.map.MapPosition import MapPosition
-from strategyRLEnv.objects.Building import BuildingType
 from strategyRLEnv.objects.City import City
 
 
