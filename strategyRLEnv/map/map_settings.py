@@ -88,3 +88,15 @@ ALLOWED_BUILDING_PLACEMENTS = {
 }
 
 max_agent_id = 63  # based on current setup of visibility map, would have to use other datatype or multiple maps for more agents
+
+ADJACENCY_MULTIPLIERS = {
+    BuildingType.MINE: {
+        BuildingType.ROAD: {"radius": 1, "multiplier": 3.33},
+        BuildingType.BRIDGE: {"radius": 1, "multiplier": 2.0},
+    },
+    BuildingType.FARM: {
+        BuildingType.ROAD: {"radius": 1, "multiplier": 2.0},
+        BuildingType.BRIDGE: {"radius": 1, "multiplier": 2.0},
+    },
+    # Add other building types and their adjacency rules as needed
+}
