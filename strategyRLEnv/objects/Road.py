@@ -48,6 +48,10 @@ class Road(Building):
             road_color,
         )
 
+    def update(self, env):
+        super().update(env)
+        update_road_bridge_shape(self, env.map)
+
 
 class Bridge(Building):
     def __init__(self, position: MapPosition, building_parameters: Dict, shape=None):
@@ -78,6 +82,10 @@ class Bridge(Building):
             self.shape,
             bridge_color,
         )
+
+    def update(self, env):
+        super().update(env)
+        update_road_bridge_shape(self, env.map)
 
 
 def update_road_bridge_shape(road_or_bridge, map):

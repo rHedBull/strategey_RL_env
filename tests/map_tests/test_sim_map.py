@@ -216,7 +216,7 @@ def test_add_building(map_instance):
     assert building_object in tile.buildings
 
     # test remove building
-    tile.remove_building(building_object)
+    tile.remove_building(BuildingType.CITY)
     assert tile.has_any_building() is False
     assert building_object not in tile.buildings
 

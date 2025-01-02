@@ -21,19 +21,19 @@ class BuildRoadAction(BuildAction):
             return False
 
         next_to_road, _ = env.map.tile_is_next_to_building_type(
-            self.position, BuildingType.ROAD
+            self.position, BuildingType.ROAD, diagonal=False
         )
         if next_to_road:
             return True
 
-        next_to_road, _ = env.map.tile_is_next_to_building_type(
-            self.position, BuildingType.BRIDGE
+        next_to_bridge, _ = env.map.tile_is_next_to_building_type(
+            self.position, BuildingType.BRIDGE, diagonal=False
         )
-        if next_to_road:
+        if next_to_bridge:
             return True
 
         next_to_city, tile = env.map.tile_is_next_to_building_type(
-            self.position, BuildingType.CITY
+            self.position, BuildingType.CITY, diagonal=False
         )
         if next_to_city and tile.get_owner() == self.agent.id:
             return True
@@ -59,19 +59,19 @@ class BuildBridgeAction(BuildAction):
             return False
 
         next_to_road, _ = env.map.tile_is_next_to_building_type(
-            self.position, BuildingType.ROAD
+            self.position, BuildingType.ROAD, diagonal=False
         )
         if next_to_road:
             return True
 
-        next_to_road, _ = env.map.tile_is_next_to_building_type(
-            self.position, BuildingType.BRIDGE
+        next_to_bridge, _ = env.map.tile_is_next_to_building_type(
+            self.position, BuildingType.BRIDGE, diagonal=False
         )
-        if next_to_road:
+        if next_to_bridge:
             return True
 
         next_to_city, tile = env.map.tile_is_next_to_building_type(
-            self.position, BuildingType.CITY
+            self.position, BuildingType.CITY, diagonal=False
         )
         if next_to_city and tile.get_owner() == self.agent.id:
             return True
