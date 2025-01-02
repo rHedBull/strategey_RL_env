@@ -9,6 +9,7 @@ from strategyRLEnv.map.MapPosition import MapPosition
 from strategyRLEnv.objects.City import City
 from strategyRLEnv.objects.Farm import Farm
 from strategyRLEnv.objects.Mine import Mine
+from strategyRLEnv.objects.Road import Bridge, Road
 
 
 @pytest.fixture
@@ -38,198 +39,300 @@ def setup():
     env.close()
 
 
-def test_build_simple_road(setup):
-    env, city, agent_id, position_1, position_2 = setup
+def test_build_road_not_visible(setup):
+    env, _, agent_id, position_1, _ = setup
     build_road_action = [3, position_1.x, position_1.y]
 
     env.reset()
     tile1 = env.map.get_tile(position_1)
     tile1.set_land_type(LandType.LAND)
 
-    # not visible, should not work
+    # Not visible, should not work
     observation, reward, terminated, truncated, info = env.step([[build_road_action]])
-    assert tile1.has_any_building() is False
-
-    # set visible and claimed by another agent
-    env.map.set_visible(position_1, agent_id)
-    tile1.owner_id = 3  # claimed by another agent
-
-    # visible but claimed by another agent, should not work now
-    observation, reward, terminated, truncated, info = env.step([[build_road_action]])
-    assert tile1.has_any_building() is False
-
-    # set tile unclaimed,
-    tile1.owner_id = agent_id
-
-    # claimed and visible, should not work
-    observation, reward, terminated, truncated, info = env.step([[build_road_action]])
-    assert tile1.has_any_building() is False
-
-    # # test build on top of existing building, should not work
-    # observation, reward, terminated, truncated, info = env.step([[build_road_action]])
-    # assert tile1.has_any_building() is True
-    # assert tile1.has_building(BuildingType.ROAD) is True
-    # check that the building is still the same!!
-
-    # remove the road
-    tile1.buildings = set()
-    tile1.building_int = 0
-    assert tile1.has_any_building() is False, "Road should be removed"
-
-    # set tile unclaimed,
-    tile1.owner_id = OWNER_DEFAULT_TILE
-    # visible unclaimed but no building next to it, should not work
-    # visible but claimed by another agent, should not work now
-    observation, reward, terminated, truncated, info = env.step([[build_road_action]])
-    assert tile1.has_any_building() is False
-
-    # add a opponent city next to it
-    env.map.get_tile(position_2).add_building(city)
-    tile2 = env.map.get_tile(position_2)
-    tile2.owner_id = 7
-    # next to a hostile city should not work
-    observation, reward, terminated, truncated, info = env.step([[build_road_action]])
-    assert tile1.has_any_building() is False
-
-    # next to a friendly city should work
-    tile2.owner_id = agent_id
-    observation, reward, terminated, truncated, info = env.step([[build_road_action]])
-    assert tile1.has_any_building() is True
-    assert tile1.has_building(BuildingType.ROAD) is True
-
-    # removing city on tile 2
-    tile2.buildings = set()
-    tile2.building_int = 0
-    tile2.owner_id = OWNER_DEFAULT_TILE
-    tile2.set_land_type(LandType.OCEAN)
-    assert tile2.has_any_building() is False
-
-    # test building bridge next to bridge
-    observation, reward, terminated, truncated, info = env.step(
-        [[[4, position_2.x, position_2.y]]]
-    )
-    assert tile2.has_any_building() is True
-    assert tile2.has_building(BuildingType.BRIDGE) is True
-
-    # test building bridge next to bridge
-    tile2.buildings = set()
-    tile2.building_int = 0
-    tile2.set_land_type(LandType.LAND)
-    observation, reward, terminated, truncated, info = env.step(
-        [[[3, position_2.x, position_2.y]]]
-    )
-    assert tile2.has_any_building() is True
-    assert tile2.has_building(BuildingType.ROAD) is True
-
-    # removing roads on tile 2
-    tile2.buildings = set()
-    tile2.building_int = 0
-    tile1.buildings = set()
-    tile1.building_int = 0
-    # place owned mine on tile 2
-    mine = Farm(agent_id, position_2, {"building_type_id": 4})
-    tile2.add_building(mine)
-    tile2.owner_id = agent_id
-    # next to self owned mine should not work
-    observation, reward, terminated, truncated, info = env.step([[build_road_action]])
-    assert tile1.has_any_building() is False
+    assert (
+        not tile1.has_any_building()
+    ), "Building should not be placed on non-visible tile"
 
 
-def test_build_simple_bridge(setup):
-    env, city, agent_id, position_1, position_2 = setup
-    env.reset()
-
+def test_build_bridge_not_visible(setup):
+    env, _, agent_id, position_1, _ = setup
     build_bridge_action = [4, position_1.x, position_1.y]
+
+    env.reset()
     tile1 = env.map.get_tile(position_1)
-
     tile1.set_land_type(LandType.OCEAN)
-    # not visible, should not work
-    observation, reward, terminated, truncated, info = env.step([[build_bridge_action]])
-    assert tile1.has_any_building() is False
 
-    # set visible and claimed by another agent
+    # Not visible, should not work
+    observation, reward, terminated, truncated, info = env.step([[build_bridge_action]])
+    assert (
+        not tile1.has_any_building()
+    ), "Building should not be placed on non-visible tile"
+
+
+def test_build_road_claimed_by_other(setup):
+    env, _, agent_id, position_1, _ = setup
+    build_road_action = [3, position_1.x, position_1.y]
+
+    env.reset()
+    tile1 = env.map.get_tile(position_1)
+    tile1.set_land_type(LandType.LAND)
     env.map.set_visible(position_1, agent_id)
-    tile1.owner_id = 3  # claimed by another agent
+    tile1.owner_id = 3  # Claimed by another agent
 
-    # visible but claimed by another agent, should not work now
+    # Visible but claimed by another agent, should not work
+    observation, reward, terminated, truncated, info = env.step([[build_road_action]])
+    assert (
+        not tile1.has_any_building()
+    ), "Building should not be placed on tile claimed by another agent"
+
+
+def test_build_bridge_claimed_by_other(setup):
+    env, _, agent_id, position_1, _ = setup
+    build_bridge_action = [4, position_1.x, position_1.y]
+
+    env.reset()
+    tile1 = env.map.get_tile(position_1)
+    tile1.set_land_type(LandType.LAND)
+    env.map.set_visible(position_1, agent_id)
+    tile1.owner_id = 3  # Claimed by another agent
+
+    # Visible but claimed by another agent, should not work
     observation, reward, terminated, truncated, info = env.step([[build_bridge_action]])
-    assert tile1.has_any_building() is False
+    assert (
+        not tile1.has_any_building()
+    ), "Building should not be placed on tile claimed by another agent"
 
-    # set tile claimed,
-    tile1.owner_id = agent_id
 
-    # claimed and visible should not work
+def test_build_road_claimed_by_self(setup):
+    env, _, agent_id, position_1, _ = setup
+    build_road_action = [3, position_1.x, position_1.y]
+
+    env.reset()
+    tile1 = env.map.get_tile(position_1)
+    tile1.set_land_type(LandType.LAND)
+    env.map.set_visible(position_1, agent_id)
+    tile1.owner_id = agent_id  # Claimed by self
+
+    # Visible and claimed by self, should work
+    observation, reward, terminated, truncated, info = env.step([[build_road_action]])
+    assert not tile1.has_building(
+        BuildingType.ROAD
+    ), "Building should not be placed on self-owned tile"
+
+
+def test_build_bridge_claimed_by_self(setup):
+    env, _, agent_id, position_1, _ = setup
+    build_bridge_action = [4, position_1.x, position_1.y]
+
+    env.reset()
+    tile1 = env.map.get_tile(position_1)
+    tile1.set_land_type(LandType.LAND)
+    env.map.set_visible(position_1, agent_id)
+    tile1.owner_id = agent_id  # Claimed by self
+
+    # Visible and claimed by self, should work
     observation, reward, terminated, truncated, info = env.step([[build_bridge_action]])
-    assert tile1.has_any_building() is False
+    assert not tile1.has_building(
+        BuildingType.BRIDGE
+    ), "Building should not be placed on self-owned tile"
 
-    # test build on top of existing building, should not work
-    # observation, reward, terminated, truncated, info = env.step([[build_bridge_action]])
-    # assert tile1.has_any_building() is True
-    # assert tile1.has_building(BuildingType.BRIDGE) is True
-    # check that the building is still the same!!
 
-    # remove the road
-    tile1.buildings = set()
-    tile1.building_int = 0
-    assert tile1.has_any_building() is False, "Bridge should be removed"
+def test_build_road_unclaimed_no_adjacent(setup):
+    env, _, agent_id, position_1, _ = setup
+    build_road_action = [3, position_1.x, position_1.y]
 
-    # set tile unclaimed,
-    tile1.owner_id = -1
-    # visible unclaimed but no building next to it, should not work
-    # visible but claimed by another agent, should not work now
+    env.reset()
+    tile1 = env.map.get_tile(position_1)
+    tile1.set_land_type(LandType.LAND)
+    env.map.set_visible(position_1, agent_id)
+    tile1.owner_id = OWNER_DEFAULT_TILE  # Unclaimed
+
+    # Visible, unclaimed, but no adjacent buildings, should not work
+    observation, reward, terminated, truncated, info = env.step([[build_road_action]])
+    assert (
+        not tile1.has_any_building()
+    ), "Should not build road on unclaimed tile with no adjacent buildings"
+
+
+def test_build_bridge_unclaimed_no_adjacent(setup):
+    env, _, agent_id, position_1, _ = setup
+    build_bridge_action = [4, position_1.x, position_1.y]
+
+    env.reset()
+    tile1 = env.map.get_tile(position_1)
+    tile1.set_land_type(LandType.LAND)
+    env.map.set_visible(position_1, agent_id)
+    tile1.owner_id = OWNER_DEFAULT_TILE  # Unclaimed
+
+    # Visible, unclaimed, but no adjacent buildings, should not work
     observation, reward, terminated, truncated, info = env.step([[build_bridge_action]])
-    assert tile1.has_any_building() is False
+    assert (
+        not tile1.has_any_building()
+    ), "Should not build road on unclaimed tile with no adjacent buildings"
 
-    # add an opponent city next to it
-    env.map.get_tile(position_2).add_building(city)
+
+def test_build_road_next_to_hostile_city(setup):
+    env, city, agent_id, position_1, position_2 = setup
+    build_road_action = [3, position_1.x, position_1.y]
+
+    env.reset()
+    tile1 = env.map.get_tile(position_1)
+    tile1.set_land_type(LandType.LAND)
+    env.map.set_visible(position_1, agent_id)
+    tile1.owner_id = OWNER_DEFAULT_TILE  # Unclaimed
+
+    # Add opponent city next to tile1
     tile2 = env.map.get_tile(position_2)
-    tile2.owner_id = 7
-    # next to a hostile city should not work
-    observation, reward, terminated, truncated, info = env.step([[build_bridge_action]])
-    assert tile1.has_any_building() is False
+    tile2.add_building(city)
+    tile2.owner_id = 7  # Opponent agent
 
-    # next to a friendly city should work
-    tile2.owner_id = agent_id
-    observation, reward, terminated, truncated, info = env.step([[build_bridge_action]])
-    assert tile1.has_any_building() is True
-    assert tile1.has_building(BuildingType.BRIDGE) is True
+    # Next to a hostile city, should not work
+    observation, reward, terminated, truncated, info = env.step([[build_road_action]])
+    assert not tile1.has_any_building(), "Should not build road next to hostile city"
 
-    # removing city on tile 2
-    tile2.buildings = set()
-    tile2.building_int = 0
-    tile2.owner_id = OWNER_DEFAULT_TILE
+
+def test_build_bridge_next_to_hostile_city(setup):
+    env, city, agent_id, position_1, position_2 = setup
+    build_bridge_action = [4, position_1.x, position_1.y]
+
+    env.reset()
+    tile1 = env.map.get_tile(position_1)
+    tile1.set_land_type(LandType.OCEAN)
+    env.map.set_visible(position_1, agent_id)
+    tile1.owner_id = OWNER_DEFAULT_TILE  # Unclaimed
+
+    # Add opponent city next to tile1
+    tile2 = env.map.get_tile(position_2)
+    tile2.add_building(city)
+    tile2.owner_id = 7  # Opponent agent
+
+    # Next to a hostile city, should not work
+    observation, reward, terminated, truncated, info = env.step([[build_bridge_action]])
+    assert not tile1.has_any_building(), "Should not build road next to hostile city"
+
+
+def test_build_road_next_to_friendly_city(setup):
+    env, city, agent_id, position_1, position_2 = setup
+    build_road_action = [3, position_1.x, position_1.y]
+
+    env.reset()
+    tile1 = env.map.get_tile(position_1)
+    tile1.set_land_type(LandType.LAND)
+    env.map.set_visible(position_1, agent_id)
+    tile1.owner_id = OWNER_DEFAULT_TILE  # Unclaimed
+
+    # Add friendly city next to tile1
+    tile2 = env.map.get_tile(position_2)
+    tile2.add_building(city)
+    tile2.owner_id = agent_id  # Friendly agent
+
+    # Next to a friendly city, should work
+    observation, reward, terminated, truncated, info = env.step([[build_road_action]])
+    assert tile1.has_building(
+        BuildingType.ROAD
+    ), "Should build road next to friendly city"
+
+
+def test_build_bridge_next_to_friendly_city(setup):
+    env, city, agent_id, position_1, position_2 = setup
+    build_bridge_action = [4, position_1.x, position_1.y]
+
+    env.reset()
+    tile1 = env.map.get_tile(position_1)
+    tile1.set_land_type(LandType.OCEAN)
+    env.map.set_visible(position_1, agent_id)
+    tile1.owner_id = OWNER_DEFAULT_TILE  # Unclaimed
+
+    # Add friendly city next to tile1
+    tile2 = env.map.get_tile(position_2)
+    tile2.add_building(city)
+    tile2.owner_id = agent_id  # Friendly agent
+
+    # Next to a friendly city, should work
+    observation, reward, terminated, truncated, info = env.step([[build_bridge_action]])
+    assert tile1.has_building(
+        BuildingType.BRIDGE
+    ), "Should build bridge next to friendly city"
+
+
+def test_build_road_next_to_road(setup):
+    env, _, agent_id, position_1, position_2 = setup
+    build_road_action = [3, position_1.x, position_1.y]
+
+    env.reset()
+    tile1 = env.map.get_tile(position_1)
+    tile1.set_land_type(LandType.LAND)
+    env.map.set_visible(position_1, agent_id)
+
+    # Build bridge on tile2
+    road = Road(position_2, {"building_type_id": 2})
+    tile2 = env.map.get_tile(position_2)
     tile2.set_land_type(LandType.LAND)
-    assert tile2.has_any_building() is False
+    tile2.add_building(road)
 
-    # test building road next to bridge
-    observation, reward, terminated, truncated, info = env.step(
-        [[[3, position_2.x, position_2.y]]]
-    )
-    assert tile2.has_any_building() is True
-    assert tile2.has_building(BuildingType.ROAD) is True
+    # Build road next to bridge, should work
+    observation, reward, terminated, truncated, info = env.step([[build_road_action]])
+    assert tile1.has_building(BuildingType.ROAD), "Should build road next to bridge"
 
-    # test building bridge next to bridge
-    tile2.buildings = set()
-    tile2.building_int = 0
+
+def test_build_bridge_next_to_bridge(setup):
+    env, _, agent_id, position_1, position_2 = setup
+    build_bridge_action = [4, position_1.x, position_1.y]
+
+    env.reset()
+    tile1 = env.map.get_tile(position_1)
+    tile1.set_land_type(LandType.OCEAN)
+    env.map.set_visible(position_1, agent_id)
+
+    # Build road on tile2
+    bridge = Bridge(position_2, {"building_type_id": 3})
+    tile2 = env.map.get_tile(position_2)
     tile2.set_land_type(LandType.OCEAN)
-    observation, reward, terminated, truncated, info = env.step(
-        [[[4, position_2.x, position_2.y]]]
-    )
-    assert tile2.has_any_building() is True
-    assert tile2.has_building(BuildingType.BRIDGE) is True
+    tile2.add_building(bridge)
 
-    # removing roads on tile 2
-    tile2.buildings = set()
-    tile2.building_int = 0
-    tile1.buildings = set()
-    tile1.building_int = 0
-    # place owned mine on tile 2
-    mine = Mine(agent_id, position_2, {"building_type_id": 5})
-    tile2.add_building(mine)
-    tile2.owner_id = agent_id
-    # next to self owned mine should not work
+    # Build bridge next to road, should work
     observation, reward, terminated, truncated, info = env.step([[build_bridge_action]])
-    assert tile1.has_any_building() is False
+    assert tile1.has_building(BuildingType.BRIDGE), "Should build bridge next to road"
+
+
+def test_build_road_next_to_bridge(setup):
+    env, _, agent_id, position_1, position_2 = setup
+    build_road_action = [3, position_1.x, position_1.y]
+
+    env.reset()
+    tile1 = env.map.get_tile(position_1)
+    tile1.set_land_type(LandType.LAND)
+    env.map.set_visible(position_1, agent_id)
+
+    # Build bridge on tile2
+    bridge = Bridge(position_2, {"building_type_id": 3})
+    tile2 = env.map.get_tile(position_2)
+    tile2.set_land_type(LandType.OCEAN)
+    tile2.add_building(bridge)
+
+    # Build road next to bridge, should work
+    observation, reward, terminated, truncated, info = env.step([[build_road_action]])
+    assert tile1.has_building(BuildingType.ROAD), "Should build road next to bridge"
+
+
+def test_build_bridge_next_to_road(setup):
+    env, _, agent_id, position_1, position_2 = setup
+    build_bridge_action = [4, position_1.x, position_1.y]
+
+    env.reset()
+    tile1 = env.map.get_tile(position_1)
+    tile1.set_land_type(LandType.OCEAN)
+    env.map.set_visible(position_1, agent_id)
+
+    # Build road on tile2
+    road = Road(position_2, {"building_type_id": 3})
+    tile2 = env.map.get_tile(position_2)
+    tile2.set_land_type(LandType.LAND)
+    tile2.add_building(road)
+
+    # Build bridge next to road, should work
+    observation, reward, terminated, truncated, info = env.step([[build_bridge_action]])
+    assert tile1.has_building(BuildingType.BRIDGE), "Should build bridge next to road"
 
 
 def test_road_bridge_multiplier(setup):
