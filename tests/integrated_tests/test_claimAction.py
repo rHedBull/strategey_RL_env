@@ -27,7 +27,6 @@ def setup():
         "building_type_id": 1,
         "money_gain_per_turn": 110,
         "maintenance_cost_per_turn": 10,
-        "max_level": 3,
     }
     city = City(agent_id, position_2, mock_city_params)
 
@@ -40,8 +39,8 @@ def test_simple_claim(setup):
     env, city, agent_id, position_1, position_2 = setup
     env.reset()
 
-    mock_road_params = {"building_type_id": 2, "max_level": 3}
-    mock_bridge_params = {"building_type_id": 2, "max_level": 3}
+    mock_road_params = {"building_type_id": 2}
+    mock_bridge_params = {"building_type_id": 2}
     road = Road(position_2, mock_road_params)
     bridge = Bridge(position_2, mock_bridge_params)
 

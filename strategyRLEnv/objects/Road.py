@@ -57,7 +57,6 @@ class Bridge(Building):
     def __init__(self, position: MapPosition, building_parameters: Dict, shape=None):
         super().__init__(position, BuildingType.BRIDGE, building_parameters)
 
-        self.max_level = 3
         self.shape = shape if shape else RoadShape()
 
     def draw(

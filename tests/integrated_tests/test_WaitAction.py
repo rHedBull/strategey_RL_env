@@ -27,7 +27,6 @@ def setup():
         "building_type_id": 1,
         "money_gain_per_turn": 110,
         "maintenance_cost_per_turn": 10,
-        "max_level": 3,
     }
     city = City(agent_id, position_2, mock_city_params)
 
@@ -65,7 +64,7 @@ def test_simple_wait(setup):
     assert tile1.get_owner() == agent_id
     assert tile1.has_any_building() is False
 
-    road = Road(position_1, {"building_type_id": 2, "max_level": 3})
+    road = Road(position_1, {"building_type_id": 2})
     tile1.add_building(road)  # add city to adjacent tile
 
     observation, reward, terminated, truncated, info = env.step([[wait_action]])

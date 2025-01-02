@@ -31,7 +31,6 @@ def setup():
         "building_type_id": 1,
         "money_gain_per_turn": 110,
         "maintenance_cost_per_turn": 10,
-        "max_level": 3,
     }
     city = City(agent_id, position_2, mock_city_params)
     yield env, city, agent_id, position_1, position_2

@@ -19,8 +19,6 @@ class Building(ABC):
 
         self.position = position
 
-        self.level = 0
-        self.max_level = building_parameters.get("max_level", 1)
         self.building_type = building_type
         self.building_type_id = building_parameters.get("building_type_id")
 

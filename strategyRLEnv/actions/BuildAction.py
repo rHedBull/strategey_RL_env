@@ -55,7 +55,6 @@ class BuildAction(Action, ABC):
             "building_type_id": action["build_type_id"],
             "money_gain_per_turn": action.get("money_gain_per_turn", 0),
             "maintenance_cost_per_turn": action.get("maintenance_cost_per_turn", 0),
-            "max_level": action.get("max_level", 1),
         }
         return params
 

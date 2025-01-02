@@ -22,7 +22,6 @@ def map_square():
         "building_type_id": 1,
         "money_gain_per_turn": 110,
         "maintenance_cost_per_turn": 10,
-        "max_level": 3,
     }
     map_square = Map_Square(1, MapPosition(5, 10), land_value=LandType.LAND)
     yield mock_city_params, map_square
@@ -158,7 +157,7 @@ def test_has_building(map_square):
     """
     mock_city_params, map_square = map_square
 
-    mock_road_params = {"building_type_id": 2, "max_level": 3}
+    mock_road_params = {"building_type_id": 2}
     mock_agent_id = 7
     city = City(mock_agent_id, map_square.position, mock_city_params)
     road = Road(map_square.position, mock_road_params)
@@ -177,7 +176,7 @@ def test_has_building(map_square):
     assert map_square.has_building(BuildingType.CITY) is False
     map_square.remove_building(BuildingType.ROAD)
 
-    mine = Mine(1, map_square, {"building_type_id": 5, "max_level": 3})
+    mine = Mine(1, map_square, {"building_type_id": 5})
     map_square.add_building(mine)
     assert map_square.has_building(BuildingType.MINE) is True
     assert map_square.has_building(BuildingType.CITY) is False
@@ -208,7 +207,7 @@ def test_remove_building(map_square):
     mock_city_params, map_square = map_square
     mock_agent_id = 7
 
-    mock_road_params = {"building_type_id": 2, "max_level": 3}
+    mock_road_params = {"building_type_id": 2}
     city = City(mock_agent_id, map_square.position, mock_city_params)
     road = Road(map_square.position, mock_road_params)
 
@@ -268,9 +267,9 @@ def test_has_road_and_bridge(map_square):
     """
     mock_city_params, map_square = map_square
 
-    mock_road_params = {"building_type_id": 2, "max_level": 3}
-    mock_bridge_params = {"building_type_id": 3, "max_level": 3}
-    mock_farm_params = {"building_type_id": 4, "max_level": 3}
+    mock_road_params = {"building_type_id": 2}
+    mock_bridge_params = {"building_type_id": 3}
+    mock_farm_params = {"building_type_id": 4}
     road = Road(map_square.position, mock_road_params)
     bridge = Bridge(map_square.position, mock_bridge_params)
     farm = Farm(0, map_square.position, mock_farm_params)
