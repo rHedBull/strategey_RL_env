@@ -26,6 +26,9 @@ AGENT_COLORS = [
     (0, 255, 0),
 ]
 
+road_color = (128, 128, 128)
+bridge_color = (139, 69, 19)
+
 OWNER_DEFAULT_TILE = -1
 
 

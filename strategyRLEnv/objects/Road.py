@@ -2,14 +2,10 @@ from typing import Dict, Tuple
 
 import pygame
 
-from strategyRLEnv.map.map_settings import BuildingType
+from strategyRLEnv.map.map_settings import (BuildingType, bridge_color,
+                                            road_color)
 from strategyRLEnv.map.MapPosition import MapPosition
 from strategyRLEnv.objects.Building import Building
-
-road_color = (128, 128, 128)
-
-# brown bridge
-bridge_color = (139, 69, 19)
 
 
 class RoadShape:
