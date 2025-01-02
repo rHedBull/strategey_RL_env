@@ -3,7 +3,7 @@ import uuid
 import numpy as np
 
 from strategyRLEnv.Agent import Agent
-from strategyRLEnv.map.map_settings import max_agent_id, BuildingType
+from strategyRLEnv.map.map_settings import BuildingType, max_agent_id
 from strategyRLEnv.map.MapPosition import MapPosition
 from strategyRLEnv.map.MapSquare import Map_Square
 
@@ -54,6 +54,11 @@ class Map:
                 square.reset()
         self.visibility_map = np.zeros((self.width, self.height), dtype=np.int64)
 
+    def trigger_surrounding_tile_update(self, position, radius=1):
+        surrounding_tiles = self.get_surrounding_tiles(position, radius)
+        for tile in surrounding_tiles:
+            tile.update(self.env)
+
     def get_random_position_on_map(self):
         x = np.random.randint(0, self.width)
         y = np.random.randint(0, self.height)
@@ -83,7 +88,7 @@ class Map:
                     elif name == "tile_ownership":
                         square_array[i] = square.get_land_type()
                     elif name == "land_money_value":
-                        square_array[i] = square.get_land_money_value()
+                        square_array[i] = square.get_tile_income()
                     elif name == "resources":
                         square_array[i] = square.get_land_type()
                     elif name == "buildings":
@@ -105,6 +110,12 @@ class Map:
 
     def add_building(self, building_object, position: MapPosition) -> None:
         self.get_tile(position).add_building(building_object)
+
+    def remove_building(
+        self, building_type: BuildingType, position: MapPosition
+    ) -> None:
+        self.get_tile(position).remove_building(building_type)
+        self.trigger_surrounding_tile_update(position, 1)
 
     def draw(self, screen, zoom_level, pan_x, pan_y):
         """

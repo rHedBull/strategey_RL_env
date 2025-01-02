@@ -2,7 +2,8 @@ from abc import ABC, abstractmethod
 from typing import Dict
 
 from strategyRLEnv.actions.Action import Action, ActionType
-from strategyRLEnv.map.map_settings import ALLOWED_BUILDING_PLACEMENTS, BuildingType
+from strategyRLEnv.map.map_settings import (ALLOWED_BUILDING_PLACEMENTS,
+                                            BuildingType)
 from strategyRLEnv.map.MapPosition import MapPosition
 
 
@@ -28,6 +29,8 @@ class BuildAction(Action, ABC):
 
     def execute(self, env) -> float:
         self.perform_build(env)
+        env.map.get_tile(self.position).update(env)
+        env.map.trigger_surrounding_tile_update(self.position)
         self.agent.money -= self.get_cost(env)
         reward = self.get_reward(env)
         return reward

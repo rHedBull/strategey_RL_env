@@ -43,12 +43,14 @@ class ResourceType(Enum):
     METAL = 1
     NONE = 0
 
+
 class BuildingType(Enum):
     CITY = "build_city"
     ROAD = "build_road"
     BRIDGE = "build_bridge"
     FARM = "build_farm"
     MINE = "build_mine"
+
 
 def land_type_color(land_type: LandType):
     if land_type == LandType.LAND:

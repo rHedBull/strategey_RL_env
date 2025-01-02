@@ -3,8 +3,8 @@ from typing import Tuple
 import pygame
 
 from strategyRLEnv.map import MapPosition
-from strategyRLEnv.objects.Building import Building
 from strategyRLEnv.map.map_settings import BuildingType
+from strategyRLEnv.objects.Building import Building
 from strategyRLEnv.objects.Ownable import Ownable
 
 

@@ -1,19 +1,11 @@
 from abc import ABC, abstractmethod
-from enum import Enum
 from typing import Dict, Tuple
 from uuid import uuid1
 
 import pygame
 
 from strategyRLEnv.map import MapPosition
-
-
-class BuildingType(Enum):
-    CITY = "build_city"
-    ROAD = "build_road"
-    BRIDGE = "build_bridge"
-    FARM = "build_farm"
-    MINE = "build_mine"
+from strategyRLEnv.map.map_settings import ADJACENCY_MULTIPLIERS, BuildingType
 
 
 class Building(ABC):
@@ -32,12 +24,20 @@ class Building(ABC):
         self.building_type = building_type
         self.building_type_id = building_parameters.get("building_type_id")
 
-        self.money_gain_per_turn = building_parameters.get("money_gain_per_turn", 0)
+        self.base_money_income = building_parameters.get("money_gain_per_turn", 0)
         self.maintenance_cost_per_turn = building_parameters.get(
             "maintenance_cost_per_turn", 0
         )
-        self.income_per_turn = 0
-        self.calculate_income()
+        self.income_per_turn = float(
+            self.base_money_income - self.maintenance_cost_per_turn
+        )
+
+    def update(self, env):
+        # update building income
+        multiplier = self.check_multipliers(env)
+        self.income_per_turn = (
+            self.base_money_income * multiplier
+        ) - self.maintenance_cost_per_turn
 
     @abstractmethod
     def draw(
@@ -60,18 +60,21 @@ class Building(ABC):
     def get_building_type_id(self):
         return self.building_type_id
 
-    def upgrade(self):
-        new_level = self.level + 1
-        self.level = min(new_level, self.max_level)
-        self.calculate_income()
-
-    def downgrade(self):
-        new_level = self.level - 1
-        self.level = max(new_level, 0)
-        self.calculate_income()
-
-    def calculate_income(self):
-        self.income_per_turn = self.base_money_income - self.maintenance_cost_per_turn
-
     def get_income(self):
         return self.income_per_turn
+
+    def check_multipliers(self, env):
+        adjacency_rules = ADJACENCY_MULTIPLIERS.get(self.building_type, {})
+        total_multiplier = 1.0
+
+        # Iterate over the rules and apply them
+        for adjacent_building_type, rule in adjacency_rules.items():
+            radius = rule["radius"]
+            multiplier = rule["multiplier"]
+
+            applies, tile = env.map.tile_is_next_to_building_type(
+                self.position, adjacent_building_type, diagonal=False, radius=radius
+            )
+            if applies:
+                total_multiplier += multiplier
+        return total_multiplier

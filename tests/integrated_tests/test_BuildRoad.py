@@ -3,7 +3,8 @@ import json
 import pytest
 
 from strategyRLEnv.environment import MapEnvironment
-from strategyRLEnv.map.map_settings import OWNER_DEFAULT_TILE, LandType, BuildingType
+from strategyRLEnv.map.map_settings import (OWNER_DEFAULT_TILE, BuildingType,
+                                            LandType)
 from strategyRLEnv.map.MapPosition import MapPosition
 from strategyRLEnv.objects.City import City
 from strategyRLEnv.objects.Farm import Farm
@@ -256,30 +257,36 @@ def test_road_bridge_multiplier(setup):
     assert mine.get_income() > income
 
     # remove road
-    tile1.buildings = set()
-    tile1.building_int = 0
+    env.map.remove_building(BuildingType.ROAD, position_1)
+    assert tile1.has_any_building() is False
     assert mine.get_income() == income
 
     # build bridge next to mine
+    tile1.set_land_type(LandType.OCEAN)
     observation, reward, terminated, truncated, info = env.step([[build_bridge_action]])
     assert mine.get_income() > income
+    env.map.remove_building(BuildingType.BRIDGE, position_1)
+    tile2.remove_building(BuildingType.MINE)
 
     # same for farm
-    tile2.buildings = set()
-    tile2.building_int = 0
-    farm = Farm(agent_id, position_2, {"building_type_id": 4})
+    env.map.remove_building(BuildingType.MINE, position_1)
+    farm = Farm(
+        agent_id, position_2, {"building_type_id": 4, "money_gain_per_turn": 100}
+    )
     farm_income = farm.get_income()
+    tile2.add_building(farm)
 
     # build road next to farm
+    tile1.set_land_type(LandType.LAND)
     observation, reward, terminated, truncated, info = env.step([[build_road_action]])
     assert farm.get_income() > farm_income
 
     # remove road
-    tile1.buildings = set()
-    tile1.building_int = 0
+    env.map.remove_building(BuildingType.ROAD, position_1)
     assert farm.get_income() == farm_income
 
     # build bridge next to farm
+    tile1.set_land_type(LandType.OCEAN)
     observation, reward, terminated, truncated, info = env.step([[build_bridge_action]])
     assert farm.get_income() > farm_income
 

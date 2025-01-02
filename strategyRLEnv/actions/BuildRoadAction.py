@@ -1,16 +1,8 @@
 from strategyRLEnv.actions.BuildAction import BuildAction
 from strategyRLEnv.Agent import Agent
 from strategyRLEnv.map import MapPosition
-from strategyRLEnv.map.map_settings import LandType, BuildingType
+from strategyRLEnv.map.map_settings import BuildingType, LandType
 from strategyRLEnv.objects.Road import Bridge, Road, update_road_bridge_shape
-
-
-def next_to_road_or_bridge(map, position):
-    surroundings = map.get_surrounding_tiles(position, 1)
-    for tile in surroundings:
-        if tile.has_road() or tile.has_bridge():
-            return True
-    return False
 
 
 class BuildRoadAction(BuildAction):

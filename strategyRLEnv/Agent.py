@@ -120,7 +120,7 @@ class Agent:
     def update(self):
         round_money = 0
         for _, tile in enumerate(self._claimed_tiles):
-            round_money += self.env.map.get_tile(tile).get_round_value()
+            round_money += self.env.map.get_tile(tile).get_tile_income()
 
         self.money += round_money
         self.last_money_pl = round_money

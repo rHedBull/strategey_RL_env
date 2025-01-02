@@ -3,8 +3,8 @@ from unittest.mock import Mock
 import pytest
 
 from strategyRLEnv.map.map_settings import (COLOR_DEFAULT_BORDER,
-                                            OWNER_DEFAULT_TILE, LandType,
-                                            land_type_color, BuildingType)
+                                            OWNER_DEFAULT_TILE, BuildingType,
+                                            LandType, land_type_color)
 from strategyRLEnv.map.MapPosition import MapPosition
 from strategyRLEnv.map.MapSquare import Map_Square
 from strategyRLEnv.objects.City import City
@@ -170,12 +170,12 @@ def test_has_building(map_square):
     map_square.add_building(city)
     assert map_square.has_building(BuildingType.CITY) is True
     assert map_square.has_building(BuildingType.ROAD) is False
-    map_square.remove_building(city)
+    map_square.remove_building(BuildingType.CITY)
 
     map_square.add_building(road)
     assert map_square.has_building(BuildingType.ROAD) is True
     assert map_square.has_building(BuildingType.CITY) is False
-    map_square.remove_building(road)
+    map_square.remove_building(BuildingType.ROAD)
 
     mine = Mine(1, map_square, {"building_type_id": 5, "max_level": 3})
     map_square.add_building(mine)
@@ -218,7 +218,7 @@ def test_remove_building(map_square):
     assert city in map_square.buildings
 
     # Remove city
-    map_square.remove_building(city)
+    map_square.remove_building(BuildingType.CITY)
     assert map_square.has_any_building() is False
     assert map_square.building_int == 0
     assert city not in map_square.buildings
@@ -230,13 +230,13 @@ def test_remove_building(map_square):
     assert road in map_square.buildings
 
     # Remove road
-    map_square.remove_building(road)
+    map_square.remove_building(BuildingType.ROAD)
     assert road not in map_square.buildings
     assert map_square.building_int == 0
     assert map_square.has_any_building() is False
 
     # Attempting to remove a non-existent building should do nothing
-    map_square.remove_building(city)  # Already removed
+    map_square.remove_building(BuildingType.CITY)  # Already removed
     assert map_square.building_int == 0
 
 
@@ -282,13 +282,13 @@ def test_has_road_and_bridge(map_square):
     assert map_square.has_road() is True
     assert map_square.has_bridge() is False
     # Remove road
-    map_square.remove_building(road)
+    map_square.remove_building(BuildingType.ROAD)
 
     map_square.add_building(bridge)
     assert map_square.has_bridge() is True
     assert map_square.has_road() is False
     # Remove bridge
-    map_square.remove_building(bridge)
+    map_square.remove_building(BuildingType.BRIDGE)
 
     # test if farm is not a road or bridge
     map_square.add_building(farm)

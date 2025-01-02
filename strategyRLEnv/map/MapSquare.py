@@ -3,8 +3,9 @@ from typing import Tuple
 import pygame
 
 from strategyRLEnv.map.map_settings import (COLOR_DEFAULT_BORDER,
-                                            OWNER_DEFAULT_TILE, LandType,
-                                            ResourceType, land_type_color, BuildingType)
+                                            OWNER_DEFAULT_TILE, BuildingType,
+                                            LandType, ResourceType,
+                                            land_type_color)
 from strategyRLEnv.map.MapPosition import MapPosition
 from strategyRLEnv.objects.Building import Building
 
@@ -36,7 +37,8 @@ class Map_Square:
         self.buildings = set()
         self.building_int = 0  # a bit mask to easily check for buildings present here
 
-        self._land_money_value = 1
+        self._land_money_value = 1  # determined by land type
+        self.tile_income = 0  # current income of the tile
 
         # ui stuff
         self.default_border_color = COLOR_DEFAULT_BORDER
@@ -56,6 +58,23 @@ class Map_Square:
 
         self.buildings.clear()
         self.building_int = 0
+
+    def update(self, env):
+        """
+        Update the square and then recalculate the tile income
+        Args:
+            env: The environment object
+        """
+        # update buildings
+        for building in self.buildings:
+            building.update(env)
+
+        # update tile_income
+        building_income = 0
+        for building in self.buildings:
+            building_income += building.get_income()
+
+        self.tile_income = building_income + self._land_money_value
 
     def set_owner(self, agent_id: int, agent_color: Tuple[int, int, int]):
         """
@@ -89,14 +108,6 @@ class Map_Square:
     def get_land_type(self) -> LandType:
         return self.land_type
 
-    def get_round_value(self):
-        # in theory add other dynamic effects here
-        income = self._land_money_value
-        for building in self.buildings:
-            income += building.get_income()
-
-        return income
-
     # claim stuff #
     def claim(self, agent):
         """
@@ -116,6 +127,16 @@ class Map_Square:
         building_id = building.get_building_type_id()
         bit_mask = 2 ** (building_id - 1)
         self.building_int |= bit_mask
+
+    def remove_building(self, building_type: BuildingType):
+        """
+        Remove a building from the square.
+        """
+        if self.has_building(
+            building_type
+        ):  # assuming simplified model with just one building per tile total
+            self.buildings = set()
+            self.building_int = 0
 
     def has_building(self, building_type: BuildingType):
         if building_type == BuildingType.CITY:
@@ -146,16 +167,6 @@ class Map_Square:
         if self.building_int > 0:
             return True
         return False
-
-    def remove_building(self, building: Building):
-        """
-        Remove a building from the square.
-        """
-        if building in self.buildings:
-            self.buildings.remove(building)
-            building_id = building.get_building_type_id()
-            bit_mask = 2 ** (building_id - 1)
-            self.building_int &= ~bit_mask
 
     # drawing stuff #
     def draw(
@@ -241,19 +252,8 @@ class Map_Square:
     def get_observation_state(self):
         return self.get_full_info()
 
-    def get_land_money_value(self):
-        return self._land_money_value
-
-    def calculate_land_money_value(self):
-        """
-        Calculate the value of the land
-        :return:
-        """
-        # base_value = self.land_type
-        return 10
-        # for (building) in self.buildings:
-        #    base_value += self.buildings[building][2]
-        #    # TODO test this
+    def get_tile_income(self):
+        return self.tile_income
 
     def get_road_or_bridge(self):
         for building in self.buildings:
