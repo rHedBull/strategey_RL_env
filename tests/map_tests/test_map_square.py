@@ -39,8 +39,6 @@ def test_initialization(map_square):
     assert map_square.resources == []
     assert map_square.owner_id == OWNER_DEFAULT_TILE
     assert map_square.visibility_bitmask == 0
-    assert map_square.buildings == set()
-    assert map_square.building_int == 0
     assert map_square._land_money_value == 1
     assert map_square.default_border_color == COLOR_DEFAULT_BORDER
     assert map_square.default_color == land_type_color(LandType.LAND)
@@ -63,7 +61,7 @@ def test_reset(map_square):
     map_square.land_type = LandType.MOUNTAIN
     map_square.land_type_color = land_type_color(LandType.MOUNTAIN)
     map_square._land_money_value = 5
-    map_square.buildings.add(city)
+    map_square.add_building(city)
     map_square.building_int = 1
 
     # Call reset
@@ -74,8 +72,6 @@ def test_reset(map_square):
     assert map_square.visibility_bitmask == 0
     assert map_square.owner_color == COLOR_DEFAULT_BORDER
     assert map_square._land_money_value == 1
-    assert map_square.buildings == set()
-    assert map_square.building_int == 0
 
 
 def test_set_and_get_owner(map_square):
@@ -142,13 +138,11 @@ def test_add_building(map_square):
     mock_agent_id = 7
     city = City(mock_agent_id, map_square.position, mock_city_params)
 
-    assert city not in map_square.buildings
-    assert map_square.building_int == 0
+    assert not map_square.has_any_building()
 
     map_square.add_building(city)
 
-    assert city in map_square.buildings
-    assert map_square.building_int == 1
+    assert map_square.has_building(BuildingType.CITY)
 
 
 def test_has_building(map_square):
@@ -157,10 +151,9 @@ def test_has_building(map_square):
     """
     mock_city_params, map_square = map_square
 
-    mock_road_params = {"building_type_id": 2}
     mock_agent_id = 7
     city = City(mock_agent_id, map_square.position, mock_city_params)
-    road = Road(map_square.position, mock_road_params)
+    road = Road(map_square.position, {})
 
     assert map_square.has_building(BuildingType.CITY) is False
     assert map_square.has_building(BuildingType.ROAD) is False
@@ -212,31 +205,23 @@ def test_remove_building(map_square):
     road = Road(map_square.position, mock_road_params)
 
     map_square.add_building(city)
-    assert map_square.has_any_building() is True
-    assert map_square.building_int == 1
-    assert city in map_square.buildings
+    assert map_square.has_building(BuildingType.CITY)
 
     # Remove city
     map_square.remove_building(BuildingType.CITY)
-    assert map_square.has_any_building() is False
-    assert map_square.building_int == 0
-    assert city not in map_square.buildings
+    assert map_square.has_building(BuildingType.CITY) is False
 
     # Add road
     map_square.add_building(road)
-    assert map_square.has_any_building() is True
-    assert map_square.building_int == 2
-    assert road in map_square.buildings
+    assert map_square.has_building(BuildingType.ROAD)
 
     # Remove road
     map_square.remove_building(BuildingType.ROAD)
-    assert road not in map_square.buildings
-    assert map_square.building_int == 0
-    assert map_square.has_any_building() is False
+    assert map_square.has_building(BuildingType.ROAD) is False
 
     # Attempting to remove a non-existent building should do nothing
     map_square.remove_building(BuildingType.CITY)  # Already removed
-    assert map_square.building_int == 0
+    assert map_square.has_building(BuildingType.ROAD) is False
 
 
 def test_get_full_info(map_square):
@@ -254,7 +239,7 @@ def test_get_full_info(map_square):
     expected_state = [
         LandType.MOUNTAIN.value,
         mock_owner_agent,
-        building.get_building_type_id(),
+        0,
     ]
 
     state = map_square.get_full_info()
@@ -267,12 +252,9 @@ def test_has_road_and_bridge(map_square):
     """
     mock_city_params, map_square = map_square
 
-    mock_road_params = {"building_type_id": 2}
-    mock_bridge_params = {"building_type_id": 3}
-    mock_farm_params = {"building_type_id": 4}
-    road = Road(map_square.position, mock_road_params)
-    bridge = Bridge(map_square.position, mock_bridge_params)
-    farm = Farm(0, map_square.position, mock_farm_params)
+    road = Road(map_square.position, {})
+    bridge = Bridge(map_square.position, {})
+    farm = Farm(0, map_square.position, {})
 
     assert map_square.has_road() is False
     assert map_square.has_bridge() is False

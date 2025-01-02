@@ -431,9 +431,7 @@ def test_building_road_on_water_mountain_desert(setup):
     )
     assert tile1.has_any_building() is True
     assert tile1.has_building(BuildingType.ROAD) is True
-
-    tile1.building_int = 0
-    tile1.buildings = set()
+    tile1.remove_building(BuildingType.ROAD)
     assert tile1.has_any_building() is False
 
     # should work on marsh
@@ -447,8 +445,7 @@ def test_building_road_on_water_mountain_desert(setup):
     assert tile1.has_any_building() is True
     assert tile1.has_building(BuildingType.ROAD) is True
 
-    tile1.building_int = 0
-    tile1.buildings = set()
+    tile1.remove_building(BuildingType.ROAD)
 
     # should work on mountain
     tile1.set_land_type(LandType.MOUNTAIN)

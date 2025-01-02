@@ -56,7 +56,7 @@ def test_build_simple_city(setup):
     observation, reward, terminated, truncated, info = env.step([[build_city_action]])
     assert tile1.has_any_building() is True
     assert tile1.has_building(BuildingType.CITY) is True
-    object = tile1.get_building(BuildingType.CITY)
+    object = tile1.get_building()
     assert isinstance(object, City)
     assert object.position.x == position_1.x
     assert object.position.y == position_1.y
@@ -69,9 +69,7 @@ def test_build_simple_city(setup):
     assert tile1.has_any_building() is True
     assert tile1.has_building(BuildingType.CITY) is True
     assert tile1.owner_id == old_owner_id
-    assert (
-        tile1.get_building(BuildingType.CITY).id == old_building_id
-    ), "City should not be replaced"
+    assert tile1.get_building().id == old_building_id, "City should not be replaced"
 
 
 def test_building_city_on_water_mountain_desert(setup):

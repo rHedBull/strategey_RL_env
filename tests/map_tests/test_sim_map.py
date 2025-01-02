@@ -6,8 +6,8 @@ import pytest
 from strategyRLEnv.Agent import Agent
 from strategyRLEnv.environment import MapEnvironment
 from strategyRLEnv.map.Map import check_valid_agent_id
-from strategyRLEnv.map.map_settings import (OWNER_DEFAULT_TILE, LandType,
-                                            max_agent_id, BuildingType)
+from strategyRLEnv.map.map_settings import (OWNER_DEFAULT_TILE, BuildingType,
+                                            LandType, max_agent_id)
 from strategyRLEnv.map.mapGenerator import generate_finished_map
 from strategyRLEnv.map.MapPosition import MapPosition
 from strategyRLEnv.map.MapSquare import Map_Square
@@ -34,7 +34,6 @@ def map_instance():
         "building_type_id": 1,
         "money_gain_per_turn": 110,
         "maintenance_cost_per_turn": 10,
-        "max_level": 3,
     }
     yield map, mock_city_params
 
@@ -78,7 +77,7 @@ def test_create_map(map_instance):
                 LandType.LAND,
             ]
             # assert square.resources == []
-            assert square.buildings == set()
+            assert square.building is None
             # the rest should be tested in Map_Square tests
 
 
@@ -212,13 +211,12 @@ def test_add_building(map_instance):
 
     assert tile.has_any_building() is False
     map_instance.add_building(building_object, position)
-    assert tile.has_any_building() is True
-    assert building_object in tile.buildings
+    assert tile.get_building() == building_object
 
     # test remove building
     tile.remove_building(BuildingType.CITY)
     assert tile.has_any_building() is False
-    assert building_object not in tile.buildings
+    assert tile.get_building() is None
 
 
 # def test_tile_is_next_to_building(map_instance):

@@ -33,9 +33,7 @@ class Map_Square:
 
         self.visibility_bitmask = 0  # init to zero, no agent can see this tile
 
-        # building stuff
-        self.buildings = set()
-        self.building_int = 0  # a bit mask to easily check for buildings present here
+        self.building = None
 
         self._land_money_value = 1  # determined by land type
         self.tile_income = 0  # current income of the tile
@@ -56,8 +54,7 @@ class Map_Square:
 
         self._land_money_value = 1
 
-        self.buildings.clear()
-        self.building_int = 0
+        self.building = None
 
     def update(self, env):
         """
@@ -65,14 +62,11 @@ class Map_Square:
         Args:
             env: The environment object
         """
-        # update buildings
-        for building in self.buildings:
-            building.update(env)
-
-        # update tile_income
         building_income = 0
-        for building in self.buildings:
-            building_income += building.get_income()
+        # update buildings
+        if self.building is not None:
+            self.building.update(env)
+            building_income = self.building.get_income()
 
         self.tile_income = building_income + self._land_money_value
 
@@ -123,48 +117,27 @@ class Map_Square:
         """
         Add a building to the square.
         """
-        self.buildings.add(building)
-        building_id = building.get_building_type_id()
-        bit_mask = 2 ** (building_id - 1)
-        self.building_int |= bit_mask
+        self.building = building
 
     def remove_building(self, building_type: BuildingType):
         """
         Remove a building from the square.
         """
-        if self.has_building(
-            building_type
-        ):  # assuming simplified model with just one building per tile total
-            self.buildings = set()
-            self.building_int = 0
+        if self.building is not None:
+            if self.building.building_type == building_type:
+                self.building = None
 
     def has_building(self, building_type: BuildingType):
-        if building_type == BuildingType.CITY:
-            building_id = 1  # 2^0
-        elif building_type == BuildingType.ROAD:
-            building_id = 2  # 2^1
-        elif building_type == BuildingType.BRIDGE:
-            building_id = 3  # 2^2
-        elif building_type == BuildingType.FARM:
-            building_id = 4  # 2^3
-        elif building_type == BuildingType.MINE:
-            building_id = 5
-        else:
-            building_id = 0  # Undefined building type
+        if self.building is not None:
+            if self.building.building_type == building_type:
+                return True
+        return False
 
-        # convert to 2 potenz
-        building_id = int(2 ** (building_id - 1))
-
-        # Perform bitwise AND to check if the building is present
-        return (self.building_int & building_id) != 0
-
-    def get_building(self, building_type: BuildingType):
-        for building in self.buildings:
-            if building.building_type == building_type:
-                return building
+    def get_building(self):
+        return self.building
 
     def has_any_building(self):
-        if self.building_int > 0:
+        if self.building is not None:
             return True
         return False
 
@@ -240,13 +213,17 @@ class Map_Square:
                 1,
             )
 
-        for building in self.buildings:
-            building.draw(screen, square_size, self.owner_color)
+        if self.building is not None:
+            self.building.draw(screen, square_size, self.owner_color)
 
     # observation stuff #
     def get_full_info(self):
         # these are the features the agent can observe
-        state = [self.land_type.value, self.owner_id, self.building_int]
+        state = [
+            self.land_type.value,
+            self.owner_id,
+            0,
+        ]  # TODO fix correct value for building
         return state
 
     def get_observation_state(self):
@@ -256,12 +233,11 @@ class Map_Square:
         return self.tile_income
 
     def get_road_or_bridge(self):
-        for building in self.buildings:
-            if (
-                building.building_type == BuildingType.ROAD
-                or building.building_type == BuildingType.BRIDGE
-            ):
-                return building
+        if (
+            self.building.building_type == BuildingType.ROAD
+            or self.building.building_type == BuildingType.BRIDGE
+        ):
+            return self.building
 
     def has_road(self):
         if self.has_building(BuildingType.ROAD):

@@ -20,7 +20,6 @@ class Building(ABC):
         self.position = position
 
         self.building_type = building_type
-        self.building_type_id = building_parameters.get("building_type_id")
 
         self.base_money_income = building_parameters.get("money_gain_per_turn", 0)
         self.maintenance_cost_per_turn = building_parameters.get(
@@ -54,9 +53,6 @@ class Building(ABC):
         Return the type of the building (e.g., 'City', 'Road', 'Farm').
         """
         return self.building_type
-
-    def get_building_type_id(self):
-        return self.building_type_id
 
     def get_income(self):
         return self.income_per_turn

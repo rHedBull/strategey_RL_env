@@ -207,8 +207,8 @@ Behavior:
 
 ### Actions
 - [ ] account for continuous maps in action checks
-- [ ] roads and bridges can only be placed next to an own city or another road or bridge, ensures roads connect to cities, !!
 - [ ] destroy action
+- [ ] concept of upgradable buildings
 
 ## UI
 - [ ] zooming, moving?
