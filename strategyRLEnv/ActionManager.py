@@ -9,6 +9,7 @@ from strategyRLEnv.actions.BuildMineAction import BuildMineAction
 from strategyRLEnv.actions.BuildRoadAction import (BuildBridgeAction,
                                                    BuildRoadAction)
 from strategyRLEnv.actions.ClaimAction import ClaimAction
+from strategyRLEnv.actions.DestroyAction import DestroyAction
 from strategyRLEnv.Agent import Agent
 from strategyRLEnv.map.MapPosition import MapPosition
 
@@ -26,6 +27,8 @@ def create_action(agent: Agent, action_type, position: MapPosition):
         return BuildFarmAction(agent, position)
     elif action_type == "build_mine":
         return BuildMineAction(agent, position)
+    elif action_type == "destroy":
+        return DestroyAction(agent, position)
     # elif action_type == "move":
     #     return MoveAction(agent, position)
     else:

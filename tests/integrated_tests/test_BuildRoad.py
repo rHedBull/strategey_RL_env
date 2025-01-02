@@ -17,8 +17,8 @@ def setup():
     # open settings file
     with open("test_env_settings.json", "r") as f:
         env_settings = json.load(f)
-        env_settings["map_width"] = 100
-        env_settings["map_height"] = 100
+        env_settings["map_width"] = 10
+        env_settings["map_height"] = 10
     env_settings["actions"]["build_road"]["cost"] = 10  # allow building road
     env = MapEnvironment(env_settings, 2, "rgb_array")
 
@@ -45,6 +45,7 @@ def test_build_road_not_visible(setup):
     env.reset()
     tile1 = env.map.get_tile(position_1)
     tile1.set_land_type(LandType.LAND)
+    env.map.clear_visible(position_1, agent_id)
 
     # Not visible, should not work
     observation, reward, terminated, truncated, info = env.step([[build_road_action]])
@@ -359,7 +360,7 @@ def test_road_bridge_multiplier(setup):
     assert mine.get_income() > income
 
     # remove road
-    env.map.remove_building(BuildingType.ROAD, position_1)
+    env.map.remove_building(position_1, BuildingType.ROAD)
     assert tile1.has_any_building() is False
     assert mine.get_income() == income
 
@@ -367,11 +368,11 @@ def test_road_bridge_multiplier(setup):
     tile1.set_land_type(LandType.OCEAN)
     observation, reward, terminated, truncated, info = env.step([[build_bridge_action]])
     assert mine.get_income() > income
-    env.map.remove_building(BuildingType.BRIDGE, position_1)
+    env.map.remove_building(position_1, BuildingType.BRIDGE)
     tile2.remove_building(BuildingType.MINE)
 
     # same for farm
-    env.map.remove_building(BuildingType.MINE, position_1)
+    env.map.remove_building(position_1, BuildingType.MINE)
     farm = Farm(
         agent_id, position_2, {"building_type_id": 4, "money_gain_per_turn": 100}
     )
@@ -384,7 +385,7 @@ def test_road_bridge_multiplier(setup):
     assert farm.get_income() > farm_income
 
     # remove road
-    env.map.remove_building(BuildingType.ROAD, position_1)
+    env.map.remove_building(position_1, BuildingType.ROAD)
     assert farm.get_income() == farm_income
 
     # build bridge next to farm

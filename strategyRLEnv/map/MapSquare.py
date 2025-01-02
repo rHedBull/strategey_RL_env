@@ -119,12 +119,17 @@ class Map_Square:
         """
         self.building = building
 
-    def remove_building(self, building_type: BuildingType):
+    def remove_building(self, building_type: BuildingType = None):
         """
         Remove a building from the square.
         """
+        if building_type is None:  # remove without checking
+            self.building = None
+
         if self.building is not None:
-            if self.building.building_type == building_type:
+            if (
+                self.building.building_type == building_type
+            ):  # only remove if the building type matches
                 self.building = None
 
     def has_building(self, building_type: BuildingType):

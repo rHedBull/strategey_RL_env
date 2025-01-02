@@ -207,7 +207,6 @@ Behavior:
 
 ### Actions
 - [ ] account for continuous maps in action checks
-- [ ] destroy action
 - [ ] concept of upgradable buildings
 
 ## UI

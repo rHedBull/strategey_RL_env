@@ -112,7 +112,9 @@ class Map:
         self.get_tile(position).add_building(building_object)
 
     def remove_building(
-        self, building_type: BuildingType, position: MapPosition
+        self,
+        position: MapPosition,
+        building_type: BuildingType = None,
     ) -> None:
         self.get_tile(position).remove_building(building_type)
         self.trigger_surrounding_tile_update(position, 1)

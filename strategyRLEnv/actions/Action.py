@@ -7,6 +7,7 @@ from strategyRLEnv.map import MapPosition
 class ActionType(Enum):
     CLAIM = "claim"
     WAIT = "wait"
+    DESTROY = "destroy"
     BUILD = auto()
 
 

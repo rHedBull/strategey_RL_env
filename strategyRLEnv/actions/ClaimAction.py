@@ -22,14 +22,9 @@ class ClaimAction(Action):
             return False
 
         # surrounding tiles
-        surrounding_tiles = env.map.get_surrounding_tiles(self.position, 1)
-
-        adjacent_claimed = False
-        for tile in surrounding_tiles:
-            if tile.get_owner() == self.agent.id:
-                adjacent_claimed = True
-                break
-
+        adjacent_claimed, _ = env.map.tile_is_next_to_own_tile(
+            self.position, self.agent.id, 1
+        )
         if not adjacent_claimed:
             return False
 
