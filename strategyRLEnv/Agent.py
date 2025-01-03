@@ -83,6 +83,8 @@ class Agent:
         self.all_visible = False
         self.visibility_range = 1
 
+        self.units = []
+
         self.reset()
 
     def reset(self):
@@ -116,11 +118,15 @@ class Agent:
 
         self.all_visible = False
         self.visibility_range = 3
+        self.units = []
 
     def update(self):
         round_money = 0
         for _, tile in enumerate(self._claimed_tiles):
             round_money += self.env.map.get_tile(tile).get_tile_income()
+
+        for unit in self.units:
+            unit.update(self.env)
 
         self.money += round_money
         self.last_money_pl = round_money
@@ -141,6 +147,10 @@ class Agent:
             ),
             radius,
         )
+
+        # draw the units
+        for unit in self.units:
+            unit.draw(self.env.screen, square_size, self.color)
 
     def get_observation(self):
         agent_observation = np.zeros((len(self.env.agent_features)), dtype=np.float32)

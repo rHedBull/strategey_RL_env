@@ -47,6 +47,13 @@
             "cost": 0,
             "reward": 0.5
         },
+        "place_unit": {
+            "cost": 50,
+            "reward": 0.5
+        },
+        "withdraw_unit": {
+            "cost": 0.7
+        },
         "invalid_action_penalty": -1000
     },
     "map_features": [

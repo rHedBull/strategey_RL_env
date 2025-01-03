@@ -10,6 +10,8 @@ from strategyRLEnv.actions.BuildRoadAction import (BuildBridgeAction,
                                                    BuildRoadAction)
 from strategyRLEnv.actions.ClaimAction import ClaimAction
 from strategyRLEnv.actions.DestroyAction import DestroyAction
+from strategyRLEnv.actions.PlaceUnitAction import PlaceUnitAction
+from strategyRLEnv.actions.WithdrawUnitAction import WithdrawUnitAction
 from strategyRLEnv.Agent import Agent
 from strategyRLEnv.map.MapPosition import MapPosition
 
@@ -29,6 +31,10 @@ def create_action(agent: Agent, action_type, position: MapPosition):
         return BuildMineAction(agent, position)
     elif action_type == "destroy":
         return DestroyAction(agent, position)
+    elif action_type == "place_unit":
+        return PlaceUnitAction(agent, position)
+    elif action_type == "withdraw_unit":
+        return WithdrawUnitAction(agent, position)
     # elif action_type == "move":
     #     return MoveAction(agent, position)
     else:

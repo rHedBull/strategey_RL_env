@@ -281,11 +281,11 @@ class MapEnvironment(gym.Env):
 
     def _update_environment_state(self):
         """
-        Updates the environment state after actions have been applied.A
+        Updates the environment state after actions have been applied.
         """
-        # Update map dynamics if any
-        # self.map.update()
-
+        # update agents in random order
+        copy = self.agents.copy()
+        np.random.shuffle(copy)
         for agent in self.agents:
             agent.update()
 

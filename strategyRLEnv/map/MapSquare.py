@@ -38,6 +38,8 @@ class Map_Square:
         self._land_money_value = 1  # determined by land type
         self.tile_income = 0  # current income of the tile
 
+        self.unit = None
+
         # ui stuff
         self.default_border_color = COLOR_DEFAULT_BORDER
         self.default_color = land_type_color(LandType.LAND)
@@ -229,11 +231,7 @@ class Map_Square:
     # observation stuff #
     def get_full_info(self):
         # these are the features the agent can observe
-        state = [
-            self.land_type.value,
-            self.owner_id,
-            self.get_building_value()
-        ]
+        state = [self.land_type.value, self.owner_id, self.get_building_value()]
         return state
 
     def get_observation_state(self):

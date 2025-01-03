@@ -9,6 +9,7 @@ class ActionType(Enum):
     WAIT = "wait"
     DESTROY = "destroy"
     BUILD = auto()
+    UNIT = auto()
 
 
 class Action(ABC):
