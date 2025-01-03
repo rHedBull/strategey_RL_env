@@ -4,55 +4,46 @@
     "water_budget_per_agent": 0.2,
     "mountain_budget_per_agent": 0.2,
     "dessert_budget_per_agent": 0.1,
-    "numb_rivers": 0,
     "resource_density": 0.1,
     "city_clearance_radius": 2,
     "agent_initial_budget": 10000,
     "agent_initial_budget_distribution": "equal",
     "actions": {
         "wait": {
-            "action_id": 0,
             "cost": 1,
             "reward": 0
         },
         "claim": {
-            "action_id": 1,
             "cost":100,
             "reward": 10
         },
         "build_city": {
-            "action_id": 2,
             "cost": 200,
             "reward": 20,
             "money_gain_per_turn": 110,
             "maintenance_cost_per_turn": 10
         },
         "build_road": {
-            "action_id": 3,
             "cost": -100,
             "reward": 3
         },
         "build_bridge": {
-            "action_id": 4,
             "cost": 0,
             "reward": 3
         },
         "build_farm": {
-            "action_id": 5,
             "cost": 8,
             "reward": 5,
             "money_gain_per_turn": 20,
             "maintenance_cost_per_turn": 5
         },
         "build_mine": {
-            "action_id": 6,
             "cost": 8,
             "reward": 5,
             "money_gain_per_turn": 20,
             "maintenance_cost_per_turn": 5
         },
         "destroy": {
-            "action_id": 7,
             "cost": 0,
             "reward": 0.5
         },
@@ -73,7 +64,7 @@
         },
         {
             "name": "buildings",
-            "select": false,
+            "select": true,
             "values": {
                 "min": 0,
                 "max": 10000000000

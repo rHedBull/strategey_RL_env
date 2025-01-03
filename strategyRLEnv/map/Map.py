@@ -92,7 +92,7 @@ class Map:
                     elif name == "resources":
                         square_array[i] = square.get_land_type()
                     elif name == "buildings":
-                        square_array[i] = 0  # square.building_int TODO: fix
+                        square_array[i] = square.get_building_value()
 
                     map_info[square.position.x][square.position.y] = square_array
                     i += 1

@@ -71,6 +71,13 @@ def land_type_color(land_type: LandType):
     else:
         return COLOR_DEFAULT_LAND
 
+BUILDING_IDS = {
+    BuildingType.CITY: 0,
+    BuildingType.ROAD: 1,
+    BuildingType.BRIDGE: 2,
+    BuildingType.FARM: 3,
+    BuildingType.MINE: 4,
+}
 
 ALLOWED_BUILDING_PLACEMENTS = {
     BuildingType.CITY: {

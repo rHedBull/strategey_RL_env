@@ -5,7 +5,7 @@ from uuid import uuid1
 import pygame
 
 from strategyRLEnv.map import MapPosition
-from strategyRLEnv.map.map_settings import ADJACENCY_MULTIPLIERS, BuildingType
+from strategyRLEnv.map.map_settings import ADJACENCY_MULTIPLIERS, BUILDING_IDS, BuildingType
 
 
 class Building(ABC):
@@ -53,6 +53,14 @@ class Building(ABC):
         Return the type of the building (e.g., 'City', 'Road', 'Farm').
         """
         return self.building_type
+
+    def get_building_type_id(self) -> int:
+        """
+        Return the type id of the building.
+        """
+        id = BUILDING_IDS.get(self.building_type, {})
+
+        return id
 
     def get_income(self):
         return self.income_per_turn

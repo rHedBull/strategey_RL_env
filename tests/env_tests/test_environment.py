@@ -51,9 +51,7 @@ def test_step(env):
     agent_1_random_actions = [
         action_space.sample(),
         action_space.sample(),
-    ]  # test multiple actions per agent
-    agent_2_random_actions = []  # test empty action
-    agent_invalid_action = [[-1, 0, 0]]  # invalid action id
+    ]
 
     observation, reward, terminated, truncated, info = env.step(
         [agent_0_random_actions]

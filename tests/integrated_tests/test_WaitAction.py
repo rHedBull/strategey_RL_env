@@ -6,7 +6,7 @@ from strategyRLEnv.environment import MapEnvironment
 from strategyRLEnv.map.map_settings import OWNER_DEFAULT_TILE, BuildingType
 from strategyRLEnv.map.MapPosition import MapPosition
 from strategyRLEnv.objects.City import City
-from strategyRLEnv.objects.Road import Bridge, Road
+from strategyRLEnv.objects.Road import Road
 
 
 @pytest.fixture

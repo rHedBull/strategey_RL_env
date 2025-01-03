@@ -188,21 +188,23 @@ Behavior:
 - enable actual biomes
 - make height relevant for water and mountain
 - loading maps into env
+- more realistic height map with biomes and more influence on the map
 
 
 ## RL
 - [ ] make some kind of run setup to run on the different maps of different settings and logg
 - [ ] better Game dynamic structure, if one tile changes, trigger updates for surrounding tiles
+- [ ] simple simple combat system, simple attack, place defense as despositable scalar value, wall structure?
 
 ### Observation
 - [ ] different types of observability for different agents
-- [ ] adjust height, biomes and other min and max values in obs space
-  - [ ] add option for continuos map
+- [ ] add option for continuos map
 
 
 ### Rewards
 - [ ] calculate rewards better, decide what rewards to give
 - [ ] setup reward structure around 0 with standard deviation of 1, is supposed to be better for learning
+- [ ] increase city reward if connected to other cities, own farm or mine
 
 
 ### Actions

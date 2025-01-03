@@ -141,6 +141,11 @@ class Map_Square:
     def get_building(self):
         return self.building
 
+    def get_building_value(self):
+        if self.building is not None:
+            return self.building.get_building_type_id()
+        return 0
+
     def has_any_building(self):
         if self.building is not None:
             return True
