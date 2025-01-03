@@ -232,8 +232,8 @@ class Map_Square:
         state = [
             self.land_type.value,
             self.owner_id,
-            0,
-        ]  # TODO fix correct value for building
+            self.get_building_value()
+        ]
         return state
 
     def get_observation_state(self):
