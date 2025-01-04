@@ -1,4 +1,3 @@
-# land specific colors
 from enum import Enum
 
 COLOR_DEFAULT_LAND = (34, 139, 34)
@@ -71,6 +70,7 @@ def land_type_color(land_type: LandType):
     else:
         return COLOR_DEFAULT_LAND
 
+
 BUILDING_IDS = {
     BuildingType.CITY: 0,
     BuildingType.ROAD: 1,
@@ -94,6 +94,7 @@ ALLOWED_BUILDING_PLACEMENTS = {
     BuildingType.BRIDGE: {LandType.RIVER, LandType.OCEAN},
     BuildingType.FARM: {LandType.LAND, LandType.MARSH},
     BuildingType.MINE: {LandType.MOUNTAIN},
+    "UNIT": {LandType.LAND, LandType.MARSH, LandType.DESERT}
     # Add mappings for other building types
 }
 

@@ -30,13 +30,13 @@ class ClaimAction(Action):
 
         return True
 
-    def execute(self, env) -> int:
+    def execute(self, env):
         env.map.claim_tile(self.agent, self.position)
         self.agent.add_claimed_tile(self.position)
         self.agent.update_local_visibility(self.position)
 
-        self.agent.money -= env.action_manager.actions_definition["claim"]["cost"]
-        reward = env.action_manager.actions_definition["claim"]["reward"]
+        self.agent.money -= self.get_cost(env)
+        reward = self.get_reward(env)
         return reward
 
 

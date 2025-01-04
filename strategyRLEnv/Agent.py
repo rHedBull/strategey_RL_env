@@ -192,6 +192,14 @@ class Agent:
                 if self.env.map.check_position_on_map(tmp_pos):
                     self.env.map.set_visible(tmp_pos, self.id)
 
+    def add_unit(self, unit):
+        if unit.owner.id == self.id:
+            self.units.append(unit)
+
+    def remove_unit(self, unit):
+        if unit in self.units:
+            self.units.remove(unit)
+
     # claiming stuff
     def add_claimed_tile(self, position: MapPosition):
         self._claimed_tiles.add(position)

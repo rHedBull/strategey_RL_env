@@ -264,7 +264,9 @@ def test_tile_is_next_to_building_type(map_instance):
 
     tile = map_instance.get_tile(position)
     # now check for a city, should return true
-    bool_value, return_tile = map_instance.tile_is_next_to_building(adjacent_position)
+    bool_value, return_tile = map_instance.tile_is_next_to_building_type(
+        adjacent_position, BuildingType.CITY
+    )
     assert bool_value is True
     assert return_tile == tile
 
@@ -287,7 +289,9 @@ def test_tile_is_next_to_any_building(map_instance):
 
     # Now, should detect a building nearby
     tile = map_instance.get_tile(position)
-    bool_value, return_tile = map_instance.tile_is_next_to_building(adjacent_position)
+    bool_value, return_tile = map_instance.tile_is_next_to_any_building(
+        adjacent_position
+    )
     assert bool_value is True
     assert return_tile == tile
 

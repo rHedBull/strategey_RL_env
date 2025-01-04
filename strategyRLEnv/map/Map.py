@@ -116,7 +116,9 @@ class Map:
         position: MapPosition,
         building_type: BuildingType = None,
     ) -> None:
-        self.get_tile(position).remove_building(building_type)
+        tile = self.get_tile(position)
+        tile.remove_building(building_type)
+        tile.update(self.env)
         self.trigger_surrounding_tile_update(position, 1)
 
     def draw(self, screen, zoom_level, pan_x, pan_y):
@@ -144,19 +146,6 @@ class Map:
         if self.check_position_on_map(position):
             return self.squares[position.x][position.y]
         return None
-
-    def tile_is_next_to_building(self, position: MapPosition):
-        # check if any of the neighbouring tiles has a building
-        # TODO: switch to just up, down, left, right
-        x = position.x
-        y = position.y
-        for i in range(-1, 2):
-            for j in range(-1, 2):
-                tmp_pos = MapPosition(x + i, y + j)
-                tile = self.get_tile(tmp_pos)
-                if tile and tile.has_any_building():
-                    return True, tile
-        return False, None
 
     def tile_is_next_to_own_tile(
         self,

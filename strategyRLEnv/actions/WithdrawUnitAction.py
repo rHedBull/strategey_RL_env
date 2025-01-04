@@ -20,7 +20,7 @@ class WithdrawUnitAction(Action):
             return False
 
         # check if the unit is owned by the agent
-        if env.map.get_tile(self.position).unit.owner_id != self.agent.id:
+        if env.map.get_tile(self.position).unit.owner.id != self.agent.id:
             return False
 
         return True
@@ -28,15 +28,14 @@ class WithdrawUnitAction(Action):
     def execute(self, env):
         unit = env.map.get_tile(self.position).unit
         env.map.get_tile(self.position).unit = None
-        self.agent.units.remove(unit)
+
+        self.agent.remove_unit(unit)
 
         ratio = self.get_cost(env)  # in this case a ration how much is returned
         self.agent.money += unit.strength * ratio
         reward = unit.strength * ratio
-        return reward  # TODO: proper withdrawal, and killing
-
-    # TODO: write tests to test combat behaviour
+        return reward
 
     def get_cost(self, env) -> float:
         """Return the cost of the action."""
-        return env.env_settings.get("actions")["place_unit"]["cost"]
+        return env.env_settings.get("actions")["withdraw_unit"]["cost"]

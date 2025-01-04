@@ -5,7 +5,8 @@ from uuid import uuid1
 import pygame
 
 from strategyRLEnv.map import MapPosition
-from strategyRLEnv.map.map_settings import ADJACENCY_MULTIPLIERS, BUILDING_IDS, BuildingType
+from strategyRLEnv.map.map_settings import (ADJACENCY_MULTIPLIERS,
+                                            BUILDING_IDS, BuildingType)
 
 
 class Building(ABC):
