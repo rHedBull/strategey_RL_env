@@ -1,5 +1,6 @@
 from strategyRLEnv.map.map_settings import healing_base
 
+
 class Destroyable:
     """
     Mixin class to add ownership capabilities to buildings.
@@ -18,7 +19,7 @@ class Destroyable:
 
     def heal(self):
         health = self.health + healing_base
-        self.health = min(health , self.max_health)
+        self.health = min(health, self.max_health)
 
     def destroy(self, env):
         env.map.remove_building(self.position)

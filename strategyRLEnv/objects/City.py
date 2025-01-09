@@ -11,7 +11,13 @@ from strategyRLEnv.objects.Ownable import Ownable
 
 class City(Building, Ownable, Destroyable):
     def __init__(self, agent_id: int, position: MapPosition, building_parameters: dict):
-        super().__init__(position=position, building_type=BuildingType.CITY, building_parameters=building_parameters, agent_id=agent_id, health=city_health)
+        super().__init__(
+            position=position,
+            building_type=BuildingType.CITY,
+            building_parameters=building_parameters,
+            agent_id=agent_id,
+            health=city_health,
+        )
 
     def draw(
         self,

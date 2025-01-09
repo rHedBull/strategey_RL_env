@@ -11,8 +11,13 @@ from strategyRLEnv.objects.Ownable import Ownable
 
 class Mine(Building, Ownable, Destroyable):
     def __init__(self, agent_id: int, position: MapPosition, building_parameters: Dict):
-        super().__init__(position=position, building_type=BuildingType.MINE, building_parameters=building_parameters,
-                         agent_id=agent_id, health=farm_mine_health)
+        super().__init__(
+            position=position,
+            building_type=BuildingType.MINE,
+            building_parameters=building_parameters,
+            agent_id=agent_id,
+            health=farm_mine_health,
+        )
 
     def draw(self, screen: pygame.Surface, square_size: int, colors: dict):
         """
