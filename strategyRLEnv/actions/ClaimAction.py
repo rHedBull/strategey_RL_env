@@ -14,12 +14,20 @@ class ClaimAction(Action):
         if not super().validate(env):
             return False
 
-        if env.map.get_tile(self.position).get_owner() != OWNER_DEFAULT_TILE:
+        tile = env.map.get_tile(self.position)
+
+        if tile.get_owner() != OWNER_DEFAULT_TILE:
             return False
 
         # check if visible for agent
         if not env.map.is_visible(self.position, self.agent.id):
             return False
+
+        # check no unit on the tile
+        if tile.unit is not None:
+            if tile.unit.owner.id != self.agent.id:
+                return False
+
 
         # surrounding tiles
         adjacent_claimed, _ = env.map.tile_is_next_to_own_tile(
