@@ -58,7 +58,6 @@ class Agent:
     """
 
     def __init__(self, agent_id: int, env):
-        self.capital = None
         self.id = agent_id
         self.env = env
 
@@ -76,6 +75,7 @@ class Agent:
 
         # resources
         self._claimed_tiles = set()
+        self.cities = []
 
         self.money = None
         self.last_money_pl = None
@@ -91,8 +91,14 @@ class Agent:
         """
         Resets the agent to the initial state as defined in the environment settings.
         """
+        self.cities = []
 
-        self.position = self.env.map.get_random_position_on_map()
+        while True:
+            position = self.env.map.get_random_position_on_map()
+            tile = self.env.map.get_tile(position)
+            if tile.building is None:
+                break
+        self.position = position
 
         self._claimed_tiles.clear()
         self._claimed_tiles.add(self.position)  # initial spawn is a claimed tile
@@ -131,22 +137,34 @@ class Agent:
         self.money += round_money
         self.last_money_pl = round_money
 
-        if self.money < 0 or len(self._claimed_tiles) == 0:
+        if self.money < 0 or len(self._claimed_tiles) == 0 or len(self.cities) == 0:
             self.state = AgentState.DONE
 
-    def draw(self, square_size, zoom_level, pan_x, pan_y):
-        radius = square_size / 2
-        # get a color modulo the number of colors
+        if self.state == AgentState.DONE:
+            self.kill()
 
-        pygame.draw.circle(
-            self.env.screen,
-            self.color,
-            (
-                (self.position.x * square_size) + radius,
-                (self.position.y * square_size) + radius,
-            ),
-            radius,
-        )
+    def kill(self):
+        # remove all units
+        print("Agent ", self.id, " is dead")
+        for unit in self.units:
+            unit.kill()
+
+        for tile in self._claimed_tiles:
+            tile.reset(False)
+
+    def draw(self, square_size, zoom_level, pan_x, pan_y):
+        # radius = square_size / 2
+        # # get a color modulo the number of colors
+        #
+        # pygame.draw.circle(
+        #     self.env.screen,
+        #     self.color,
+        #     (
+        #         (self.position.x * square_size) + radius,
+        #         (self.position.y * square_size) + radius,
+        #     ),
+        #     radius,
+        # )
 
         # draw the units
         for unit in self.units:
@@ -206,3 +224,6 @@ class Agent:
 
     def get_claimed_tiles(self):
         return self._claimed_tiles
+
+    def add_city(self, city):
+        self.cities.append(city)

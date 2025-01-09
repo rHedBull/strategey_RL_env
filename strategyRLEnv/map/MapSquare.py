@@ -47,16 +47,16 @@ class Map_Square:
         self.land_type_color = land_type_color(LandType.LAND)
         self.owner_color = COLOR_DEFAULT_BORDER
 
-    def reset(self):
-        self.owner_id = OWNER_DEFAULT_TILE
-
-        self.visibility_bitmask = 0
-
-        self.owner_color = COLOR_DEFAULT_BORDER
+    def reset(self, total_reset: bool = True):
+        self.set_owner(OWNER_DEFAULT_TILE, COLOR_DEFAULT_BORDER)
 
         self._land_money_value = 1
 
         self.building = None
+        self.unit = None
+
+        if total_reset:
+            self.visibility_bitmask = 0
 
     def update(self, env):
         """

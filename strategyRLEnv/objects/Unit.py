@@ -49,7 +49,6 @@ class Unit(Ownable):
         minimum_damage = 5
 
         if isinstance(attacked_target, Unit):
-
             # normal attack
             diff = self.strength - attacked_target.strength
             damage_self = max(minimum_damage, int(dmg_multiplier_self * diff))
@@ -59,9 +58,9 @@ class Unit(Ownable):
 
             return True
 
-        if isinstance(attacked_target, Destroyable): # means this is a building
+        if isinstance(attacked_target, Destroyable):  # means this is a building
             # attack building
-            building_damage = 20 # fix for now
+            building_damage = 20  # fix for now
             attacked_target.reduce_health(env, building_damage)
 
     def reduce_strength(self, env, damage):
@@ -82,9 +81,8 @@ class Unit(Ownable):
         square_size: int,
         owner_color: Tuple[int, int, int],
     ):
-
         # Calculate the size of the diamond
-        rectangle_size = square_size/3
+        rectangle_size = square_size / 3
         x_offset = square_size * self.position.x
         y_offset = square_size * self.position.y
 

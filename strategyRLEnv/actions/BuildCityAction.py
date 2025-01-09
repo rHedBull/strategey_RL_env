@@ -41,4 +41,5 @@ class BuildCityAction(BuildAction):
 
         env.map.claim_tile(self.agent, self.position)
         self.agent.add_claimed_tile(self.position)
+        self.agent.add_city(city)
         self.agent.update_local_visibility(self.position)
