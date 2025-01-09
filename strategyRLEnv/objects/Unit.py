@@ -90,50 +90,20 @@ class Unit(Ownable):
         square_size: int,
         owner_color: Tuple[int, int, int],
     ):
-        max_strength = 500
-        scalar_value = max(0.2, self.strength / max_strength)
 
+        # Calculate the size of the diamond
+        rectangle_size = square_size/3
+        x_offset = square_size * self.position.x
+        y_offset = square_size * self.position.y
 
-        # Calculate the maximum size for the rectangle
-        max_size = square_size / 2
+        center_x = x_offset + (square_size / 2)
+        center_y = y_offset + (square_size / 2)
 
-        # Calculate the size of the rectangle
+        # Define the vertices of the diamond
+        top = (center_x, center_y - rectangle_size)
+        right = (center_x + rectangle_size, center_y)
+        bottom = (center_x, center_y + rectangle_size)
+        left = (center_x - rectangle_size, center_y)
+        vertices = [top, right, bottom, left]
 
-
-        # Initialize rectangle position variables
-        rect_x = 0
-        rect_y = 0
-        rect_width = 0
-        rect_height = 0
-        rectangle_size = max_size * scalar_value
-
-        # Determine the position based on the side
-        if self.shape == UnitPlacement.BASE:
-
-            rect_x = self.position.x * square_size + square_size / 4
-            rect_y = self.position.y * square_size + square_size / 4
-            rect_width = square_size / 2
-            rect_height = square_size / 2
-        elif self.shape == UnitPlacement.LEFT:
-            rect_x = self.position.x * square_size
-            rect_y = self.position.y * square_size
-            rect_width = rectangle_size
-            rect_height = square_size
-        elif self.shape == UnitPlacement.RIGHT:
-            rect_x = self.position.x * square_size + square_size
-            rect_y = self.position.y * square_size
-            rect_width = rectangle_size
-            rect_height = square_size
-        elif self.shape == UnitPlacement.UP:
-            rect_x = self.position.x * square_size
-            rect_y = self.position.y * square_size
-            rect_width = square_size
-            rect_height =rectangle_size
-        elif self.shape == UnitPlacement.DOWN:
-            rect_x = self.position.x * square_size
-            rect_y = self.position.y * square_size + square_size
-            rect_width = square_size
-            rect_height = rectangle_size
-
-        # Draw the rectangle
-        pygame.draw.rect(screen, owner_color, (rect_x, rect_y, rect_width, rect_height))
+        pygame.draw.polygon(screen, owner_color, vertices)
