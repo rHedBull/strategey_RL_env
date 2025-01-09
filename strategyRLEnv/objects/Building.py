@@ -15,7 +15,10 @@ class Building(ABC):
         position: MapPosition,
         building_type: BuildingType,
         building_parameters: Dict,
+        *args,
+        **kwargs
     ):
+        super().__init__(*args, **kwargs)
         self.id = uuid1()
 
         self.position = position

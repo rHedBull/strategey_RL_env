@@ -3,15 +3,15 @@ from typing import Tuple
 import pygame
 
 from strategyRLEnv.map import MapPosition
-from strategyRLEnv.map.map_settings import BuildingType
+from strategyRLEnv.map.map_settings import BuildingType, city_health
 from strategyRLEnv.objects.Building import Building
+from strategyRLEnv.objects.Destroyable import Destroyable
 from strategyRLEnv.objects.Ownable import Ownable
 
 
-class City(Building, Ownable):
+class City(Building, Ownable, Destroyable):
     def __init__(self, agent_id: int, position: MapPosition, building_parameters: dict):
-        Ownable.__init__(self, agent_id)
-        Building.__init__(self, position, BuildingType.CITY, building_parameters)
+        super().__init__(position=position, building_type=BuildingType.CITY, building_parameters=building_parameters, agent_id=agent_id, health=city_health)
 
     def draw(
         self,

@@ -111,3 +111,7 @@ ADJACENCY_MULTIPLIERS = {
     },
     # Add other building types and their adjacency rules as needed
 }
+
+farm_mine_health = 50
+city_health = 100
+healing_base = 10

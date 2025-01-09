@@ -3,15 +3,16 @@ from typing import Dict
 import pygame
 
 from strategyRLEnv.map import MapPosition
-from strategyRLEnv.map.map_settings import BuildingType
+from strategyRLEnv.map.map_settings import BuildingType, farm_mine_health
 from strategyRLEnv.objects.Building import Building
+from strategyRLEnv.objects.Destroyable import Destroyable
 from strategyRLEnv.objects.Ownable import Ownable
 
 
-class Mine(Building, Ownable):
+class Mine(Building, Ownable, Destroyable):
     def __init__(self, agent_id: int, position: MapPosition, building_parameters: Dict):
-        Ownable.__init__(self, agent_id)
-        Building.__init__(self, position, BuildingType.MINE, building_parameters)
+        super().__init__(position=position, building_type=BuildingType.MINE, building_parameters=building_parameters,
+                         agent_id=agent_id, health=farm_mine_health)
 
     def draw(self, screen: pygame.Surface, square_size: int, colors: dict):
         """
