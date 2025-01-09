@@ -93,6 +93,8 @@ class Map:
                         square_array[i] = square.get_land_type()
                     elif name == "buildings":
                         square_array[i] = square.get_building_value()
+                    elif name == "unit_strength":
+                        square_array[i] = square.get_unit_strength()
 
                     map_info[square.position.x][square.position.y] = square_array
                     i += 1

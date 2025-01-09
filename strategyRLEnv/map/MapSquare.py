@@ -247,6 +247,11 @@ class Map_Square:
         ):
             return self.building
 
+    def get_unit_strength(self):
+        if self.unit is not None:
+            return self.unit.strength
+        return 0
+
     def has_road(self):
         if self.has_building(BuildingType.ROAD):
             return True

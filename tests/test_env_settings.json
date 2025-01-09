@@ -96,6 +96,14 @@
         {
             "name": "resources",
             "select": false
+        },
+        {
+            "name": "unit_strength",
+            "select": true,
+            "values": {
+                "min": 0,
+                "max":500
+            }
         }
     ],
     "agent_features": [
@@ -113,6 +121,14 @@
             "values":{
                 "min": 0,
                 "max": 1
+            }
+        },
+        {
+            "name": "total_unit_strength",
+            "select": true,
+            "values":{
+                "min": 0,
+                "max": 5000000
             }
         },
         {
