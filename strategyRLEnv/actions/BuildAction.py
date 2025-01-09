@@ -16,14 +16,21 @@ class BuildAction(Action, ABC):
         if not super().validate(env):
             return False
 
+        tile = env.map.get_tile(self.position)
+
         if not fit_building_to_land_type(env, self.position, self.building_type):
             return False
 
         if not env.map.is_visible(self.position, self.agent.id):
             return False
 
-        if env.map.get_tile(self.position).has_any_building():
+        if tile.has_any_building():
             return False
+
+        # check no opponent unit on the tile
+        if tile.unit is not None:
+            if tile.unit.owner.id != self.agent.id:
+                return False
 
         return True
 
