@@ -7,6 +7,8 @@ from strategyRLEnv.map.map_settings import (OWNER_DEFAULT_TILE, BuildingType,
                                             LandType)
 from strategyRLEnv.map.MapPosition import MapPosition
 from strategyRLEnv.objects.City import City
+from strategyRLEnv.objects.Unit import Unit
+from tests.env_tests.test_action_manager import MockAgent
 
 
 @pytest.fixture
@@ -14,6 +16,8 @@ def setup():
     # open settings file
     with open("test_env_settings.json", "r") as f:
         env_settings = json.load(f)
+        env_settings["agent_water_budget"] = 0.0
+        env_settings["agent_mountain_budget"] = 0.0
         env_settings["map_width"] = 100
         env_settings["map_height"] = 100
 
@@ -23,102 +27,156 @@ def setup():
     pos_y = 2
     position_1 = MapPosition(pos_x, pos_y)
     position_2 = MapPosition(pos_x + 1, pos_y)
+    build_city_action = [2, position_1.x, position_1.y]
 
-    yield env, agent_id, position_1, position_2
+    yield env, agent_id, position_1, position_2, build_city_action
     env.close()
 
 
 def test_build_simple_city(setup):
-    env, agent_id, position_1, position_2 = setup
+    env, agent_id, position_1, position_2, build_city_action = setup
 
     env.reset()
     other_agent_id = 3
 
-    agent_id = 0
-    build_city_action = [2, position_1.x, position_1.y]
     tile1 = env.map.get_tile(position_1)
     tile1.set_land_type(LandType.LAND)
+
+
+def test_build_city_invisible_tile(setup):
+    env, agent_id, position_1, position_2, build_city_action = setup
+
+    env.reset()
+    tile1 = env.map.get_tile(position_1)
+    env.map.clear_visible(position_1, agent_id)
 
     # no visibility, should not work
     observation, reward, terminated, truncated, info = env.step([[build_city_action]])
     assert tile1.has_any_building() is False
 
-    # set visible and unclaimed
-    env.map.set_visible(position_1, agent_id)
-    tile1.owner_id = other_agent_id  # claimed by another agent
 
+def test_build_city_other_claimed_tile(setup):
+    env, agent_id, position_1, position_2, build_city_action = setup
+
+    env.reset()
+    tile1 = env.map.get_tile(position_1)
+    env.map.set_visible(position_1, agent_id)
+    tile1.owner_id = 3
     # visible but claimed by other agent, should not work now
     observation, reward, terminated, truncated, info = env.step([[build_city_action]])
     assert tile1.has_any_building() is False
 
-    # set tile unclaimed,
+
+def test_build_city_visible_unclaimed(setup):
+    env, agent_id, position_1, position_2, build_city_action = setup
+
+    env.reset()
+    tile1 = env.map.get_tile(position_1)
+    env.map.set_visible(position_1, agent_id)
     tile1.owner_id = OWNER_DEFAULT_TILE
+
     observation, reward, terminated, truncated, info = env.step([[build_city_action]])
-    assert tile1.has_any_building() is True
     assert tile1.has_building(BuildingType.CITY) is True
     object = tile1.get_building()
     assert isinstance(object, City)
     assert object.position.x == position_1.x
     assert object.position.y == position_1.y
-    old_owner_id = tile1.owner_id
-    old_building_id = object.id
-    assert old_owner_id == agent_id
+    assert env.agents[agent_id].cities[1] == object
+
+
+def test_build_city_on_existing_building(setup):
+    env, agent_id, position_1, position_2, build_city_action = setup
+
+    env.reset()
+    tile1 = env.map.get_tile(position_1)
+    env.map.set_visible(position_1, agent_id)
+    tile1.owner_id = agent_id
+    city = City(agent_id, position_1, {})
+    old_id = city.id
+    tile1.add_building(city)
 
     # test build on top of existing building, should not work
     observation, reward, terminated, truncated, info = env.step([[build_city_action]])
-    assert tile1.has_any_building() is True
     assert tile1.has_building(BuildingType.CITY) is True
-    assert tile1.owner_id == old_owner_id
-    assert tile1.get_building().id == old_building_id, "City should not be replaced"
+    assert tile1.owner_id == agent_id
+    assert tile1.get_building().id == old_id, "City should not be replaced"
 
 
-def test_building_city_on_water_mountain_desert(setup):
-    env, agent_id, position_1, position_2 = setup
+def test_building_city_on_opponent_unit(setup):
+    env, agent_id, position_1, position_2, build_city_action = setup
 
-    build_city_action = [2, position_1.x, position_1.y]
+    env.reset()
+    tile1 = env.map.get_tile(position_1)
+    env.map.set_visible(position_1, agent_id)
 
-    # test all water
-    with open("test_env_settings.json", "r") as f:
-        env_settings = json.load(f)
-    env_settings["actions"]["build_road"]["cost"] = 10  # allow building road
+    agent = MockAgent(id=3)
+    unit = Unit(agent, position_1)
 
-    special_env = MapEnvironment(env_settings, 2, "rgb_array")
-    special_env.reset()
+    tile1.unit = unit
+    observation, reward, terminated, truncated, info = env.step([[build_city_action]])
+    assert tile1.has_any_building() is False
+    assert tile1.unit is unit
+
+
+def test_building_city_on_own_unit(setup):
+    env, agent_id, position_1, position_2, build_city_action = setup
+
+    env.reset()
+    tile1 = env.map.get_tile(position_1)
+    env.map.set_visible(position_1, agent_id)
+
+    agent = MockAgent(id=agent_id)
+    unit = Unit(agent, position_1)
+    tile1.unit = unit
+    observation, reward, terminated, truncated, info = env.step([[build_city_action]])
+    assert tile1.unit is unit
+    assert tile1.has_building(BuildingType.CITY) is True
+
+
+def test_building_city_on_water(setup):
+    env, agent_id, position_1, position_2, build_city_action = setup
 
     # set visible
-    special_env.map.set_visible(position_1, agent_id)
-    tile1 = special_env.map.get_tile(position_1)
+    env.map.set_visible(position_1, agent_id)
+    tile1 = env.map.get_tile(position_1)
 
     # should not work on ocean
     tile1.set_land_type(LandType.OCEAN)
-    observation, reward, terminated, truncated, info = special_env.step(
-        [[build_city_action]]
-    )
+    observation, reward, terminated, truncated, info = env.step([[build_city_action]])
     assert tile1.has_any_building() is False
 
+
+def test_building_city_on_mountain(setup):
+    env, agent_id, position_1, position_2, build_city_action = setup
+
+    # set visible
+    env.map.set_visible(position_1, agent_id)
+    tile1 = env.map.get_tile(position_1)
     # should not work on mountain
     tile1.set_land_type(LandType.MOUNTAIN)
-    observation, reward, terminated, truncated, info = special_env.step(
-        [[build_city_action]]
-    )
+    observation, reward, terminated, truncated, info = env.step([[build_city_action]])
     assert tile1.has_any_building() is False
 
-    # should work on dessert
+
+def test_building_city_on_dessert(setup):
+    env, agent_id, position_1, position_2, build_city_action = setup
+
+    # set visible
+    env.map.set_visible(position_1, agent_id)
+    tile1 = env.map.get_tile(position_1)
+
     tile1.set_land_type(LandType.DESERT)
-    observation, reward, terminated, truncated, info = special_env.step(
-        [[build_city_action]]
-    )
-    assert tile1.has_any_building() is True
+    observation, reward, terminated, truncated, info = env.step([[build_city_action]])
     assert tile1.has_building(BuildingType.CITY) is True
 
-    tile1.buildings = set()
-    tile1.building_int = 0
-    tile1.owner_id = OWNER_DEFAULT_TILE
 
-    # should work on marsh
+def test_building_city_on_marsh(setup):
+    env, agent_id, position_1, position_2, build_city_action = setup
+
+    # set visible
+    env.map.set_visible(position_1, agent_id)
+    tile1 = env.map.get_tile(position_1)
+
     tile1.set_land_type(LandType.MARSH)
-    observation, reward, terminated, truncated, info = special_env.step(
-        [[build_city_action]]
-    )
-    assert tile1.has_any_building() is True
+    observation, reward, terminated, truncated, info = env.step([[build_city_action]])
     assert tile1.has_building(BuildingType.CITY) is True
