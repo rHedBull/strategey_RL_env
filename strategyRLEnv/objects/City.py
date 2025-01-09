@@ -36,3 +36,7 @@ class City(Building, Ownable, Destroyable):
                 square_size,
             ),
         )
+
+    def destroy(self, env):
+        super().destroy(env)
+        env.agents[self.owner_id].remove_city(self)

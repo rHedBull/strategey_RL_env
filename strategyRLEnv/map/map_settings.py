@@ -115,3 +115,7 @@ ADJACENCY_MULTIPLIERS = {
 farm_mine_health = 50
 city_health = 100
 healing_base = 10
+
+max_unit_strength = 500
+
+killed_punish_value = 100000

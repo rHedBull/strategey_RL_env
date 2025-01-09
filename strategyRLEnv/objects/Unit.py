@@ -4,6 +4,7 @@ from typing import Tuple
 import pygame
 
 from strategyRLEnv.map import MapPosition
+from strategyRLEnv.map.map_settings import max_unit_strength
 from strategyRLEnv.objects.Destroyable import Destroyable
 from strategyRLEnv.objects.Ownable import Ownable
 
@@ -67,6 +68,10 @@ class Unit(Ownable):
         self.strength -= damage
         if self.strength <= 0:
             self.kill(env)
+
+    def increase_strength(self, amount):
+        new_strength = self.strength + amount
+        self.strength = min(max_unit_strength, new_strength)
 
     def kill(self, env):
         tile = env.map.get_tile(self.position)

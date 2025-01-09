@@ -7,6 +7,7 @@ from gymnasium import spaces
 
 from strategyRLEnv.ActionManager import ActionManager
 from strategyRLEnv.Agent import Agent, AgentState
+from strategyRLEnv.map.map_settings import killed_punish_value
 from strategyRLEnv.map.mapGenerator import generate_finished_map
 
 
@@ -60,6 +61,7 @@ class MapEnvironment(gym.Env):
 
         # Initialize agents
         self.agents: List[Agent] = [Agent(i, self) for i in range(self.num_agents)]
+        self.done_agents: List[int] = []
 
         # Initialize action manager
         self.action_manager = ActionManager(self)
@@ -111,6 +113,7 @@ class MapEnvironment(gym.Env):
             )
 
         info = {}
+        old_done_numb = len(self.done_agents)
 
         rewards, dones = self.action_manager.apply_actions(actions)
 
@@ -120,10 +123,16 @@ class MapEnvironment(gym.Env):
 
         truncated = [False for _ in range(self.num_agents)]  # always False for now
         dones = [False for _ in range(self.num_agents)]
+        for i in self.done_agents:
+            dones[i] = True
 
-        for i, agent in enumerate(self.agents):
-            if agent.state == AgentState.DONE:
-                dones[i] = True
+        if len(self.done_agents) > old_done_numb:
+            diff = len(self.done_agents) - old_done_numb
+
+            for i in range(diff):
+                died_id = self.done_agents[old_done_numb + i]
+                rewards[died_id] -= killed_punish_value
+
         return observations, rewards, dones, truncated, info
 
     def render(self):
@@ -297,10 +306,6 @@ class MapEnvironment(gym.Env):
             observation (Dict[str, Any]): The current observation.
         """
 
-        # all_visible_masks = []
-        # for agent in self.agents:
-        #     all_visible_masks.append(get_visible_mask(agent.id, self.map))
-
         map_observation, visibility_map = self.map.get_observation()
         agent_observations = np.zeros(
             (self.num_agents, len(self.agent_features)), dtype=np.float32
@@ -308,9 +313,6 @@ class MapEnvironment(gym.Env):
 
         for i, agent in enumerate(self.agents):
             agent_observations[i] = agent.get_observation()
-
-        # np_all_visible_masks = np.array(all_visible_masks)
-        # agent_info = np.array([])
 
         return {
             "map": map_observation,

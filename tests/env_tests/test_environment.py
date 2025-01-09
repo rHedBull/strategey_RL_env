@@ -5,6 +5,9 @@ import numpy as np
 import pytest
 
 from strategyRLEnv.environment import MapEnvironment
+from strategyRLEnv.map.MapPosition import MapPosition
+from strategyRLEnv.objects.Unit import Unit
+from tests.env_tests.test_action_manager import MockAgent
 
 
 @pytest.fixture
@@ -176,3 +179,24 @@ def test_seed(env):
     # Test seed function
     env.reset(seed=42)
     assert True, "Seeding should not raise any errors"
+
+
+def test_killed_agent(env):
+    # Test killed agent
+    env.reset()
+    position_1 = MapPosition(2, 2)
+    wait_action = [0, position_1.x, position_1.y]
+    pos = env.agents[0].cities[0].position
+    pos2 = MapPosition(pos.x, pos.y + 1)
+    tile = env.map.get_tile(pos)
+    tile2 = env.map.get_tile(pos2)
+    tile.building.health = 1
+
+    # place unit next to city, should kill city and agent
+    opp = MockAgent(1)
+    opp_unit = Unit(opp, pos2)
+    env.agents[1].add_unit(opp_unit)
+    tile2.unit = opp_unit
+
+    observation, reward, terminated, truncated, info = env.step([[wait_action]])
+    assert reward[0] < -10000, "killed agent should receive large negative reward"

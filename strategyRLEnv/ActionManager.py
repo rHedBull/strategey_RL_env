@@ -12,7 +12,7 @@ from strategyRLEnv.actions.ClaimAction import ClaimAction
 from strategyRLEnv.actions.DestroyAction import DestroyAction
 from strategyRLEnv.actions.PlaceUnitAction import PlaceUnitAction
 from strategyRLEnv.actions.WithdrawUnitAction import WithdrawUnitAction
-from strategyRLEnv.Agent import Agent
+from strategyRLEnv.Agent import Agent, AgentState
 from strategyRLEnv.map.MapPosition import MapPosition
 
 
@@ -79,6 +79,9 @@ class ActionManager:
 
         for agent, agent_actions in zip(agents, actions):
             proposed_turn_actions = []
+            if agent.state == AgentState.DONE:
+                continue
+
             for action in agent_actions:
                 if action is None:
                     continue

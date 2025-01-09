@@ -2,7 +2,6 @@ from enum import Enum
 from typing import Tuple
 
 import numpy as np
-import pygame
 
 from strategyRLEnv.actions.BuildCityAction import BuildCityAction
 from strategyRLEnv.map.map_settings import AGENT_COLORS, PLAYER_COLOR
@@ -127,6 +126,9 @@ class Agent:
         self.units = []
 
     def update(self):
+        if self.state == AgentState.DONE:
+            return
+
         round_money = 0
         for _, tile in enumerate(self._claimed_tiles):
             round_money += self.env.map.get_tile(tile).get_tile_income()
@@ -138,34 +140,21 @@ class Agent:
         self.last_money_pl = round_money
 
         if self.money < 0 or len(self._claimed_tiles) == 0 or len(self.cities) == 0:
-            self.state = AgentState.DONE
-
-        if self.state == AgentState.DONE:
             self.kill()
 
     def kill(self):
+        self.state = AgentState.DONE
         # remove all units
         print("Agent ", self.id, " is dead")
         for unit in self.units:
             unit.kill()
 
-        for tile in self._claimed_tiles:
-            tile.reset(False)
+        for pos in self._claimed_tiles:
+            self.env.map.get_tile(pos).reset(False)
+
+        self.env.done_agents.append(self.id)
 
     def draw(self, square_size, zoom_level, pan_x, pan_y):
-        # radius = square_size / 2
-        # # get a color modulo the number of colors
-        #
-        # pygame.draw.circle(
-        #     self.env.screen,
-        #     self.color,
-        #     (
-        #         (self.position.x * square_size) + radius,
-        #         (self.position.y * square_size) + radius,
-        #     ),
-        #     radius,
-        # )
-
         # draw the units
         for unit in self.units:
             unit.draw(self.env.screen, square_size, self.color)
@@ -187,6 +176,8 @@ class Agent:
                 )
             elif name == "last_money_pl":
                 agent_observation[i] = self.last_money_pl
+            elif name == "total_unit_strength":
+                agent_observation[i] = sum([unit.strength for unit in self.units])
             i += 1
 
         return agent_observation
@@ -227,3 +218,10 @@ class Agent:
 
     def add_city(self, city):
         self.cities.append(city)
+
+    def remove_city(self, city):
+        if city in self.cities:
+            self.cities.remove(city)
+
+        if len(self.cities) == 0:
+            self.kill()
