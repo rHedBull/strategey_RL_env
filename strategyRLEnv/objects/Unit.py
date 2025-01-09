@@ -1,19 +1,11 @@
 import random
-from enum import Enum, auto
 from typing import Tuple
 
 import pygame
 
 from strategyRLEnv.map import MapPosition
+from strategyRLEnv.objects.Destroyable import Destroyable
 from strategyRLEnv.objects.Ownable import Ownable
-
-
-class UnitPlacement(Enum):
-    UP = auto()
-    DOWN = auto()
-    LEFT = auto()
-    RIGHT = auto()
-    BASE = auto()
 
 
 class Unit(Ownable):
@@ -21,14 +13,13 @@ class Unit(Ownable):
         Ownable.__init__(self, agent.id)
         self.position = position
         self.strength = 50  # minimum start strength
-        self.shape = UnitPlacement.BASE
         self.owner = agent
-        # list with up, down, left, right to keep track of opponent units
-        self.opponent_units = []  # list of neighbouring opponents
+        self.opponent_targets = []  # list of neighbouring opponents
 
     def update(self, env):
         # check for other units around and adapt placement
 
+        self.opponent_targets = []
         surounding_tiles = env.map.get_surrounding_tiles(
             self.position, 1, diagonal=True
         )
@@ -37,45 +28,46 @@ class Unit(Ownable):
             if tile.unit is not None:
                 unit = tile.unit
                 if unit.owner.id != self.owner.id:
-                    self.opponent_units.append(unit)
-                    # check if the unit is above or below
-                    if unit.position.y < self.position.y:
-                        self.shape = UnitPlacement.UP
-                    if unit.position.y > self.position.y:
-                        self.shape = UnitPlacement.DOWN
-                    if unit.position.x < self.position.x:
-                        self.shape = UnitPlacement.LEFT
-                    if unit.position.x > self.position.x:
-                        self.shape = UnitPlacement.RIGHT
+                    self.opponent_targets.append(unit)
+            elif tile.building is not None:
+                if isinstance(tile.building, Destroyable):
+                    if tile.building.owner_id != self.owner.id:
+                        self.opponent_targets.append(tile.building)
 
-        if len(self.opponent_units) > 1 or len(self.opponent_units) == 0:
-            self.shape = UnitPlacement.BASE
-
+    def step(self, env):
+        self.update(env)
         self.attack_random(env)
 
     def attack_random(self, env):
-        if len(self.opponent_units) < 1:
+        if len(self.opponent_targets) < 1:
             return False
-        attacked_opponent = random.choice(self.opponent_units)
+        attacked_target = random.choice(self.opponent_targets)
 
         # calculate the damage
         dmg_multiplier_self = 0.3
         dmg_multiplier_opponent = 0.7
         minimum_damage = 5
 
-        # normal attack
-        diff = self.strength - attacked_opponent.strength
-        damage_self = max(minimum_damage, int(dmg_multiplier_self * diff))
-        damage_opponent = max(minimum_damage, int(dmg_multiplier_opponent * diff))
-        self.strength -= damage_self
-        attacked_opponent.strength -= damage_opponent
+        if isinstance(attacked_target, Unit):
 
+            # normal attack
+            diff = self.strength - attacked_target.strength
+            damage_self = max(minimum_damage, int(dmg_multiplier_self * diff))
+            damage_opponent = max(minimum_damage, int(dmg_multiplier_opponent * diff))
+            self.reduce_strength(env, damage_self)
+            attacked_target.reduce_strength(env, damage_opponent)
+
+            return True
+
+        if isinstance(attacked_target, Destroyable): # means this is a building
+            # attack building
+            building_damage = 20 # fix for now
+            attacked_target.reduce_health(env, building_damage)
+
+    def reduce_strength(self, env, damage):
+        self.strength -= damage
         if self.strength <= 0:
             self.kill(env)
-
-        if attacked_opponent.strength <= 0:
-            attacked_opponent.kill(env)
-        return True
 
     def kill(self, env):
         tile = env.map.get_tile(self.position)

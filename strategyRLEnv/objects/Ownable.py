@@ -5,7 +5,7 @@ class Ownable:
 
     def __init__(self, agent_id: int, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.owner = agent_id  # ID of the owning agent
+        self.owner_id = agent_id  # ID of the owning agent
 
     def set_owner(self, agent_id: int):
         """

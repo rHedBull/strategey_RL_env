@@ -126,7 +126,7 @@ class Agent:
             round_money += self.env.map.get_tile(tile).get_tile_income()
 
         for unit in self.units:
-            unit.update(self.env)
+            unit.step(self.env)
 
         self.money += round_money
         self.last_money_pl = round_money
