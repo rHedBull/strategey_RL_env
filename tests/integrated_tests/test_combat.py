@@ -2,10 +2,10 @@ import json
 
 import pytest
 
-from strategyRLEnv.Agent import Agent
 from strategyRLEnv.environment import MapEnvironment
 from strategyRLEnv.map.map_settings import LandType
 from strategyRLEnv.map.MapPosition import MapPosition
+from strategyRLEnv.objects.City import City
 from strategyRLEnv.objects.Unit import Unit
 
 
@@ -20,17 +20,18 @@ def setup():
         env_settings["mountain_budget_per_agent"] = 0.0
         env_settings["water_budget_per_agent"] = 0.0
 
-    agent_id = 0
     pos_x = 2
     pos_y = 2
     position_1 = MapPosition(pos_x, pos_y)
     position_2 = MapPosition(pos_x + 1, pos_y)
 
     env = MapEnvironment(env_settings, 2, "rgb_array", seed=100)
-    agent = Agent(agent_id, env)
-    opp = Agent(1, env)
+    agent = env.agents[0]
+    opp = env.agents[1]
     unit = Unit(agent, position_1)
     opponent = Unit(opp, position_2)
+    agent.add_unit(unit)
+    opp.add_unit(opponent)
     yield env, unit, opponent, position_1, position_2
     env.close()
 
@@ -139,10 +140,26 @@ def test_unit_kills_other_unit(setup):
     env.map.get_tile(position_1).unit = unit
     env.map.get_tile(position_2).unit = opponent
 
-    unit.update(env)
+    unit.step(env)
 
     # Attack again
-    unit.update(env)
+    unit.step(env)
 
     assert opponent.strength <= 0, "Opponent should be killed on second hit."
     assert env.map.get_tile(position_2).unit is None, "Tile no longer has the opponent."
+
+
+def test_attack_on_city(setup):
+    env, unit, opponent, position_1, position_2 = setup
+
+    city = City(opponent.owner_id, position_2, {})
+    city.health = 10
+    tile2 = env.map.get_tile(position_2)
+    tile2.add_building(city)
+
+    wait_action = [0, position_2.x, position_2.y]
+
+    # Step once, unit should destroy the city
+    observation, reward, terminated, truncated, info = env.step([[wait_action]])
+
+    assert tile2.has_any_building() is False
