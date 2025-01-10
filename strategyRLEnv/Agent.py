@@ -129,6 +129,7 @@ class Agent:
         if self.state == AgentState.DONE:
             return
 
+        init_money = self.money
         round_money = 0
         for _, tile in enumerate(self._claimed_tiles):
             round_money += self.env.map.get_tile(tile).get_tile_income()
@@ -136,23 +137,30 @@ class Agent:
         for unit in self.units:
             unit.step(self.env)
 
-        self.money += round_money
-        self.last_money_pl = round_money
-
-        if self.money < 0 or len(self._claimed_tiles) == 0 or len(self.cities) == 0:
-            self.kill()
+        self.add_money(round_money)
+        self.last_money_pl = self.money - init_money
 
     def kill(self):
         self.state = AgentState.DONE
         # remove all units
         print("Agent ", self.id, " is dead")
-        for unit in self.units:
-            unit.kill()
+        unit_copy = self.units.copy()
+        for unit in unit_copy:
+            unit.kill(self.env)
 
         for pos in self._claimed_tiles:
             self.env.map.get_tile(pos).reset(False)
+        self._claimed_tiles.clear()
 
         self.env.done_agents.append(self.id)
+
+    def add_money(self, amount):
+        self.money += amount
+
+    def reduce_money(self, amount):
+        self.money -= amount
+        if self.money < 0:
+            self.kill()
 
     def draw(self, square_size, zoom_level, pan_x, pan_y):
         # draw the units
@@ -171,8 +179,10 @@ class Agent:
             if name == "agent_money":
                 agent_observation[i] = self.money
             elif name == "agent_map_ownership":
-                agent_observation[i] = len(self._claimed_tiles) / (
-                    self.env.map.width * self.env.map.height
+                agent_observation[i] = round(
+                    len(self._claimed_tiles)
+                    / (self.env.map.width * self.env.map.height),
+                    4,
                 )
             elif name == "last_money_pl":
                 agent_observation[i] = self.last_money_pl
@@ -215,6 +225,13 @@ class Agent:
 
     def get_claimed_tiles(self):
         return self._claimed_tiles
+
+    def remove_claimed_tile(self, position: MapPosition):
+        if position in self._claimed_tiles:
+            self._claimed_tiles.remove(position)
+
+        if len(self._claimed_tiles) == 0:
+            self.kill()
 
     def add_city(self, city):
         self.cities.append(city)
