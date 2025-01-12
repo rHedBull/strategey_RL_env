@@ -6,9 +6,10 @@ import pygame
 from gymnasium import spaces
 
 from strategyRLEnv.ActionManager import ActionManager
-from strategyRLEnv.Agent import Agent, AgentState
+from strategyRLEnv.Agent import Agent
 from strategyRLEnv.map.map_settings import killed_punish_value
 from strategyRLEnv.map.mapGenerator import generate_finished_map
+from strategyRLEnv.map.MapPosition import MapPosition
 
 
 def capture_game_state_as_image():
@@ -70,9 +71,6 @@ class MapEnvironment(gym.Env):
         # Define action and observation spaces
         self.observation_space = self._define_observation_space()
         self.action_space = self._define_action_space()
-
-        for agent in self.agents:
-            agent.reset()
 
     def reset(self, seed=None, map_file=None):
         """

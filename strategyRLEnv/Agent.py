@@ -84,8 +84,6 @@ class Agent:
 
         self.units = []
 
-        self.reset()
-
     def reset(self):
         """
         Resets the agent to the initial state as defined in the environment settings.

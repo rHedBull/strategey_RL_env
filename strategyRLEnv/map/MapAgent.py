@@ -24,7 +24,7 @@ class Map_Agent:
             (-1, 0),
             (-1, 1),
         ]
-        selected_step = possible_steps[walk[0]]
+        selected_step = possible_steps[int(walk)]
         step_x = selected_step[0]
         step_y = selected_step[1]
         self.x += step_x
