@@ -25,6 +25,7 @@ def env():
         env_settings = json.load(f)
 
     env = MapEnvironment(env_settings, 2, "rgb_array")
+    env.reset()
     yield env
     env.close()
 

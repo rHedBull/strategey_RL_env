@@ -22,6 +22,7 @@ def setup():
         env_settings["map_height"] = 100
 
     env = MapEnvironment(env_settings, 2, "rgb_array")
+    env.reset()
     agent_id = 0
     pos_x = 2
     pos_y = 2

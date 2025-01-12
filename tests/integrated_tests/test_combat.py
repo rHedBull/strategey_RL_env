@@ -26,6 +26,7 @@ def setup():
     position_2 = MapPosition(pos_x + 1, pos_y)
 
     env = MapEnvironment(env_settings, 2, "rgb_array", seed=100)
+    env.reset()
     agent = env.agents[0]
     opp = env.agents[1]
     unit = Unit(agent, position_1)
@@ -49,7 +50,6 @@ def test_one_unit_one_opponent_same_strength(setup):
     Place a unit on a visible, empty LAND tile. Should succeed.
     """
     env, unit, opponent, position_1, position_2 = setup
-    env.reset()
 
     # place unit and opponent next to each other
     env.map.set_visible(position_1, agent_id=unit.owner.id)
@@ -84,7 +84,6 @@ def test_one_unit_one_opponent_not_same_strength(setup):
     Place a unit on a visible, empty LAND tile. Should succeed.
     """
     env, unit, opponent, position_1, position_2 = setup
-    env.reset()
 
     # place unit and opponent next to each other
     env.map.set_visible(position_1, agent_id=unit.owner.id)
@@ -133,7 +132,6 @@ def test_unit_kills_other_unit(setup):
     """
     env, unit, opponent, position_1, position_2 = setup
 
-    env.reset()
     unit.strength = 90
     opponent.strength = 30
 

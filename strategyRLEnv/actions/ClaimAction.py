@@ -28,7 +28,6 @@ class ClaimAction(Action):
             if tile.unit.owner.id != self.agent.id:
                 return False
 
-
         # surrounding tiles
         adjacent_claimed, _ = env.map.tile_is_next_to_own_tile(
             self.position, self.agent.id, 1

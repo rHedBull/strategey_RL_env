@@ -134,7 +134,9 @@ def generate_map_topologies(numb, map_settings, seed=None, path=None):
     print(f"{numb} maps generated and saved to {path}")
 
 
-def let_map_agent_run(map_arrays, land_type_percentage, tiles, LAND_TYPE_VALUE, position):
+def let_map_agent_run(
+    map_arrays, land_type_percentage, tiles, LAND_TYPE_VALUE, position
+):
     if land_type_percentage < 0:
         return
 
@@ -159,8 +161,6 @@ def let_map_agent_run(map_arrays, land_type_percentage, tiles, LAND_TYPE_VALUE, 
                     tile_budget_per_agent,
                 )
             )
-
-
 
         while agents:
             left_agents = len(agents)
@@ -198,17 +198,29 @@ def create_topologies(
 
     # mountain agents
     topology_arrays = let_map_agent_run(
-        topology_arrays, mountain_percentage, total_tiles, LandType.MOUNTAIN, MapPosition(random_values[0], random_values[1])
+        topology_arrays,
+        mountain_percentage,
+        total_tiles,
+        LandType.MOUNTAIN,
+        MapPosition(random_values[0], random_values[1]),
     )
 
     # dessert agents
     topology_arrays = let_map_agent_run(
-        topology_arrays, dessert_percentage, total_tiles, LandType.DESERT, MapPosition(random_values[2], random_values[3])
+        topology_arrays,
+        dessert_percentage,
+        total_tiles,
+        LandType.DESERT,
+        MapPosition(random_values[2], random_values[3]),
     )
 
     # water agents
     topology_arrays = let_map_agent_run(
-        topology_arrays, water_percentage, total_tiles, LandType.OCEAN, MapPosition(random_values[4], random_values[5])
+        topology_arrays,
+        water_percentage,
+        total_tiles,
+        LandType.OCEAN,
+        MapPosition(random_values[4], random_values[5]),
     )
 
     # expand topology arrays unsqueeze

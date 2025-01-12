@@ -21,6 +21,7 @@ def setup():
         env_settings["map_height"] = 10
     env_settings["actions"]["build_road"]["cost"] = 10  # allow building road
     env = MapEnvironment(env_settings, 2, "rgb_array")
+    env.reset()
 
     agent_id = 0
     pos_x = 2
@@ -42,7 +43,6 @@ def test_build_road_not_visible(setup):
     env, _, agent_id, position_1, _ = setup
     build_road_action = [3, position_1.x, position_1.y]
 
-    env.reset()
     tile1 = env.map.get_tile(position_1)
     tile1.set_land_type(LandType.LAND)
     env.map.clear_visible(position_1, agent_id)
@@ -58,7 +58,6 @@ def test_build_bridge_not_visible(setup):
     env, _, agent_id, position_1, _ = setup
     build_bridge_action = [4, position_1.x, position_1.y]
 
-    env.reset()
     tile1 = env.map.get_tile(position_1)
     tile1.set_land_type(LandType.OCEAN)
 
@@ -73,7 +72,6 @@ def test_build_road_claimed_by_other(setup):
     env, _, agent_id, position_1, _ = setup
     build_road_action = [3, position_1.x, position_1.y]
 
-    env.reset()
     tile1 = env.map.get_tile(position_1)
     tile1.set_land_type(LandType.LAND)
     env.map.set_visible(position_1, agent_id)
@@ -90,7 +88,6 @@ def test_build_bridge_claimed_by_other(setup):
     env, _, agent_id, position_1, _ = setup
     build_bridge_action = [4, position_1.x, position_1.y]
 
-    env.reset()
     tile1 = env.map.get_tile(position_1)
     tile1.set_land_type(LandType.LAND)
     env.map.set_visible(position_1, agent_id)
@@ -107,7 +104,6 @@ def test_build_road_claimed_by_self(setup):
     env, _, agent_id, position_1, _ = setup
     build_road_action = [3, position_1.x, position_1.y]
 
-    env.reset()
     tile1 = env.map.get_tile(position_1)
     tile1.set_land_type(LandType.LAND)
     env.map.set_visible(position_1, agent_id)
@@ -124,7 +120,6 @@ def test_build_bridge_claimed_by_self(setup):
     env, _, agent_id, position_1, _ = setup
     build_bridge_action = [4, position_1.x, position_1.y]
 
-    env.reset()
     tile1 = env.map.get_tile(position_1)
     tile1.set_land_type(LandType.LAND)
     env.map.set_visible(position_1, agent_id)
@@ -141,7 +136,6 @@ def test_build_road_unclaimed_no_adjacent(setup):
     env, _, agent_id, position_1, _ = setup
     build_road_action = [3, position_1.x, position_1.y]
 
-    env.reset()
     tile1 = env.map.get_tile(position_1)
     tile1.set_land_type(LandType.LAND)
     env.map.set_visible(position_1, agent_id)
@@ -158,7 +152,6 @@ def test_build_bridge_unclaimed_no_adjacent(setup):
     env, _, agent_id, position_1, _ = setup
     build_bridge_action = [4, position_1.x, position_1.y]
 
-    env.reset()
     tile1 = env.map.get_tile(position_1)
     tile1.set_land_type(LandType.LAND)
     env.map.set_visible(position_1, agent_id)
@@ -175,7 +168,6 @@ def test_build_road_next_to_hostile_city(setup):
     env, city, agent_id, position_1, position_2 = setup
     build_road_action = [3, position_1.x, position_1.y]
 
-    env.reset()
     tile1 = env.map.get_tile(position_1)
     tile1.set_land_type(LandType.LAND)
     env.map.set_visible(position_1, agent_id)
@@ -195,7 +187,6 @@ def test_build_bridge_next_to_hostile_city(setup):
     env, city, agent_id, position_1, position_2 = setup
     build_bridge_action = [4, position_1.x, position_1.y]
 
-    env.reset()
     tile1 = env.map.get_tile(position_1)
     tile1.set_land_type(LandType.OCEAN)
     env.map.set_visible(position_1, agent_id)
@@ -215,7 +206,6 @@ def test_build_road_next_to_friendly_city(setup):
     env, city, agent_id, position_1, position_2 = setup
     build_road_action = [3, position_1.x, position_1.y]
 
-    env.reset()
     tile1 = env.map.get_tile(position_1)
     tile1.set_land_type(LandType.LAND)
     env.map.set_visible(position_1, agent_id)
@@ -237,7 +227,6 @@ def test_build_bridge_next_to_friendly_city(setup):
     env, city, agent_id, position_1, position_2 = setup
     build_bridge_action = [4, position_1.x, position_1.y]
 
-    env.reset()
     tile1 = env.map.get_tile(position_1)
     tile1.set_land_type(LandType.OCEAN)
     env.map.set_visible(position_1, agent_id)
@@ -259,7 +248,6 @@ def test_build_road_next_to_road(setup):
     env, _, agent_id, position_1, position_2 = setup
     build_road_action = [3, position_1.x, position_1.y]
 
-    env.reset()
     tile1 = env.map.get_tile(position_1)
     tile1.set_land_type(LandType.LAND)
     env.map.set_visible(position_1, agent_id)
@@ -279,7 +267,6 @@ def test_build_bridge_next_to_bridge(setup):
     env, _, agent_id, position_1, position_2 = setup
     build_bridge_action = [4, position_1.x, position_1.y]
 
-    env.reset()
     tile1 = env.map.get_tile(position_1)
     tile1.set_land_type(LandType.OCEAN)
     env.map.set_visible(position_1, agent_id)
@@ -299,7 +286,6 @@ def test_build_road_next_to_bridge(setup):
     env, _, agent_id, position_1, position_2 = setup
     build_road_action = [3, position_1.x, position_1.y]
 
-    env.reset()
     tile1 = env.map.get_tile(position_1)
     tile1.set_land_type(LandType.LAND)
     env.map.set_visible(position_1, agent_id)
@@ -319,7 +305,6 @@ def test_build_bridge_next_to_road(setup):
     env, _, agent_id, position_1, position_2 = setup
     build_bridge_action = [4, position_1.x, position_1.y]
 
-    env.reset()
     tile1 = env.map.get_tile(position_1)
     tile1.set_land_type(LandType.OCEAN)
     env.map.set_visible(position_1, agent_id)

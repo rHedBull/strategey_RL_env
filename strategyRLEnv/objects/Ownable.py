@@ -13,7 +13,7 @@ class Ownable:
         """
         self.owner = agent
 
-    def get_owner(self) :
+    def get_owner(self):
         """
         Get the ID of the owning agent.
         """

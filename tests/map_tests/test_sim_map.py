@@ -15,7 +15,6 @@ from strategyRLEnv.objects.City import City
 from strategyRLEnv.objects.Mine import Mine
 
 
-
 @pytest.fixture
 def map_instance():
     """Fixture to create and return a Map instance."""

@@ -28,7 +28,7 @@ def setup():
         env_settings["map_height"] = 10
 
     env = MapEnvironment(env_settings, 2, "rgb_array")
-
+    env.reset()
     yield env, city, agent_id, position_1, position_2
     env.close()
 
@@ -87,8 +87,7 @@ def test_calculate_new_position():
 
 def test_agent_initialization(setup):
     env, city, agent_id, position_1, position_2 = setup
-    env.reset()
-    agent = Agent(agent_id, env)
+    agent = env.agents[agent_id]
 
     assert agent.id == agent_id
     assert agent.state == AgentState.ACTIVE
@@ -101,8 +100,7 @@ def test_agent_initialization(setup):
 
 def test_agent_update(setup):
     env, city, agent_id, position_1, position_2 = setup
-    env.reset()
-    agent = Agent(agent_id, env)
+    agent = env.agents[agent_id]
 
     initial_money = env.env_settings["agent_initial_budget"]
     assert agent.money == initial_money
@@ -123,8 +121,7 @@ def test_agent_update(setup):
 
 def test_agent_kill(setup):
     env, city, agent_id, position_1, position_2 = setup
-    env.reset()
-    agent = Agent(agent_id, env)
+    agent = env.agents[agent_id]
 
     unit1 = Unit(agent, position_1)
     unit2 = Unit(agent, position_2)
@@ -145,8 +142,7 @@ def test_agent_kill(setup):
 
 def test_agent_get_observation(setup):
     env, city, agent_id, position_1, position_2 = setup
-    env.reset()
-    agent = Agent(agent_id, env)
+    agent = env.agents[agent_id]
 
     agent.money = 600
     agent.last_money_pl = 100
@@ -161,8 +157,7 @@ def test_agent_get_observation(setup):
 
 def test_agent_update_local_visibility(setup):
     env, city, agent_id, position_1, position_2 = setup
-    env.reset()
-    agent = Agent(agent_id, env)
+    agent = env.agents[agent_id]
     agent.visibility_range = 1
 
     agent.update_local_visibility(position_1)
@@ -174,8 +169,7 @@ def test_agent_update_local_visibility(setup):
 
 def test_agent_add_remove_unit(setup):
     env, city, agent_id, position_1, position_2 = setup
-    env.reset()
-    agent = Agent(agent_id, env)
+    agent = env.agents[agent_id]
 
     mock_unit1 = MagicMock()
     mock_unit1.owner.id = agent_id
@@ -205,8 +199,7 @@ def test_agent_add_remove_unit(setup):
 
 def test_agent_claimed_tiles(setup):
     env, city, agent_id, position_1, position_2 = setup
-    env.reset()
-    agent = Agent(agent_id, env)
+    agent = env.agents[agent_id]
 
     # Initially, only the starting position is claimed
     assert len(agent.get_claimed_tiles()) == 1
@@ -218,8 +211,7 @@ def test_agent_claimed_tiles(setup):
 
 def test_agent_add_remove_city(setup):
     env, city, agent_id, position_1, position_2 = setup
-    env.reset()
-    agent = Agent(agent_id, env)
+    agent = env.agents[agent_id]
 
     assert len(agent.cities) == 1
     founding_city = agent.cities[0]
