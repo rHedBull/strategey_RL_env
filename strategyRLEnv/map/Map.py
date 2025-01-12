@@ -30,7 +30,7 @@ class Map:
         visibility_map: A 2D numpy array to store the visibility of each tile.
     """
 
-    def __init__(self):
+    def __init__(self, topology_array):
         self.id = uuid.uuid4()
         self.env = None
 
@@ -47,6 +47,10 @@ class Map:
         self.tile_size = 1
 
         # ownership map
+        # reorder dimensions of numpy array to [feature, x, y]
+        topology_array = np.moveaxis(topology_array, 2, 0)
+        self.landtype_map = topology_array[0]
+        self.resources_map = topology_array[1]
         self.ownership_map = None
 
     def reset(self):
@@ -89,19 +93,17 @@ class Map:
             (len(features), self.width, self.height), dtype=np.float32
         )
 
-        map_features[0] = self.ownership_map
+        map_features[0] = self.landtype_map
+        map_features[1] = self.resources_map
+        map_features[2] = self.ownership_map
 
-        for i in range(1, len(features)):
+        for i in range(2, len(features)):
             feature_name = features[i]["name"]
             for x in range(self.width):
                 for y in range(self.height):
                     square = self.squares[x][y]
-                    if feature_name == "tile_ownership":
-                        value = square.get_land_type().value
-                    elif feature_name == "land_money_value":
+                    if feature_name == "land_money_value":
                         value = square.get_tile_income()
-                    elif feature_name == "resources":
-                        value = square.get_land_type()
                     elif feature_name == "buildings":
                         value = square.get_building_value()
                     elif feature_name == "unit_strength":

@@ -16,7 +16,7 @@ from strategyRLEnv.map.MapSquare import Map_Square
 def topology_to_map(topology_array):
     # Convert the topology array to a map
 
-    created_map = Map()
+    created_map = Map(topology_array)
     created_map.width = len(topology_array[0])
     created_map.height = len(topology_array)
     created_map.tiles = created_map.height * created_map.width
