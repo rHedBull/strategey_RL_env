@@ -134,43 +134,46 @@ def generate_map_topologies(numb, map_settings, seed=None, path=None):
     print(f"{numb} maps generated and saved to {path}")
 
 
-def let_map_agent_run(map_arrays, land_type_percentage, tiles, LAND_TYPE_VALUE):
+def let_map_agent_run(map_arrays, land_type_percentage, tiles, LAND_TYPE_VALUE, position):
     if land_type_percentage < 0:
         return
 
-    map_copy = map_arrays.copy()
+    map_copy = [m.copy() for m in map_arrays]
+
     total_tile_budget = tiles * land_type_percentage
     numb_agents_per_map = int(min(10, (tiles * 0.01) + 1))
     tile_budget_per_agent = int((total_tile_budget / numb_agents_per_map))
     map_count = len(map_arrays)
 
-    if (numb_agents_per_map * tile_budget_per_agent) > 0:
-        for m in range(map_count):
-            agents = [
+    if (numb_agents_per_map * tile_budget_per_agent) <= 0:
+        return map_copy
+
+    for m in range(map_count):
+        agents = []
+        for i in range(numb_agents_per_map):
+            agents.append(
                 Map_Agent(
-                    random.randint(0, int(math.sqrt(tiles) - 1)),
-                    random.randint(0, int(math.sqrt(tiles) - 1)),
+                    position.x,
+                    position.y,
                     m,
                     tile_budget_per_agent,
                 )
-                for i in range(numb_agents_per_map)
-            ]
+            )
 
-        running = True
-        # make random walk decision for all agents at once
 
-        while running:
+
+        while agents:
             left_agents = len(agents)
-            walks = np.random.randint(0, 8, size=(left_agents, 1))
-            agents_copy = agents.copy()
-            for i in range(len(agents_copy)):
-                agent = agents_copy[i]
-                walk = walks[i]
+            # Generate random walks on GPU
+            walks = np.random.randint(0, 8, size=left_agents)
+
+            # We iterate over a snapshot copy of agents
+            # so we can safely remove them from the original list
+            for i, agent in enumerate(list(agents)):
+                walk = walks[i].item()  # single integer
                 agent.step(map_copy, tiles, walk, LAND_TYPE_VALUE)
-                if agent.tile_budget == 0:
+                if agent.tile_budget <= 0:
                     agents.remove(agent)
-                if len(agents) == 0:
-                    running = False
 
     return map_copy
 
@@ -190,19 +193,22 @@ def create_topologies(
     resource_arr = [np.zeros((width, height, 1), dtype=np.int64) for _ in range(num)]
     total_tiles = width * height
 
+    # use numpy to generate 6 random ints between 0 and 100
+    random_values = np.random.randint(0, width, 6)
+
     # mountain agents
     topology_arrays = let_map_agent_run(
-        topology_arrays, mountain_percentage, total_tiles, LandType.MOUNTAIN
+        topology_arrays, mountain_percentage, total_tiles, LandType.MOUNTAIN, MapPosition(random_values[0], random_values[1])
     )
 
     # dessert agents
     topology_arrays = let_map_agent_run(
-        topology_arrays, dessert_percentage, total_tiles, LandType.DESERT
+        topology_arrays, dessert_percentage, total_tiles, LandType.DESERT, MapPosition(random_values[2], random_values[3])
     )
 
     # water agents
     topology_arrays = let_map_agent_run(
-        topology_arrays, water_percentage, total_tiles, LandType.OCEAN
+        topology_arrays, water_percentage, total_tiles, LandType.OCEAN, MapPosition(random_values[4], random_values[5])
     )
 
     # expand topology arrays unsqueeze
