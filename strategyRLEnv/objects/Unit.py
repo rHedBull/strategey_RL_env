@@ -11,10 +11,9 @@ from strategyRLEnv.objects.Ownable import Ownable
 
 class Unit(Ownable):
     def __init__(self, agent, position: MapPosition):
-        Ownable.__init__(self, agent.id)
+        Ownable.__init__(self, agent)
         self.position = position
         self.strength = 50  # minimum start strength
-        self.owner = agent
         self.opponent_targets = []  # list of neighbouring opponents
 
     def update(self, env):
@@ -31,8 +30,8 @@ class Unit(Ownable):
                 if unit.owner.id != self.owner.id:
                     self.opponent_targets.append(unit)
             elif tile.building is not None:
-                if isinstance(tile.building, Destroyable):
-                    if tile.building.owner_id != self.owner.id:
+                if isinstance(tile.building, Ownable):
+                    if tile.building.owner.id != self.owner.id:
                         self.opponent_targets.append(tile.building)
 
     def step(self, env):

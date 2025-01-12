@@ -25,7 +25,7 @@ class BuildFarmAction(BuildAction):
         return False
 
     def perform_build(self, env):
-        farm = Farm(self.agent.id, self.position, self.get_building_parameters(env))
+        farm = Farm(self.agent, self.position, self.get_building_parameters(env))
         env.map.add_building(farm, self.position)
 
         tile = env.map.get_tile(self.position)

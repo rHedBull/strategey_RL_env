@@ -152,7 +152,7 @@ def test_unit_kills_other_unit(setup):
 def test_attack_on_city(setup):
     env, unit, opponent, position_1, position_2 = setup
 
-    city = City(opponent.owner_id, position_2, {})
+    city = City(opponent.owner, position_2, {})
     city.health = 10
     tile2 = env.map.get_tile(position_2)
     tile2.add_building(city)

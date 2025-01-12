@@ -3,17 +3,17 @@ class Ownable:
     Mixin class to add ownership capabilities to buildings.
     """
 
-    def __init__(self, agent_id: int, *args, **kwargs):
+    def __init__(self, agent, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.owner_id = agent_id  # ID of the owning agent
+        self.owner = agent  # ID of the owning agent
 
-    def set_owner(self, agent_id: int):
+    def set_owner(self, agent):
         """
         Assign ownership to an agent.
         """
-        self.owner = agent_id
+        self.owner = agent
 
-    def get_owner(self) -> int:
+    def get_owner(self) :
         """
         Get the ID of the owning agent.
         """

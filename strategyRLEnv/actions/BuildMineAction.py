@@ -25,7 +25,7 @@ class BuildMineAction(BuildAction):
         return False
 
     def perform_build(self, env):
-        mine = Mine(self.agent.id, self.position, self.get_building_parameters(env))
+        mine = Mine(self.agent, self.position, self.get_building_parameters(env))
         env.map.add_building(mine, self.position)
 
         tile = env.map.get_tile(self.position)

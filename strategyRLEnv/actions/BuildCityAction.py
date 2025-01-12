@@ -36,7 +36,7 @@ class BuildCityAction(BuildAction):
 
     def perform_build(self, env):
         params = self.get_building_parameters(env)
-        city = City(self.agent.id, self.position, params)
+        city = City(self.agent, self.position, params)
         env.map.add_building(city, self.position)
 
         env.map.claim_tile(self.agent, self.position)
