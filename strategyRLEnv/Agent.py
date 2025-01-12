@@ -150,6 +150,7 @@ class Agent:
 
         for pos in self._claimed_tiles:
             self.env.map.get_tile(pos).reset(False)
+            self.env.map.unclaim_tile(pos)
         self._claimed_tiles.clear()
 
         self.env.done_agents.append(self.id)

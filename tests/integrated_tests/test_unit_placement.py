@@ -126,13 +126,15 @@ def test_place_unit_on_enemy_claimed_tile_2support(setup):
     tile1 = env.map.get_tile(position_1)
     tile1.set_land_type(LandType.LAND)
     tile1.owner_id = opponent.owner.id  # Owned by agent 1
+    env.map.ownership_map[position_1.x, position_1.y] = opponent.owner.id
 
     # place 2 friendly unit around position_1
     tile2 = env.map.get_tile(position_2)
     tile2.unit = unit
     tile3 = env.map.get_tile(MapPosition(position_1.x + 1, position_1.y + 1))
     tile3.unit = unit
-
+    env.map.ownership_map[position_2.x, position_2.y] = unit.owner.id
+    env.map.ownership_map[position_1.x + 1, position_1.y + 1] = unit.owner.id
     env.map.set_visible(position_1, agent_id=unit.owner.id)
 
     place_unit_action = [8, position_1.x, position_1.y]
@@ -145,6 +147,9 @@ def test_place_unit_on_enemy_claimed_tile_2support(setup):
     ), "Unit should be placed on not-fully-surrounded enemy tile."
     assert tile1.unit.owner.id == unit.owner.id, "Now tile1 should have agent 0's unit."
     assert tile1.owner_id == unit.owner.id, "Tile should now belong to agent 0."
+    assert (
+        env.map.ownership_map[position_1.x, position_1.y] == unit.owner.id
+    ), "Ownership map should reflect the change."
 
 
 def test_place_unit_on_enemy_claimed_tile_1support(setup):

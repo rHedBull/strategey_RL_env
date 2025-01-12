@@ -3,7 +3,8 @@ import uuid
 import numpy as np
 
 from strategyRLEnv.Agent import Agent
-from strategyRLEnv.map.map_settings import BuildingType, max_agent_id
+from strategyRLEnv.map.map_settings import (OWNER_DEFAULT_TILE, BuildingType,
+                                            max_agent_id)
 from strategyRLEnv.map.MapPosition import MapPosition
 from strategyRLEnv.map.MapSquare import Map_Square
 
@@ -45,6 +46,9 @@ class Map:
         self.visibility_map = None
         self.tile_size = 1
 
+        # ownership map
+        self.ownership_map = None
+
     def reset(self):
         """
         Reset the map to its initial state. Keeps topology, but resets ownership, buildings, visibility.
@@ -52,7 +56,11 @@ class Map:
         for row in self.squares:
             for square in row:
                 square.reset()
+
         self.visibility_map = np.zeros((self.width, self.height), dtype=np.int64)
+        self.ownership_map = np.full(
+            (self.width, self.height), OWNER_DEFAULT_TILE, dtype=np.int64
+        )
 
     def trigger_surrounding_tile_update(self, position, radius=1):
         surrounding_tiles = self.get_surrounding_tiles(position, radius)
@@ -75,29 +83,31 @@ class Map:
 
         features = self.env.features_per_tile
 
-        for row in self.squares:
-            for square in row:
-                square_array = np.zeros(len(features), dtype=np.float32)
+        # np array for all features and squares
 
-                i = 0
-                for feature in features:
-                    name = feature["name"]
+        map_features = np.zeros(
+            (len(features), self.width, self.height), dtype=np.float32
+        )
 
-                    if name == "tile_ownership":
-                        square_array[i] = square.get_owner()
-                    elif name == "tile_ownership":
-                        square_array[i] = square.get_land_type()
-                    elif name == "land_money_value":
-                        square_array[i] = square.get_tile_income()
-                    elif name == "resources":
-                        square_array[i] = square.get_land_type()
-                    elif name == "buildings":
-                        square_array[i] = square.get_building_value()
-                    elif name == "unit_strength":
-                        square_array[i] = square.get_unit_strength()
+        map_features[0] = self.ownership_map
 
-                    map_info[square.position.x][square.position.y] = square_array
-                    i += 1
+        for i in range(1, len(features)):
+            feature_name = features[i]["name"]
+            for x in range(self.width):
+                for y in range(self.height):
+                    square = self.squares[x][y]
+                    if feature_name == "tile_ownership":
+                        value = square.get_land_type().value
+                    elif feature_name == "land_money_value":
+                        value = square.get_tile_income()
+                    elif feature_name == "resources":
+                        value = square.get_land_type()
+                    elif feature_name == "buildings":
+                        value = square.get_building_value()
+                    elif feature_name == "unit_strength":
+                        value = square.get_unit_strength()
+
+                    map_features[i][x][y] = value
 
         return map_info, self.visibility_map
 
@@ -109,6 +119,16 @@ class Map:
         :return:
         """
         self.squares[position.x][position.y].set_owner(agent)
+        self.ownership_map[(position.x, position.y)] = agent.id
+
+    def unclaim_tile(self, position: MapPosition) -> None:
+        """
+        Unclaim a tile at position (x,y)
+        :param position:
+        :return:
+        """
+        self.squares[position.x][position.y].set_owner(None, default=True)
+        self.ownership_map[(position.x, position.y)] = OWNER_DEFAULT_TILE
 
     def add_building(self, building_object, position: MapPosition) -> None:
         self.get_tile(position).add_building(building_object)

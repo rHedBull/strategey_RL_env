@@ -130,3 +130,25 @@ def test_claiming_opponent_and_self_tiles_adjacent(setup):
     observation, reward, terminated, truncated, info = env.step([[claim_action]])
     assert tile1.get_owner() == agent_0.id
     assert env.map.ownership_map[position_1.x, position_1.y] == agent_0.id
+
+
+def test_unclaiming_self_claimed_tile(setup):
+    env, city, agent_0, position_1, position_2, tile1, tile2, claim_action = setup
+    tile1.owner_id = agent_0.id
+    env.map.ownership_map[position_1.x, position_1.y] = agent_0.id
+    env.map.set_visible(position_1, agent_0.id)
+
+    env.map.unclaim_tile(position_1)
+    assert tile1.get_owner() == OWNER_DEFAULT_TILE
+    assert env.map.ownership_map[position_1.x, position_1.y] == OWNER_DEFAULT_TILE
+
+
+def test_unclaiming_unclaimed_tile(setup):
+    env, city, agent_0, position_1, position_2, tile1, tile2, claim_action = setup
+    tile1.owner_id = OWNER_DEFAULT_TILE
+    env.map.ownership_map[position_1.x, position_1.y] = OWNER_DEFAULT_TILE
+    env.map.set_visible(position_1, agent_0.id)
+
+    env.map.unclaim_tile(position_1)
+    assert tile1.get_owner() == OWNER_DEFAULT_TILE
+    assert env.map.ownership_map[position_1.x, position_1.y] == OWNER_DEFAULT_TILE

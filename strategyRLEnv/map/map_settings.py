@@ -119,3 +119,5 @@ healing_base = 10
 max_unit_strength = 500
 
 killed_punish_value = 100000
+
+conquer_threshold = 2

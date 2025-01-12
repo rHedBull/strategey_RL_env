@@ -1,9 +1,8 @@
-from typing import Tuple
-
 from strategyRLEnv.actions.Action import Action, ActionType
 from strategyRLEnv.actions.BuildAction import fit_building_to_land_type
 from strategyRLEnv.Agent import Agent
-from strategyRLEnv.map.map_settings import OWNER_DEFAULT_TILE
+from strategyRLEnv.map.map_settings import (OWNER_DEFAULT_TILE,
+                                            conquer_threshold)
 from strategyRLEnv.map.MapPosition import MapPosition
 from strategyRLEnv.objects.Unit import Unit
 
@@ -58,9 +57,6 @@ class PlaceUnitAction(Action):
     def get_cost(self, env) -> float:
         """Return the cost of the action."""
         return env.env_settings.get("actions")["place_unit"]["cost"]
-
-
-conquer_threshold = 2
 
 
 def check_if_claiming_enemy_tile(env, position: MapPosition, agent_id: int) -> bool:
