@@ -34,8 +34,6 @@ class PlaceUnitAction(Action):
         return True
 
     def execute(self, env):
-        unit = Unit(self.agent, self.position)
-
         tile = env.map.get_tile(self.position)
         if tile.owner_id != OWNER_DEFAULT_TILE and tile.owner_id != self.agent.id:
             # also claim the tile
@@ -47,8 +45,9 @@ class PlaceUnitAction(Action):
             # add strength to unit
             tile.unit.strength += 50
         else:
+            unit = Unit(self.agent, self.position)
             env.agents[self.agent.id].add_unit(unit)
-            tile.unit = unit
+            env.map.add_unit(unit, self.position)
 
         self.agent.money -= self.get_cost(env)
         reward = 0

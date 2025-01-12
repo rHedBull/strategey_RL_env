@@ -27,7 +27,7 @@ class WithdrawUnitAction(Action):
 
     def execute(self, env):
         unit = env.map.get_tile(self.position).unit
-        env.map.get_tile(self.position).unit = None
+        env.map.remove_unit(self.position)
 
         self.agent.remove_unit(unit)
 

@@ -1,8 +1,6 @@
-import json
 import time
 
 from strategyRLEnv.environment import MapEnvironment
-
 
 test_settings = {
     "map_width": 10,
@@ -15,130 +13,54 @@ test_settings = {
     "agent_initial_budget": 1000,
     "agent_initial_budget_distribution": "equal",
     "actions": {
-        "wait": {
-            "cost": 1,
-            "reward": 0
-        },
-        "claim": {
-            "cost":100,
-            "reward": 10
-        },
+        "wait": {"cost": 1, "reward": 0},
+        "claim": {"cost": 100, "reward": 10},
         "build_city": {
             "cost": 500,
             "reward": 20,
             "money_gain_per_turn": 110,
-            "maintenance_cost_per_turn": 10
+            "maintenance_cost_per_turn": 10,
         },
-        "build_road": {
-            "cost": 10,
-            "reward": 3
-        },
-        "build_bridge": {
-            "cost": 20,
-            "reward": 3
-        },
+        "build_road": {"cost": 10, "reward": 3},
+        "build_bridge": {"cost": 20, "reward": 3},
         "build_farm": {
             "cost": 100,
             "reward": 5,
             "money_gain_per_turn": 20,
-            "maintenance_cost_per_turn": 5
+            "maintenance_cost_per_turn": 5,
         },
         "build_mine": {
             "cost": 8,
             "reward": 5,
             "money_gain_per_turn": 20,
-            "maintenance_cost_per_turn": 5
+            "maintenance_cost_per_turn": 5,
         },
-        "destroy": {
-            "action_id": 7,
-            "cost": 0,
-            "reward": 0.5
-        },
-        "place_unit": {
-            "cost": 50,
-            "reward": 0.5
-        },
-        "withdraw_unit": {
-            "cost": 0.7
-        },
-        "invalid_action_penalty": -1000
+        "destroy": {"action_id": 7, "cost": 0, "reward": 0.5},
+        "place_unit": {"cost": 50, "reward": 0.5},
+        "withdraw_unit": {"cost": 0.7},
+        "invalid_action_penalty": -1000,
     },
     "map_features": [
-        {
-            "name": "land_type",
-            "select": True,
-            "values": {
-                "min": 0,
-                "max": 5
-            }
-        },
-        {
-            "name": "tile_ownership",
-            "select": True,
-            "values": {
-                "min": 0,
-                "max": 63
-            }
-        },
+        {"name": "land_type", "select": True, "values": {"min": 0, "max": 5}},
+        {"name": "tile_ownership", "select": True, "values": {"min": 0, "max": 63}},
         {
             "name": "land_money_value",
             "select": False,
-            "values": {
-                "min": 0,
-                "max": 10000
-            }
+            "values": {"min": 0, "max": 10000},
         },
-        {
-            "name": "buildings",
-            "select": True,
-            "values": {
-                "min": 0,
-                "max": 10000000000
-            }
-        },
-        {
-            "name": "resources",
-            "select": False
-        }
+        {"name": "buildings", "select": True, "values": {"min": 0, "max": 10000000000}},
+        {"name": "resources", "select": True, "values": {"min": 0, "max": 10000000000}},
+        {"name": "unit_strength", "select": True, "values": {"min": 0, "max": 500}},
     ],
     "agent_features": [
-        {
-            "name": "agent_money",
-            "select": True,
-            "values":{
-                "min": 0,
-                "max": 1000000
-            }
-        },
-        {
-            "name": "agent_map_ownership",
-            "select": True,
-            "values":{
-                "min": 0,
-                "max": 1
-            }
-        },
-        {
-            "name": "last_money_pl",
-            "select": False
-        },
-        {
-            "name": "resource_access",
-            "select": False
-        },
-        {
-            "name": "resource_collection_rate",
-            "select": False
-        },
-        {
-            "name": "production_rate",
-            "select": False
-        },
-        {
-            "name": "resource_collection_rate",
-            "select": False
-        }
-    ]
+        {"name": "agent_money", "select": True, "values": {"min": 0, "max": 1000000}},
+        {"name": "agent_map_ownership", "select": True, "values": {"min": 0, "max": 1}},
+        {"name": "last_money_pl", "select": False},
+        {"name": "resource_access", "select": False},
+        {"name": "resource_collection_rate", "select": False},
+        {"name": "production_rate", "select": False},
+        {"name": "resource_collection_rate", "select": False},
+    ],
 }
 
 
@@ -148,7 +70,7 @@ def timing_test():
 
     for size in map_sizes:
         for numb in agents:
-            if (size * size)/ numb < 10:
+            if (size * size) / numb < 10:
                 continue
             test_settings["map_width"] = size
             test_settings["map_height"] = size
@@ -171,7 +93,9 @@ def timing_test():
             t_2 = time.time()
             env.close()
 
-            print(f"Map size: {size}x{size}, Agents: {numb}, Reset time: {t_1 - t_0}, Step/s {100/ (t_2 - t_1)}")
+            print(
+                f"Map size: {size}x{size}, Agents: {numb}, Reset time: {t_1 - t_0}, Step/s {100/ (t_2 - t_1)}"
+            )
 
 
 if __name__ == "__main__":

@@ -74,7 +74,8 @@ class Unit(Ownable):
 
     def kill(self, env):
         tile = env.map.get_tile(self.position)
-        tile.unit = None  # forget this unit
+        env.map.remove_unit(self.position)
+
         self.owner.remove_unit(self)
         tile.update(env)
         env.map.trigger_surrounding_tile_update(self.position)

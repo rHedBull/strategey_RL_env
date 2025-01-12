@@ -52,6 +52,8 @@ class Map:
         self.landtype_map = topology_array[0]
         self.resources_map = topology_array[1]
         self.ownership_map = None
+        self.building_map = None
+        self.unit_strength_map = None
 
     def reset(self):
         """
@@ -65,6 +67,8 @@ class Map:
         self.ownership_map = np.full(
             (self.width, self.height), OWNER_DEFAULT_TILE, dtype=np.int64
         )
+        self.building_map = np.zeros((self.width, self.height), dtype=np.int64)
+        self.unit_strength_map = np.zeros((self.width, self.height), dtype=np.int64)
 
     def trigger_surrounding_tile_update(self, position, radius=1):
         surrounding_tiles = self.get_surrounding_tiles(position, radius)
@@ -86,9 +90,6 @@ class Map:
         )
 
         features = self.env.features_per_tile
-
-        # np array for all features and squares
-
         map_features = np.zeros(
             (len(features), self.width, self.height), dtype=np.float32
         )
@@ -96,20 +97,8 @@ class Map:
         map_features[0] = self.landtype_map
         map_features[1] = self.resources_map
         map_features[2] = self.ownership_map
-
-        for i in range(2, len(features)):
-            feature_name = features[i]["name"]
-            for x in range(self.width):
-                for y in range(self.height):
-                    square = self.squares[x][y]
-                    if feature_name == "land_money_value":
-                        value = square.get_tile_income()
-                    elif feature_name == "buildings":
-                        value = square.get_building_value()
-                    elif feature_name == "unit_strength":
-                        value = square.get_unit_strength()
-
-                    map_features[i][x][y] = value
+        map_features[3] = self.building_map
+        map_features[4] = self.unit_strength_map
 
         return map_info, self.visibility_map
 
@@ -134,6 +123,18 @@ class Map:
 
     def add_building(self, building_object, position: MapPosition) -> None:
         self.get_tile(position).add_building(building_object)
+        self.building_map[position.x][
+            position.y
+        ] = building_object.get_building_type_id()
+
+    def add_unit(self, unit, position: MapPosition) -> None:
+        self.get_tile(position).unit = unit
+        self.unit_strength_map[position.x][position.y] = unit.strength
+
+    def remove_unit(self, position: MapPosition) -> None:
+        tile = self.get_tile(position)
+        tile.unit = None
+        self.unit_strength_map[position.x][position.y] = 0
 
     def remove_building(
         self,
@@ -144,6 +145,7 @@ class Map:
         tile.remove_building(building_type)
         tile.update(self.env)
         self.trigger_surrounding_tile_update(position, 1)
+        self.building_map[position.x][position.y] = 0
 
     def draw(self, screen, zoom_level, pan_x, pan_y):
         """

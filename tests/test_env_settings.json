@@ -67,7 +67,11 @@
         },
         {
             "name": "tile_ownership",
-            "select": false
+            "select": true,
+            "values": {
+                "min": 0,
+                "max": 63
+            }
         },
         {
             "name": "buildings",
@@ -87,7 +91,7 @@
         },
         {
             "name": "land_money_value",
-            "select": true,
+            "select": false,
             "values": {
                 "min": 0,
                 "max": 10000
@@ -95,7 +99,11 @@
         },
         {
             "name": "resources",
-            "select": false
+            "select": true,
+            "values": {
+                "min": 0,
+                "max": 10000
+            }
         },
         {
             "name": "unit_strength",
