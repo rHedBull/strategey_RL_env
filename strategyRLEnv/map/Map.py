@@ -108,7 +108,7 @@ class Map:
         :param agent:
         :return:
         """
-        self.squares[position.x][position.y].claim(agent)
+        self.squares[position.x][position.y].set_owner(agent)
 
     def add_building(self, building_object, position: MapPosition) -> None:
         self.get_tile(position).add_building(building_object)

@@ -48,7 +48,7 @@ class Map_Square:
         self.owner_color = COLOR_DEFAULT_BORDER
 
     def reset(self, total_reset: bool = True):
-        self.set_owner(OWNER_DEFAULT_TILE, COLOR_DEFAULT_BORDER)
+        self.set_owner(None, default=True)
 
         self._land_money_value = 1
 
@@ -72,12 +72,16 @@ class Map_Square:
 
         self.tile_income = building_income + self._land_money_value
 
-    def set_owner(self, agent_id: int, agent_color: Tuple[int, int, int]):
+    def set_owner(self, agent, default=False):
         """
         Claim the square for an agent.
         """
-        self.owner_id = agent_id
-        self.owner_color = agent_color
+        if default:
+            self.owner_id = OWNER_DEFAULT_TILE
+            self.owner_color = COLOR_DEFAULT_BORDER
+        else:
+            self.owner_id = agent.id
+            self.owner_color = agent.color
 
     def get_owner(self):
         return self.owner_id
@@ -103,16 +107,6 @@ class Map_Square:
 
     def get_land_type(self) -> LandType:
         return self.land_type
-
-    # claim stuff #
-    def claim(self, agent):
-        """
-        Claim the square for an agent
-        :param agent:
-        :return:
-        """
-        self.owner_id = agent.id
-        self.owner_color = agent.color
 
     # building stuff #
     def add_building(self, building: Building):

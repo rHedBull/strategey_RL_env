@@ -15,9 +15,6 @@ from strategyRLEnv.objects.City import City
 from strategyRLEnv.objects.Mine import Mine
 
 
-class MockAgent:
-    pass  # Simplified Agent class
-
 
 @pytest.fixture
 def map_instance():

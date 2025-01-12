@@ -13,8 +13,9 @@ from strategyRLEnv.environment import MapEnvironment
 
 
 class MockAgent:
-    def __init__(self, id=0):
+    def __init__(self, id=0, color=(0, 0, 0)):
         self.id = id
+        self.color = color
 
 
 @pytest.fixture
