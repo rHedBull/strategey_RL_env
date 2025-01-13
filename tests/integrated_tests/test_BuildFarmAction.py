@@ -39,12 +39,14 @@ def test_build_simple_farm(setup):
     # no visibility, should not work
     observation, reward, terminated, truncated, info = env.step([[build_farm_action]])
     assert tile1.has_any_building() is False
+    assert observation["map"][3][position_1.x][position_1.y] == -1
 
     # set visible
     env.map.set_visible(position_1, agent_id)
     # visible but unclaimed, should not work now
     observation, reward, terminated, truncated, info = env.step([[build_farm_action]])
     assert tile1.has_any_building() is False
+    assert observation["map"][3][position_1.x][position_1.y] == -1
 
     # claimed by another agent
     tile1.owner_id = other_agent_id  # claimed by another agent
@@ -58,6 +60,7 @@ def test_build_simple_farm(setup):
     assert tile1.has_any_building() is True
     assert tile1.has_building(BuildingType.FARM) is True
     assert tile1.owner_id == agent_id
+    assert observation["map"][3][position_1.x][position_1.y] == 3
 
     # test build on top of existing building, should not work
     observation, reward, terminated, truncated, info = env.step([[build_farm_action]])

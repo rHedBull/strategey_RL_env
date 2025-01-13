@@ -52,6 +52,7 @@ def test_build_road_not_visible(setup):
     assert (
         not tile1.has_any_building()
     ), "Building should not be placed on non-visible tile"
+    assert observation["map"][3][position_1.x][position_1.y] == -1
 
 
 def test_build_bridge_not_visible(setup):
@@ -66,6 +67,7 @@ def test_build_bridge_not_visible(setup):
     assert (
         not tile1.has_any_building()
     ), "Building should not be placed on non-visible tile"
+    assert observation["map"][3][position_1.x][position_1.y] == -1
 
 
 def test_build_road_claimed_by_other(setup):
@@ -109,7 +111,7 @@ def test_build_road_claimed_by_self(setup):
     env.map.set_visible(position_1, agent_id)
     tile1.owner_id = agent_id  # Claimed by self
 
-    # Visible and claimed by self, should work
+    # Visible and claimed by self, should not work, not next to a city or road or bridge
     observation, reward, terminated, truncated, info = env.step([[build_road_action]])
     assert not tile1.has_building(
         BuildingType.ROAD
@@ -221,6 +223,7 @@ def test_build_road_next_to_friendly_city(setup):
     assert tile1.has_building(
         BuildingType.ROAD
     ), "Should build road next to friendly city"
+    assert observation["map"][3][position_1.x][position_1.y] == 1
 
 
 def test_build_bridge_next_to_friendly_city(setup):
@@ -242,6 +245,7 @@ def test_build_bridge_next_to_friendly_city(setup):
     assert tile1.has_building(
         BuildingType.BRIDGE
     ), "Should build bridge next to friendly city"
+    assert observation["map"][3][position_1.x][position_1.y] == 2
 
 
 def test_build_road_next_to_road(setup):
@@ -261,6 +265,7 @@ def test_build_road_next_to_road(setup):
     # Build road next to bridge, should work
     observation, reward, terminated, truncated, info = env.step([[build_road_action]])
     assert tile1.has_building(BuildingType.ROAD), "Should build road next to bridge"
+    assert observation["map"][3][position_1.x][position_1.y] == 1
 
 
 def test_build_bridge_next_to_bridge(setup):
@@ -272,7 +277,7 @@ def test_build_bridge_next_to_bridge(setup):
     env.map.set_visible(position_1, agent_id)
 
     # Build road on tile2
-    bridge = Bridge(position_2, {"building_type_id": 3})
+    bridge = Bridge(position_2, {})
     tile2 = env.map.get_tile(position_2)
     tile2.set_land_type(LandType.OCEAN)
     tile2.add_building(bridge)
@@ -280,6 +285,7 @@ def test_build_bridge_next_to_bridge(setup):
     # Build bridge next to road, should work
     observation, reward, terminated, truncated, info = env.step([[build_bridge_action]])
     assert tile1.has_building(BuildingType.BRIDGE), "Should build bridge next to road"
+    assert observation["map"][3][position_1.x][position_1.y] == 2
 
 
 def test_build_road_next_to_bridge(setup):
@@ -299,6 +305,7 @@ def test_build_road_next_to_bridge(setup):
     # Build road next to bridge, should work
     observation, reward, terminated, truncated, info = env.step([[build_road_action]])
     assert tile1.has_building(BuildingType.ROAD), "Should build road next to bridge"
+    assert observation["map"][3][position_1.x][position_1.y] == 1
 
 
 def test_build_bridge_next_to_road(setup):
@@ -318,6 +325,7 @@ def test_build_bridge_next_to_road(setup):
     # Build bridge next to road, should work
     observation, reward, terminated, truncated, info = env.step([[build_bridge_action]])
     assert tile1.has_building(BuildingType.BRIDGE), "Should build bridge next to road"
+    assert observation["map"][3][position_1.x][position_1.y] == 2
 
 
 def test_road_bridge_multiplier(setup):

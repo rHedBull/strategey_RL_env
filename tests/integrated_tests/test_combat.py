@@ -161,3 +161,4 @@ def test_attack_on_city(setup):
     observation, reward, terminated, truncated, info = env.step([[wait_action]])
 
     assert tile2.has_any_building() is False
+    assert observation["map"][3][position_1.x][position_1.y] == -1

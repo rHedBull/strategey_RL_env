@@ -8,6 +8,8 @@ from strategyRLEnv.map.map_settings import (OWNER_DEFAULT_TILE, BuildingType,
 from strategyRLEnv.map.MapPosition import MapPosition
 from strategyRLEnv.map.MapSquare import Map_Square
 
+DEFAULT_BUILDING_VALUE = -1
+
 
 def check_valid_agent_id(agent_id: int) -> bool:
     return 0 <= agent_id < max_agent_id
@@ -67,7 +69,9 @@ class Map:
         self.ownership_map = np.full(
             (self.width, self.height), OWNER_DEFAULT_TILE, dtype=np.int64
         )
-        self.building_map = np.zeros((self.width, self.height), dtype=np.int64)
+        self.building_map = np.full(
+            (self.width, self.height), DEFAULT_BUILDING_VALUE, dtype=np.int64
+        )
         self.unit_strength_map = np.zeros((self.width, self.height), dtype=np.int64)
 
     def trigger_surrounding_tile_update(self, position, radius=1):
@@ -119,10 +123,11 @@ class Map:
         self.ownership_map[(position.x, position.y)] = OWNER_DEFAULT_TILE
 
     def add_building(self, building_object, position: MapPosition) -> None:
-        self.get_tile(position).add_building(building_object)
-        self.building_map[position.x][
-            position.y
-        ] = building_object.get_building_type_id()
+        if self.check_position_on_map(position):
+            self.get_tile(position).add_building(building_object)
+            self.building_map[position.x][position.y] = float(
+                building_object.get_building_type_id()
+            )
 
     def add_unit(self, unit, position: MapPosition) -> None:
         self.get_tile(position).unit = unit
@@ -142,7 +147,7 @@ class Map:
         tile.remove_building(building_type)
         tile.update(self.env)
         self.trigger_surrounding_tile_update(position, 1)
-        self.building_map[position.x][position.y] = 0
+        self.building_map[position.x][position.y] = DEFAULT_BUILDING_VALUE
 
     def draw(self, screen, zoom_level, pan_x, pan_y):
         """

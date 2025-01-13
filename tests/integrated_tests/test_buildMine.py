@@ -44,6 +44,7 @@ def test_build_simple_mine(setup):
     # no visibility, should not work
     observation, reward, terminated, truncated, info = env.step([[build_mine_action]])
     assert tile1.has_any_building() is False
+    assert observation["map"][3][position_1.x][position_1.y] == -1
 
     # set visible
     env.map.set_visible(position_1, agent_id)
@@ -63,12 +64,14 @@ def test_build_simple_mine(setup):
     assert tile1.has_any_building() is True
     assert tile1.has_building(BuildingType.MINE) is True
     assert tile1.owner_id == agent_id
+    assert observation["map"][3][position_1.x][position_1.y] == 4
 
     # test build on top of existing building, should not work
     observation, reward, terminated, truncated, info = env.step([[build_mine_action]])
     assert tile1.has_any_building() is True
     assert tile1.has_building(BuildingType.MINE) is True
     assert tile1.owner_id == agent_id
+    assert observation["map"][3][position_1.x][position_1.y] == 4
     # check that the building is still the same!!
 
 
@@ -80,8 +83,8 @@ def test_building_mine_on_water_mountain_desert(setup):
     with open("test_env_settings.json", "r") as f:
         env_settings = json.load(f)
 
-    env_settings["map_width"] = 100
-    env_settings["map_height"] = 100
+    env_settings["map_width"] = 10
+    env_settings["map_height"] = 10
     env_settings["actions"]["build_road"]["cost"] = 10  # allow building road
 
     special_env = MapEnvironment(env_settings, 2, "rgb_array")

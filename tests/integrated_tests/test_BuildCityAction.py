@@ -34,16 +34,6 @@ def setup():
     env.close()
 
 
-def test_build_simple_city(setup):
-    env, agent_id, position_1, position_2, build_city_action = setup
-
-    env.reset()
-    other_agent_id = 3
-
-    tile1 = env.map.get_tile(position_1)
-    tile1.set_land_type(LandType.LAND)
-
-
 def test_build_city_invisible_tile(setup):
     env, agent_id, position_1, position_2, build_city_action = setup
 
@@ -54,6 +44,7 @@ def test_build_city_invisible_tile(setup):
     # no visibility, should not work
     observation, reward, terminated, truncated, info = env.step([[build_city_action]])
     assert tile1.has_any_building() is False
+    assert observation["map"][3][position_1.x][position_1.y] == -1
 
 
 def test_build_city_other_claimed_tile(setup):
@@ -83,6 +74,10 @@ def test_build_city_visible_unclaimed(setup):
     assert object.position.x == position_1.x
     assert object.position.y == position_1.y
     assert env.agents[agent_id].cities[1] == object
+    assert (
+        observation["map"][3][position_1.x][position_1.y]
+        == object.get_building_type_id()
+    )
 
 
 def test_build_city_on_existing_building(setup):
@@ -94,13 +89,14 @@ def test_build_city_on_existing_building(setup):
     tile1.owner_id = agent_id
     city = City(agent_id, position_1, {})
     old_id = city.id
-    tile1.add_building(city)
+    env.map.add_building(city, position_1)
 
     # test build on top of existing building, should not work
     observation, reward, terminated, truncated, info = env.step([[build_city_action]])
     assert tile1.has_building(BuildingType.CITY) is True
     assert tile1.owner_id == agent_id
     assert tile1.get_building().id == old_id, "City should not be replaced"
+    assert observation["map"][3][position_1.x][position_1.y] == 0
 
 
 def test_building_city_on_opponent_unit(setup):
@@ -132,6 +128,7 @@ def test_building_city_on_own_unit(setup):
     observation, reward, terminated, truncated, info = env.step([[build_city_action]])
     assert tile1.unit is unit
     assert tile1.has_building(BuildingType.CITY) is True
+    assert observation["map"][3][position_1.x][position_1.y] == 0
 
 
 def test_building_city_on_water(setup):
@@ -169,6 +166,7 @@ def test_building_city_on_dessert(setup):
     tile1.set_land_type(LandType.DESERT)
     observation, reward, terminated, truncated, info = env.step([[build_city_action]])
     assert tile1.has_building(BuildingType.CITY) is True
+    assert observation["map"][3][position_1.x][position_1.y] == 0
 
 
 def test_building_city_on_marsh(setup):
@@ -181,3 +179,4 @@ def test_building_city_on_marsh(setup):
     tile1.set_land_type(LandType.MARSH)
     observation, reward, terminated, truncated, info = env.step([[build_city_action]])
     assert tile1.has_building(BuildingType.CITY) is True
+    assert observation["map"][3][position_1.x][position_1.y] == 0

@@ -14,8 +14,8 @@ def setup():
     # open settings file
     with open("test_env_settings.json", "r") as f:
         env_settings = json.load(f)
-        env_settings["map_width"] = 100
-        env_settings["map_height"] = 100
+        env_settings["map_width"] = 10
+        env_settings["map_height"] = 10
         env_settings["actions"]["build_road"]["cost"] = 10
 
     agent_id = 0
@@ -42,13 +42,16 @@ def test_destroy_building_other_owner(setup):
     env.reset()
 
     tile1 = env.map.get_tile(position_1)
-    tile1.add_building(city)
+    env.map.add_building(city, position_1)
     tile1.owner_id = 4
 
     # test building, owned by another agent, should not work
     observation, reward, terminated, truncated, info = env.step([[destroy_action]])
     assert tile1.has_building(BuildingType.CITY)
     assert tile1.owner_id == 4
+    assert (
+        observation["map"][3][position_1.x][position_1.y] == city.get_building_type_id()
+    )
 
 
 def test_destroy_own_building(setup):
@@ -64,6 +67,7 @@ def test_destroy_own_building(setup):
     observation, reward, terminated, truncated, info = env.step([[destroy_action]])
     assert not tile1.has_building(BuildingType.CITY)
     assert tile1.get_owner() == agent_id
+    assert observation["map"][3][position_1.x][position_1.y] == -1
 
 
 def test_destroy_visible_road(setup):
@@ -81,3 +85,4 @@ def test_destroy_visible_road(setup):
     observation, reward, terminated, truncated, info = env.step([[destroy_action]])
     assert not tile1.has_building(BuildingType.ROAD)
     assert tile1.get_owner() == OWNER_DEFAULT_TILE
+    assert observation["map"][3][position_1.x][position_1.y] == -1
