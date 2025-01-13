@@ -43,7 +43,8 @@ class PlaceUnitAction(Action):
 
         if tile.unit is not None and tile.unit.owner.id == self.agent.id:
             # add strength to unit
-            tile.unit.strength += 50
+            tile.unit.increase_strength(env, 50)
+
         else:
             unit = Unit(self.agent, self.position)
             env.agents[self.agent.id].add_unit(unit)

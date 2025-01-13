@@ -67,10 +67,13 @@ class Unit(Ownable):
         self.strength -= damage
         if self.strength <= 0:
             self.kill(env)
+        else:
+            env.map.unit_strength_map[self.position.x][self.position.y] = self.strength
 
-    def increase_strength(self, amount):
+    def increase_strength(self, env, amount):
         new_strength = self.strength + amount
         self.strength = min(max_unit_strength, new_strength)
+        env.map.unit_strength_map[self.position.x][self.position.y] = self.strength
 
     def kill(self, env):
         tile = env.map.get_tile(self.position)

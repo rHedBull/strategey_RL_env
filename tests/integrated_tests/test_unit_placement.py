@@ -61,6 +61,9 @@ def test_place_unit_on_visible_land_tile(setup):
     # Assert the tile now has a unit belonging to agent 0
     assert tile1.unit is not None, "Tile should have a unit after valid placement."
     assert tile1.unit.owner.id == unit.owner.id, "Placed unit should belong to agent 0."
+    assert (
+        env.map.unit_strength_map[position_1.x][position_1.y] == unit.strength
+    ), "Unit strength should be on map"
 
 
 def test_place_unit_on_friendly_unit(setup):
@@ -92,6 +95,9 @@ def test_place_unit_on_friendly_unit(setup):
     assert (
         tile1.unit.strength == 100
     ), "Unit should add 50 to the already exisiting 50 strength."
+    assert (
+        env.map.unit_strength_map[position_1.x][position_1.y] == unit.strength
+    ), "Unit strength should be on map"
 
 
 def test_place_unit_on_invisible(setup):
@@ -110,6 +116,9 @@ def test_place_unit_on_invisible(setup):
 
     observation, reward, terminated, truncated, info = env.step([[place_unit_action]])
     assert tile1.unit is None, "Tile should not have a unit if invisible."
+    assert (
+        env.map.unit_strength_map[position_1.x][position_1.y] == 0
+    ), "Unit strength should still be 0"
 
 
 def test_place_unit_on_enemy_claimed_tile_2support(setup):
@@ -150,6 +159,9 @@ def test_place_unit_on_enemy_claimed_tile_2support(setup):
     assert (
         env.map.ownership_map[position_1.x, position_1.y] == unit.owner.id
     ), "Ownership map should reflect the change."
+    assert (
+        env.map.unit_strength_map[position_1.x, position_1.y] == unit.strength
+    ), "Unit strength should be on map"
 
 
 def test_place_unit_on_enemy_claimed_tile_1support(setup):
@@ -215,9 +227,10 @@ def test_place_unit_on_enemy_unit(setup):
     env, unit, opponent, position_1, position_2 = setup
     env.reset()
 
+    opponent.strength = 77
     tile2 = env.map.get_tile(position_2)
     tile2.set_land_type(LandType.LAND)
-    tile2.unit = opponent  # Enemy unit on this tile
+    env.map.add_unit(opponent, position_2)
 
     # Make sure agent 0 sees that tile
     env.map.set_visible(position_2, agent_id=unit.owner.id)
@@ -229,6 +242,9 @@ def test_place_unit_on_enemy_unit(setup):
     assert (
         tile2.unit.owner.id == opponent.owner.id
     ), "Enemy unit should remain on the tile."
+    assert (
+        env.map.unit_strength_map[position_2.x][position_2.y] == opponent.strength
+    ), "oponent strength should not change"
 
 
 def test_place_unit_on_ocean_fails(setup):
@@ -337,6 +353,9 @@ def test_remove_unit_action_empty_tile(setup):
     obs, rew, term, trunc, info = env.step([[remove_unit_action]])
 
     assert tile1.unit is None, "Tile should have no unit after removal."
+    assert (
+        env.map.unit_strength_map[position_1.x][position_1.y] == 0
+    ), "Unit strength should be 0"
 
 
 def test_remove_unit_action_own_unit(setup):
@@ -362,6 +381,9 @@ def test_remove_unit_action_own_unit(setup):
     assert (
         unit not in env.agents[0].units
     ), "Unit should be removed from agent 0's list of units."
+    assert (
+        env.map.unit_strength_map[position_1.x][position_1.y] == 0
+    ), "Unit strength should be 0"
 
 
 def test_remove_enemy_unit(setup):
@@ -377,7 +399,7 @@ def test_remove_enemy_unit(setup):
     env.map.set_visible(position_1, agent_id=unit.owner.id)
     tile2 = env.map.get_tile(position_2)
     tile2.set_land_type(LandType.LAND)
-    tile2.unit = opponent
+    env.map.add_unit(opponent, position_2)
 
     remove_unit_action = [9, position_2.x, position_2.y]
 
@@ -387,3 +409,6 @@ def test_remove_enemy_unit(setup):
     assert (
         tile2.unit.owner.id == opponent.owner.id
     ), "Unit should still belong to agent 1."
+    assert (
+        env.map.unit_strength_map[position_2.x][position_2.y] == opponent.strength
+    ), "Unit strength should be 0"

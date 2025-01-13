@@ -85,7 +85,7 @@
             "name": "buildings",
             "select": true,
             "values": {
-                "min": 0,
+                "min": -1,
                 "max": 10000000000
             }
         },
