@@ -184,8 +184,12 @@ class MapEnvironment(gym.Env):
         self.agent_features = selected_features
 
         # map observation space
-        map_feature_mins = np.zeros(len(self.features_per_tile), dtype=np.float32)
-        map_feature_maxs = np.zeros(len(self.features_per_tile), dtype=np.float32)
+        map_feature_mins = np.zeros(
+            (len(self.features_per_tile), 1, 1), dtype=np.float32
+        )
+        map_feature_maxs = np.zeros(
+            (len(self.features_per_tile), 1, 1), dtype=np.float32
+        )
 
         i = 0
         for feature in self.features_per_tile:
@@ -195,14 +199,14 @@ class MapEnvironment(gym.Env):
 
         map_low = (
             np.zeros(
-                (self.map.width, self.map.height, len(self.features_per_tile)),
+                (len(self.features_per_tile), self.map.width, self.map.height),
                 dtype=np.float32,
             )
             + map_feature_mins
         )
         map_high = (
             np.zeros(
-                (self.map.width, self.map.height, len(self.features_per_tile)),
+                (len(self.features_per_tile), self.map.width, self.map.height),
                 dtype=np.float32,
             )
             + map_feature_maxs

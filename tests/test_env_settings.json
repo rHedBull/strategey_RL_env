@@ -1,6 +1,6 @@
 {
-    "map_width": 100,
-    "map_height": 100,
+    "map_width": 10,
+    "map_height": 10,
     "water_budget_per_agent": 0.2,
     "mountain_budget_per_agent": 0.2,
     "dessert_budget_per_agent": 0.1,
@@ -24,7 +24,7 @@
             "maintenance_cost_per_turn": 10
         },
         "build_road": {
-            "cost": -100,
+            "cost": 0,
             "reward": 3
         },
         "build_bridge": {
@@ -66,10 +66,18 @@
             }
         },
         {
-            "name": "tile_ownership",
+            "name": "resources",
             "select": true,
             "values": {
                 "min": 0,
+                "max": 10000
+            }
+        },
+        {
+            "name": "tile_ownership",
+            "select": true,
+            "values": {
+                "min": -1,
                 "max": 63
             }
         },
@@ -97,14 +105,7 @@
                 "max": 10000
             }
         },
-        {
-            "name": "resources",
-            "select": true,
-            "values": {
-                "min": 0,
-                "max": 10000
-            }
-        },
+
         {
             "name": "unit_strength",
             "select": true,

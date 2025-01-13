@@ -85,9 +85,6 @@ class Map:
         define here what info is visible to all agents
         Assuming full observability of map for now
         """
-        map_info = np.zeros(
-            (self.width, self.height, len(self.env.features_per_tile)), dtype=np.float32
-        )
 
         features = self.env.features_per_tile
         map_features = np.zeros(
@@ -100,7 +97,7 @@ class Map:
         map_features[3] = self.building_map
         map_features[4] = self.unit_strength_map
 
-        return map_info, self.visibility_map
+        return map_features, self.visibility_map
 
     def claim_tile(self, agent: Agent, position: MapPosition) -> None:
         """
