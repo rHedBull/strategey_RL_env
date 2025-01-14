@@ -97,9 +97,7 @@ class Map:
         """
 
         features = self.env.features_per_tile
-        feature_lenght = len(
-            features
-        )
+        feature_lenght = len(features)
         map_features = np.zeros(
             (feature_lenght, self.width, self.height), dtype=np.float32
         )

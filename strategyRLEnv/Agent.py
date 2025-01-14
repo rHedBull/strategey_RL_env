@@ -141,7 +141,7 @@ class Agent:
     def kill(self):
         self.state = AgentState.DONE
         # remove all units
-        print("Agent ", self.id, " is dead")
+        # print("Agent ", self.id, " is dead")
         unit_copy = self.units.copy()
         for unit in unit_copy:
             unit.kill(self.env)
@@ -204,12 +204,12 @@ class Agent:
         y = position.y
 
         tmp_pos = MapPosition(x, y)
-        for i in range(-self.visibility_range, self.visibility_range + 1):
-            for j in range(-self.visibility_range, self.visibility_range + 1):
-                tmp_pos.x = x + i
-                tmp_pos.y = y + j
-                if self.env.map.check_position_on_map(tmp_pos):
-                    self.env.map.set_visible(tmp_pos, self.id)
+
+        surrounding_tiles = self.env.map.get_surrounding_tiles(
+            position, self.visibility_range
+        )
+        for tile in surrounding_tiles:
+            self.env.map.set_visible(tile.position, self.id)
 
     def add_unit(self, unit):
         if unit.owner.id == self.id:

@@ -51,9 +51,9 @@ def test_map_initialization(map_instance):
 
     assert map_instance.env is not None
     assert isinstance(map_instance.id, uuid.UUID)
-    assert map_instance.width == 100
-    assert map_instance.height == 100
-    assert map_instance.tiles == 10000
+    assert map_instance.width == 10
+    assert map_instance.height == 10
+    assert map_instance.tiles == 100
 
 
 def test_create_map(map_instance):
@@ -80,16 +80,11 @@ def test_create_map(map_instance):
 def test_reset(map_instance):
     # Before reset, squares should have default land type
     map_instance, mock_city_params = map_instance
-    # for row in map_instance.squares:
-    #     for square in row:
-    #         assert square.land_type == LandType.LAND
 
     # Perform reset
     map_instance.reset()
 
     # After reset, verify land types based on the agents run
-    # Since random walks are simplified, land types might remain OCEAN
-    # Adjust assertions based on your agent's behavior
     for row in map_instance.squares:
         for square in row:
             # Example: Assuming some squares are set to MOUNTAIN, DESERT, or RIVER
@@ -107,8 +102,8 @@ def test_check_position_on_map(map_instance):
     map_instance, mock_city_params = map_instance
     # Valid positions
     assert map_instance.check_position_on_map(MapPosition(0, 0)) is True
-    assert map_instance.check_position_on_map(MapPosition(99, 99)) is True
-    assert map_instance.check_position_on_map(MapPosition(54, 50)) is True
+    assert map_instance.check_position_on_map(MapPosition(9, 9)) is True
+    assert map_instance.check_position_on_map(MapPosition(5, 4)) is True
 
     # Invalid positions
     assert map_instance.check_position_on_map(MapPosition(-1, 0)) is False
@@ -131,10 +126,10 @@ def test_get_tile(map_instance):
     assert tile.position.x == 0
     assert tile.position.y == 0
 
-    tile = map_instance.get_tile(MapPosition(99, 99))
+    tile = map_instance.get_tile(MapPosition(9, 9))
     assert tile is not None
-    assert tile.position.x == 99
-    assert tile.position.y == 99
+    assert tile.position.x == 9
+    assert tile.position.y == 9
 
     # Invalid tile
     tile = map_instance.get_tile(MapPosition(100, 100))
@@ -168,7 +163,7 @@ def test_visibility_methods(map_instance):
     assert map_instance.is_visible(position, agent_id2) is True
 
     # Clear visible
-    map_instance.clear_visible(position, agent_id)
+    map_instance.set_invisible(position, agent_id)
     assert map_instance.is_visible(position, agent_id) is False
     assert map_instance.is_visible(position, agent_id2) is True
 
@@ -178,11 +173,11 @@ def test_visibility_methods(map_instance):
     assert map_instance.is_visible(position, agent_id2) is True
     assert map_instance.is_visible(position, invalid_agent_id) is False
 
-    map_instance.clear_visible(position, invalid_agent_id)  # Should have no effect
+    map_instance.set_invisible(position, invalid_agent_id)  # Should have no effect
     assert map_instance.is_visible(position, agent_id2) is True
     assert map_instance.is_visible(position, invalid_agent_id) is False
 
-    map_instance.clear_visible(position, agent_id2)
+    map_instance.set_invisible(position, agent_id2)
     assert map_instance.is_visible(position, agent_id2) is False
 
 
@@ -195,8 +190,7 @@ def test_claim_tile(map_instance):
     assert tile.owner_id == OWNER_DEFAULT_TILE  # Initially unclaimed
     map_instance.claim_tile(mock_agent, position)
     assert tile.owner_id == mock_agent.id
-
-    # TODO: test here what happens at conflict claiming
+    assert map_instance.ownership_map[position.x][position.y] == mock_agent.id
 
 
 def test_add_building(map_instance):
@@ -213,26 +207,6 @@ def test_add_building(map_instance):
     tile.remove_building(BuildingType.CITY)
     assert tile.has_any_building() is False
     assert tile.get_building() is None
-
-
-# def test_tile_is_next_to_building(map_instance):
-#     position = MapPosition(3, 5)
-#     adjacent_position = MapPosition(4, 5)
-#     map_instance, mock_city_params = map_instance
-#
-#     # Initially, no buildings nearby
-#     bool_value, return_tile = map_instance.tile_is_next_to_building(adjacent_position)
-#     assert bool_value is False
-#     assert return_tile is None
-#
-#     building_object = City(1, position, mock_city_params)
-#     map_instance.add_building(building_object, position)
-#
-#     # Now, should detect a building nearby
-#     tile = map_instance.get_tile(position)
-#     bool_value, return_tile = map_instance.tile_is_next_to_building(adjacent_position)
-#     assert bool_value is True
-#     assert return_tile == tile
 
 
 def test_tile_is_next_to_building_type(map_instance):

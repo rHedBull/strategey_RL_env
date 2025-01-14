@@ -112,9 +112,9 @@ def test_action_space(env):
         action_space, gym.spaces.Space
     ), "Action space should be an instance of gym.spaces.Space"
 
-    # assumption on test_env_settings.json with map size 100x100
+    # assumption on test_env_settings.json with map size 10x10
     assert action_space == gym.spaces.MultiDiscrete(
-        [9, 100, 100]
+        [10, 10, 10]
     ), "Action space should be a MultiDiscrete space with 3 dimensions"
 
     random_action = action_space.sample()
@@ -157,6 +157,8 @@ def test_render(env):
     # Test render function in different modes
     with open("test_env_settings.json", "r") as f:
         env_settings = json.load(f)
+        env_settings["map_width"] = 100
+        env_settings["map_height"] = 100
     env_human = MapEnvironment(
         env_settings, 2, "human"
     )  # human mode causes trouble with numpy versions while testing

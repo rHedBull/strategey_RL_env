@@ -24,12 +24,7 @@ def setup():
     position_1 = MapPosition(pos_x, pos_y)
     position_2 = MapPosition(pos_x + 1, pos_y)
 
-    mock_city_params = {
-        "building_type_id": 1,
-        "money_gain_per_turn": 110,
-        "maintenance_cost_per_turn": 10,
-    }
-    city = City(agent_id, position_2, mock_city_params)
+    city = City(agent_id, position_2, {})
     action = [7, position_1.x, position_1.y]
 
     env = MapEnvironment(env_settings, 2, "rgb_array", seed=100)
