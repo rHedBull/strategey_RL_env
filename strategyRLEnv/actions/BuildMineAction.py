@@ -26,12 +26,8 @@ class BuildMineAction(BuildAction):
 
     def perform_build(self, env):
         mine = Mine(self.agent, self.position, self.get_building_parameters(env))
-        env.map.add_building(mine, self.position)
 
         tile = env.map.get_tile(self.position)
         if tile.get_resources() != ResourceType.NONE:
             mine.income_per_turn = 2 * mine.get_income()
-
-        env.map.claim_tile(self.agent, self.position)
-        self.agent.add_claimed_tile(self.position)
-        self.agent.update_local_visibility(self.position)
+        return mine

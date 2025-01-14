@@ -3,8 +3,9 @@ from typing import Dict
 
 from strategyRLEnv.actions.Action import Action, ActionType
 from strategyRLEnv.map.map_settings import (ALLOWED_BUILDING_PLACEMENTS,
-                                            BuildingType)
+                                            BuildingType, discovery_reward)
 from strategyRLEnv.map.MapPosition import MapPosition
+from strategyRLEnv.objects.Ownable import Ownable
 
 
 class BuildAction(Action, ABC):
@@ -35,11 +36,18 @@ class BuildAction(Action, ABC):
         return True
 
     def execute(self, env) -> float:
-        self.perform_build(env)
+        building = self.perform_build(env)
+        env.map.add_building(building, self.position)
         env.map.get_tile(self.position).update(env)
         env.map.trigger_surrounding_tile_update(self.position)
         self.agent.money -= self.get_cost(env)
-        reward = self.get_reward(env)
+
+        if isinstance(self, Ownable):
+            env.map.claim_tile(self.agent, self.position)
+            self.agent.add_claimed_tile(self.position)
+
+        discovered = self.agent.update_local_visibility(self.position)
+        reward = self.get_reward(env) + discovered * discovery_reward
         return reward
 
     @abstractmethod

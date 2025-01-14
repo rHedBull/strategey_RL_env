@@ -26,12 +26,9 @@ class BuildFarmAction(BuildAction):
 
     def perform_build(self, env):
         farm = Farm(self.agent, self.position, self.get_building_parameters(env))
-        env.map.add_building(farm, self.position)
 
         tile = env.map.get_tile(self.position)
         if tile.get_resources() != ResourceType.NONE:
             farm.income_per_turn = 2 * farm.get_income()
 
-        env.map.claim_tile(self.agent, self.position)
-        self.agent.add_claimed_tile(self.position)
-        self.agent.update_local_visibility(self.position)
+        return farm

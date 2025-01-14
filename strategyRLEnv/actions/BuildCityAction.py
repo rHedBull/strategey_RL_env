@@ -37,9 +37,6 @@ class BuildCityAction(BuildAction):
     def perform_build(self, env):
         params = self.get_building_parameters(env)
         city = City(self.agent, self.position, params)
-        env.map.add_building(city, self.position)
 
-        env.map.claim_tile(self.agent, self.position)
-        self.agent.add_claimed_tile(self.position)
         self.agent.add_city(city)
-        self.agent.update_local_visibility(self.position)
+        return city

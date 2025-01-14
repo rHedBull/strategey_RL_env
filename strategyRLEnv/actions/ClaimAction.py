@@ -2,7 +2,7 @@ from typing import Tuple
 
 from strategyRLEnv.actions.Action import Action, ActionType
 from strategyRLEnv.Agent import Agent
-from strategyRLEnv.map.map_settings import OWNER_DEFAULT_TILE
+from strategyRLEnv.map.map_settings import OWNER_DEFAULT_TILE, discovery_reward
 from strategyRLEnv.map.MapPosition import MapPosition
 
 
@@ -40,10 +40,11 @@ class ClaimAction(Action):
     def execute(self, env):
         env.map.claim_tile(self.agent, self.position)
         self.agent.add_claimed_tile(self.position)
-        self.agent.update_local_visibility(self.position)
+        discovered = self.agent.update_local_visibility(self.position)
 
         self.agent.money -= self.get_cost(env)
-        reward = self.get_reward(env)
+
+        reward = self.get_reward(env) + discovered * discovery_reward
         return reward
 
 

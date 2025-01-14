@@ -120,4 +120,5 @@ max_unit_strength = 500
 
 killed_punish_value = 100000
 
-conquer_threshold = 2
+conquer_threshold = 2 # how many units need to surround a tile claimed by an opponent before you can claim it with a unit
+discovery_reward = 1 # reward received when discovering a new tile

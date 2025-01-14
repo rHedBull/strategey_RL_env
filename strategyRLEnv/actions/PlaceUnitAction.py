@@ -1,8 +1,8 @@
 from strategyRLEnv.actions.Action import Action, ActionType
-from strategyRLEnv.actions.BuildAction import fit_building_to_land_type
+from strategyRLEnv.actions.BuildAction import (fit_building_to_land_type)
 from strategyRLEnv.Agent import Agent
 from strategyRLEnv.map.map_settings import (OWNER_DEFAULT_TILE,
-                                            conquer_threshold)
+                                            conquer_threshold, discovery_reward)
 from strategyRLEnv.map.MapPosition import MapPosition
 from strategyRLEnv.objects.Unit import Unit
 
@@ -35,11 +35,12 @@ class PlaceUnitAction(Action):
 
     def execute(self, env):
         tile = env.map.get_tile(self.position)
+        discovery = 0
         if tile.owner_id != OWNER_DEFAULT_TILE and tile.owner_id != self.agent.id:
             # also claim the tile
             env.map.claim_tile(self.agent, self.position)
             self.agent.add_claimed_tile(self.position)
-            self.agent.update_local_visibility(self.position)
+            discovery = self.agent.update_local_visibility(self.position)
 
         if tile.unit is not None and tile.unit.owner.id == self.agent.id:
             # add strength to unit
@@ -49,9 +50,10 @@ class PlaceUnitAction(Action):
             unit = Unit(self.agent, self.position)
             env.agents[self.agent.id].add_unit(unit)
             env.map.add_unit(unit, self.position)
+            discovery = self.agent.update_local_visibility(self.position)
 
         self.agent.money -= self.get_cost(env)
-        reward = 0
+        reward = discovery * discovery_reward
         return reward
 
     def get_cost(self, env) -> float:

@@ -200,16 +200,17 @@ class Agent:
         :param map:
         :param position: The position of the agent.
         """
-        x = position.x
-        y = position.y
-
-        tmp_pos = MapPosition(x, y)
 
         surrounding_tiles = self.env.map.get_surrounding_tiles(
             position, self.visibility_range
         )
+        discovered_tiles = 0
         for tile in surrounding_tiles:
-            self.env.map.set_visible(tile.position, self.id)
+            if not self.env.map.is_visible(tile.position, self.id):
+                self.env.map.set_visible(tile.position, self.id)
+                discovered_tiles += 1
+
+        return discovered_tiles
 
     def add_unit(self, unit):
         if unit.owner.id == self.id:

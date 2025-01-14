@@ -43,11 +43,10 @@ class BuildRoadAction(BuildAction):
     def perform_build(self, env):
         building_type_id = self.get_building_parameters(env)
         road = Road(self.position, building_type_id)
-        env.map.add_building(road, self.position)
 
         update_road_bridge_shape(road, env.map)
 
-        self.agent.update_local_visibility(self.position)
+        return road
 
 
 class BuildBridgeAction(BuildAction):
@@ -81,7 +80,6 @@ class BuildBridgeAction(BuildAction):
     def perform_build(self, env):
         building_type_id = self.get_building_parameters(env)
         bridge = Bridge(self.position, building_type_id)
-        env.map.add_building(bridge, self.position)
 
         update_road_bridge_shape(bridge, env.map)
-        self.agent.update_local_visibility(self.position)
+        return bridge
