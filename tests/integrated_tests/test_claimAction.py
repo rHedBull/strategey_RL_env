@@ -38,7 +38,7 @@ def setup():
 def test_claim_without_visibility(setup):
     env, city, agent_0, position_1, position_2, tile1, tile2, claim_action = setup
 
-    env.map.clear_visible(position_1, agent_0.id)
+    env.map.set_invisible(position_1, agent_0.id)
     observation, reward, terminated, truncated, info = env.step([[claim_action]])
     assert tile1.get_owner() == OWNER_DEFAULT_TILE
     assert env.map.ownership_map[position_1.x, position_1.y] == OWNER_DEFAULT_TILE

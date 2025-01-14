@@ -276,7 +276,7 @@ class Map:
         if check_valid_agent_id(agent_id):
             self.visibility_map[(position.x, position.y)] |= 1 << agent_id
 
-    def clear_visible(self, position: MapPosition, agent_id: int):
+    def set_invisible(self, position: MapPosition, agent_id: int):
         if check_valid_agent_id(agent_id):
             self.visibility_map[(position.x, position.y)] &= ~(1 << agent_id)
 

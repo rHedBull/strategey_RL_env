@@ -45,7 +45,7 @@ def test_build_road_not_visible(setup):
 
     tile1 = env.map.get_tile(position_1)
     tile1.set_land_type(LandType.LAND)
-    env.map.clear_visible(position_1, agent_id)
+    env.map.set_invisible(position_1, agent_id)
 
     # Not visible, should not work
     observation, reward, terminated, truncated, info = env.step([[build_road_action]])
