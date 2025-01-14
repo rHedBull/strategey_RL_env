@@ -53,9 +53,12 @@ class Map:
         topology_array = np.moveaxis(topology_array, 2, 0)
         self.landtype_map = topology_array[0]
         self.resources_map = topology_array[1]
+
         self.ownership_map = None
         self.building_map = None
+
         self.unit_strength_map = None
+        self.unit_owner_map = None
 
     def reset(self):
         """
@@ -73,6 +76,9 @@ class Map:
             (self.width, self.height), DEFAULT_BUILDING_VALUE, dtype=np.int64
         )
         self.unit_strength_map = np.zeros((self.width, self.height), dtype=np.int64)
+        self.unit_owner_map = np.full(
+            (self.width, self.height), OWNER_DEFAULT_TILE, dtype=np.int64
+        )
 
     def trigger_surrounding_tile_update(self, position, radius=1):
         surrounding_tiles = self.get_surrounding_tiles(position, radius)
@@ -91,8 +97,11 @@ class Map:
         """
 
         features = self.env.features_per_tile
+        feature_lenght = len(
+            features
+        )
         map_features = np.zeros(
-            (len(features), self.width, self.height), dtype=np.float32
+            (feature_lenght, self.width, self.height), dtype=np.float32
         )
 
         map_features[0] = self.landtype_map
@@ -100,6 +109,7 @@ class Map:
         map_features[2] = self.ownership_map
         map_features[3] = self.building_map
         map_features[4] = self.unit_strength_map
+        map_features[5] = self.unit_owner_map
 
         return map_features, self.visibility_map
 
@@ -132,11 +142,13 @@ class Map:
     def add_unit(self, unit, position: MapPosition) -> None:
         self.get_tile(position).unit = unit
         self.unit_strength_map[position.x][position.y] = unit.strength
+        self.unit_owner_map[position.x][position.y] = unit.owner.id
 
     def remove_unit(self, position: MapPosition) -> None:
         tile = self.get_tile(position)
         tile.unit = None
         self.unit_strength_map[position.x][position.y] = 0
+        self.unit_owner_map[position.x][position.y] = OWNER_DEFAULT_TILE
 
     def remove_building(
         self,

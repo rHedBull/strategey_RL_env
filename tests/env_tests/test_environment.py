@@ -130,6 +130,23 @@ def test_observation_space(env):
         observation_space, gym.spaces.Space
     ), "Observation space should be an instance of gym.spaces.Space"
     observation, _ = env.reset()
+    assert observation["map"].shape == (6, 10, 10)
+    assert observation["agents"].shape == (2, 3)
+    assert observation["visibility_map"].shape == (10, 10)
+
+    assert observation["map"].dtype == np.float32
+    assert observation["agents"].dtype == np.float32
+    assert observation["visibility_map"].dtype == np.int64
+
+    assert observation_space.spaces["map"].contains(
+        observation["map"]
+    ), "Map out of bounds!"
+    assert observation_space.spaces["agents"].contains(
+        observation["agents"]
+    ), "Agents out of bounds!"
+    assert observation_space.spaces["visibility_map"].contains(
+        observation["visibility_map"]
+    ), "Visibility map out of bounds!"
 
     assert observation_space.contains(
         observation

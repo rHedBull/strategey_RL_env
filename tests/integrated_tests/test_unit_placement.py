@@ -64,6 +64,9 @@ def test_place_unit_on_visible_land_tile(setup):
     assert (
         env.map.unit_strength_map[position_1.x][position_1.y] == unit.strength
     ), "Unit strength should be on map"
+    assert (
+        env.map.unit_owner_map[position_1.x][position_1.y] == unit.owner.id
+    ), "Unit owner should be on map"
 
 
 def test_place_unit_on_friendly_unit(setup):
@@ -78,8 +81,9 @@ def test_place_unit_on_friendly_unit(setup):
     env.map.set_visible(position_1, agent_id=unit.owner.id)
     tile1 = env.map.get_tile(position_1)
     tile1.set_land_type(LandType.LAND)
-    tile1.unit = unit
-    tile1.unit.strength = 50
+
+    unit.strength = 50
+    env.map.add_unit(unit, position_1)
     env.agents[0].units.append(unit)
 
     # place_unit action for agent 0
@@ -98,6 +102,9 @@ def test_place_unit_on_friendly_unit(setup):
     assert (
         env.map.unit_strength_map[position_1.x][position_1.y] == unit.strength
     ), "Unit strength should be on map"
+    assert (
+        env.map.unit_owner_map[position_1.x][position_1.y] == unit.owner.id
+    ), "Unit owner should be on map"
 
 
 def test_place_unit_on_invisible(setup):
@@ -108,7 +115,7 @@ def test_place_unit_on_invisible(setup):
     env.reset()
 
     # Ensure position_1 is not visible
-    env.map.clear_visible(position_1, agent_id=unit.owner.id)
+    env.map.set_invisible(position_1, agent_id=unit.owner.id)
     tile1 = env.map.get_tile(position_1)
     tile1.set_land_type(LandType.LAND)
 
@@ -119,6 +126,9 @@ def test_place_unit_on_invisible(setup):
     assert (
         env.map.unit_strength_map[position_1.x][position_1.y] == 0
     ), "Unit strength should still be 0"
+    assert (
+        env.map.unit_owner_map[position_1.x][position_1.y] == -1
+    ), "Unit owner should be default -1 on map"
 
 
 def test_place_unit_on_enemy_claimed_tile_2support(setup):
@@ -162,6 +172,9 @@ def test_place_unit_on_enemy_claimed_tile_2support(setup):
     assert (
         env.map.unit_strength_map[position_1.x, position_1.y] == unit.strength
     ), "Unit strength should be on map"
+    assert (
+        env.map.unit_owner_map[position_1.x][position_1.y] == unit.owner.id
+    ), "Unit owner should be on map"
 
 
 def test_place_unit_on_enemy_claimed_tile_1support(setup):
@@ -245,6 +258,9 @@ def test_place_unit_on_enemy_unit(setup):
     assert (
         env.map.unit_strength_map[position_2.x][position_2.y] == opponent.strength
     ), "oponent strength should not change"
+    assert (
+        env.map.unit_owner_map[position_2.x][position_2.y] == opponent.owner.id
+    ), "Unit owner NOT CHANGE be on map"
 
 
 def test_place_unit_on_ocean_fails(setup):
@@ -356,6 +372,9 @@ def test_remove_unit_action_empty_tile(setup):
     assert (
         env.map.unit_strength_map[position_1.x][position_1.y] == 0
     ), "Unit strength should be 0"
+    assert (
+        env.map.unit_owner_map[position_1.x][position_1.y] == -1
+    ), " SHOULD  be default value -1"
 
 
 def test_remove_unit_action_own_unit(setup):
@@ -384,6 +403,9 @@ def test_remove_unit_action_own_unit(setup):
     assert (
         env.map.unit_strength_map[position_1.x][position_1.y] == 0
     ), "Unit strength should be 0"
+    assert (
+        env.map.unit_owner_map[position_1.x][position_1.y] == -1
+    ), " SHOULD  be default value -1"
 
 
 def test_remove_enemy_unit(setup):
@@ -412,3 +434,6 @@ def test_remove_enemy_unit(setup):
     assert (
         env.map.unit_strength_map[position_2.x][position_2.y] == opponent.strength
     ), "Unit strength should be 0"
+    assert (
+        env.map.unit_owner_map[position_2.x][position_2.y] == opponent.owner.id
+    ), " SHOULD still be the other agent's unit"

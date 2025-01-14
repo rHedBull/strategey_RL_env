@@ -158,6 +158,9 @@ def test_unit_kills_other_unit(setup):
     # attacker should still be damaged
     assert unit.strength < 90
     assert env.map.unit_strength_map[position_1.x][position_1.y] == unit.strength
+    assert (
+        env.map.unit_owner_map[position_2.x][position_2.y] == -1
+    ), "Unit owner should be on map"
 
 
 def test_attack_on_city(setup):

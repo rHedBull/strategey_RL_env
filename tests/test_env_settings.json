@@ -105,13 +105,20 @@
                 "max": 10000
             }
         },
-
         {
             "name": "unit_strength",
             "select": true,
             "values": {
                 "min": 0,
                 "max":500
+            }
+        },
+        {
+            "name": "unit_ownership",
+            "select": true,
+            "values": {
+                "min": -1,
+                "max": 63
             }
         }
     ],
